@@ -30,6 +30,7 @@
         <div class="product-alert-message"></div>
       </div>
     </div>    
+    {% comment %} live store {% endcomment %}
     {% if request.page_type == 'password' %}
       <main id="content" class="site-main">{{ content_for_layout }}</main>
     {% else %}
@@ -214,7 +215,7 @@
       }    
     </script>
   {%- render "ecom_footer"-%}
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1/dist/panzoom/panzoom.umd.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1/dist/panzoom/panzoom.umd.js"></script>
 </body>
 </html>
 <style>
