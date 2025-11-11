@@ -1,0 +1,94 @@
+<article class="dynamic-block-{{ block.id }} section-card{% if block.settings.include_border %} section-card-borders{% endif %} slide mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout text-{{ block.settings.text_alignment | default: 'left' }}{% if settings.animation_enable %} animated-item animated-delay-{{ forloop.index0 }}{% endif %}" {{ block.shopify_attributes }}>
+  <div class="content-promo content-promo-{{ block.settings.text_position }} content-padding{% if block.settings.image_background %} content-promo-height{% endif %}">
+    {%- liquid
+      if block.settings.image_desktop != blank or block.settings.image_mobile != blank
+        if block.settings.image_desktop != blank          
+          capture alt
+            if block.settings.image_desktop.alt != blank
+              echo block.settings.image_desktop.alt | escape
+            else
+              echo block.settings.image_desktop | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+            endif
+          endcapture
+          echo '<figure class="skip '
+          if block.settings.image_mobile != blank
+            echo 'desktop '
+          endif       
+          if video
+            echo 'image hidden '
+          endif
+          echo block.settings.insta_filter
+          echo '">'
+          render 'image.load', img_src: block.settings.image_desktop, size: desktop_size, new_size: 1240, sizes: desktop_sizes_final, padding: block.settings.section_height_desktop, alt: alt, background: true, lazy: lazy
+          echo '</figure>'
+        endif
+        if block.settings.image_mobile != blank
+          capture alt
+            if block.settings.image_mobile.alt != blank
+              echo block.settings.image_mobile.alt | escape
+            else
+              echo block.settings.image_mobile | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+            endif
+          endcapture
+          echo '<figure class="skip '
+          if block.settings.image_desktop != blank
+            echo 'mobile '
+          endif
+          echo block.settings.insta_filter_mobile
+          echo '">'
+          render 'image.load', img_src: block.settings.image_mobile, size: mobile_size, new_size: 768, sizes: mobile_sizes_final, padding: block.settings.section_height_mobile, alt: alt, background: true, lazy: lazy
+          echo '</figure>'
+        endif
+      else
+        echo '<figure class="skip">'
+          assign title = 'hero-apparel-'
+          assign index = forloop.index0 | modulo: 3 | plus: 1
+          echo title | append: index | placeholder_svg_tag: 'placeholder-svg'
+        echo '</figure>'
+      endif
+      if block.settings.link != blank
+        echo '<a class="section-layout-link keyed-inside" href="'
+        echo block.settings.link
+        echo '"'
+        if block.settings.link_seo != blank
+          echo ' title="'
+          echo block.settings.link_seo | escape
+          echo '"'
+        endif
+        echo '></a>'
+      endif
+    -%}
+    {% if video %}
+      <section data-section-id="{{ block.id }}" 
+               data-section-type="video-{{ block.id }}"
+               data-video-type="background"
+               {% if block.settings.video != blank %}
+                 data-url="{{ 'script.video.js' | asset_url }}"
+               {% endif %}
+               data-video {{ block.shopify_attributes }}>
+          <figure class="skip {{ block.settings.insta_filter }} video loading">
+            {%- liquid
+              if block.settings.video != blank
+                echo '<div class="spinner"></div>'
+                echo block.settings.video | video_tag: autoplay: false, loop: true, muted: true, controls: false, preload: auto, class: 'lazybackground'
+              endif
+            -%}
+          </figure>
+          {% if block.settings.link != blank %}
+            <a class="section-layout-link keyed-inside" href="{{ block.settings.link }}"{% if block.settings.link_seo != blank %} title="{{ block.settings.link_seo | escape }}"{% endif %}></a>
+          {% endif %}
+      </section>  
+    {% endif %}
+    {%- liquid
+      if text_background_opacity > 0 and text_background_color
+        echo '<div class="section-layout-overlay skip"></div>'
+      endif
+      render 'image.sizes', mobile_size: mobile_size, desktop_size: desktop_size, padding_mobile: padding, padding_desktop: padding, new_size_mobile: mobile_size, new_size_desktop: desktop_size
+      echo '<div class="section-layout-card-wrapper skip">'
+        echo '<div class="section-layout-card section-layout-card-no-padding">'
+          render 'block.text', section: section, block: block
+        echo '</div>'
+      echo '</div>'
+    -%}    
+  </div>
+</article>

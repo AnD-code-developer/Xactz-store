@@ -1,0 +1,196 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "t:sections.section.titles.footer.content",
+  "sections": {
+    "section_build_own_KXptt4": {
+      "type": "section-build-own",
+      "blocks": {
+        "newsletter_HEGErL": {
+          "type": "newsletter",
+          "settings": {
+            "content_width_mobile": 4,
+            "content_width_desktop": 2,
+            "include_border": false,
+            "title": "",
+            "title_h1": false,
+            "title_font": "primary",
+            "title_outline": "none",
+            "title_size": 42,
+            "title_sub": "",
+            "title_sub_font": "secondary",
+            "title_sub_outline": "none",
+            "title_sub_size": 30,
+            "text_border": true,
+            "content": "",
+            "text_alignment": "left",
+            "text_color": "",
+            "text_color_hover": "",
+            "button_color": "",
+            "line_color": "",
+            "input_text_color": "",
+            "input_background_color": "",
+            "text_background_color": "",
+            "text_background_gradient": "",
+            "text_background_opacity": 100
+          }
+        },
+        "social_xKxaGm": {
+          "type": "social",
+          "settings": {
+            "content_width_mobile": 4,
+            "content_width_desktop": 4,
+            "include_border": false,
+            "text_alignment": "right",
+            "text_color": "",
+            "text_background_color": "",
+            "text_background_gradient": "",
+            "text_background_opacity": 90
+          }
+        }
+      },
+      "block_order": [
+        "newsletter_HEGErL",
+        "social_xKxaGm"
+      ],
+      "custom_css": [
+        "@media screen and (max-width: 767px) {.text-right .social {justify-content: center; }}"
+      ],
+      "settings": {
+        "layout_x": "center",
+        "layout_y": "center",
+        "padding_grid_mobile": 40,
+        "padding_grid_desktop": 60,
+        "enable_slider_mobile": false,
+        "enable_slider_desktop": false,
+        "slider_color": "",
+        "image_background": false,
+        "section_height_mobile": 65,
+        "section_height_desktop": 65,
+        "overlay_background_color": "#000000",
+        "overlay_background_gradient": "",
+        "overlay_opacity": 10,
+        "enable_lazy": true,
+        "insta_filter": "none",
+        "insta_filter_mobile": "none",
+        "image_size": false,
+        "full_width": false,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
+        "margin_bottom_mobile": 20,
+        "padding_top_desktop": 20,
+        "padding_bottom_desktop": 20,
+        "margin_bottom_desktop": 0,
+        "padding_border": true
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "image_yYm6Ge": {
+          "type": "image",
+          "settings": {
+            "content_width_mobile": 4,
+            "content_width_desktop": 1,
+            "block_img": "shopify://shop_images/Weixin_Image_20250912184103_2008_4.png",
+            "block_img_width": 100,
+            "link": "",
+            "link_new": false
+          }
+        },
+        "richtext_TcEXfg": {
+          "type": "richtext",
+          "settings": {
+            "content_width_mobile": 4,
+            "content_width_desktop": 3,
+            "include_border": false,
+            "title": "About",
+            "title_font": "primary",
+            "title_size": 20,
+            "text_border": true,
+            "content": "<p>We are a passionate team dedicated to bringing a touch of nature and tranquility into your living spaces. Our journey began with a simple idea: to create a sanctuary at home through the beauty of succulents and terrariums.</p>",
+            "text_size": 14,
+            "text_alignment": "left"
+          }
+        },
+        "menu_aptfTd": {
+          "type": "menu",
+          "settings": {
+            "content_width_mobile": 2,
+            "content_width_desktop": 1,
+            "menu": "footer",
+            "include_border": false,
+            "title": "Help",
+            "title_font": "primary",
+            "title_size": 20,
+            "text_border": true,
+            "content": "<p>Start with these useful links to find the answers you need</p>",
+            "text_size": 12,
+            "link_size": 14,
+            "text_alignment": "left"
+          }
+        },
+        "customer_ypHcWE": {
+          "type": "customer",
+          "settings": {
+            "content_width_mobile": 2,
+            "content_width_desktop": 1,
+            "include_border": false,
+            "title": "Accounts",
+            "title_font": "primary",
+            "title_size": 20,
+            "text_border": true,
+            "content": "<p>Create an account to manage your addresses and re-order previous orders</p>",
+            "text_size": 12,
+            "link_size": 14,
+            "text_alignment": "left"
+          }
+        }
+      },
+      "block_order": [
+        "image_yYm6Ge",
+        "richtext_TcEXfg",
+        "menu_aptfTd",
+        "customer_ypHcWE"
+      ],
+      "settings": {
+        "layout_x": "center",
+        "layout_y": "start",
+        "padding_grid_mobile": 20,
+        "padding_grid_desktop": 20,
+        "enable_payment_icons": true,
+        "include_shop": false,
+        "text_color": "",
+        "text_color_hover": "",
+        "line_color": "",
+        "show_locale_selector": true,
+        "show_currency_selector": true,
+        "subfooter": "<p><a href=\"/\" title=\"Do not sell or share my personal information\">Personal info</a>  •  <a href=\"/\" title=\"Contact Information\">Contact Info</a>  •  <a href=\"/\" title=\"Privacy Policy\">Privacy Policy</a>  •  <a href=\"/\" title=\"Refund Policy\">Refund Policy</a>  •  <a href=\"/\" title=\"Terms of Service\">Terms of Service</a></p>",
+        "image_size": false,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
+        "margin_bottom_mobile": 0,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40,
+        "margin_bottom_desktop": 0,
+        "padding_border": false
+      }
+    }
+  },
+  "order": [
+    "section_build_own_KXptt4",
+    "footer"
+  ]
+}

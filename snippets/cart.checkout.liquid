@@ -1,0 +1,42 @@
+<div class="content-block" {{ block.shopify_attributes }}>
+  {%- liquid
+    assign checkbox = false
+    if block.settings.cart_terms_enable and block.settings.cart_terms != blank
+      assign checkbox = true
+    endif
+  -%}
+  {% if checkbox %}
+    <div class="line-items">
+      <div class="input-wrapper input-container">
+        <input id="cart-terms-{{ block.id }}" type="checkbox" title="{{ block.settings.cart_terms | strip_html | escape }}" required data-cart-terms>
+        <label for="cart-terms-{{ block.id }}">{{ block.settings.cart_terms }}</label>
+      </div>
+    </div>
+  {% endif %}             
+  <div{% if drawer %} class="header-minicart-interactions"{% endif %}>
+    {% if drawer %}<a href="{{ routes.cart_url }}" class="btn btn-secondary" title="{{ 'product.view_cart' | t | escape }}">{{ 'product.view_cart' | t }}</a>{% endif %}
+    <a href="/pages/about-us" class="a btn btn-{% if additional_checkout_buttons or checkbox %}secondary{% else %}primary{% endif %} btn-full-width{% if block.settings.enable_checkout_lock_icon %} with-lock{% endif %}" 
+            type="submit" 
+            name="checkout" 
+            data-checkout="{{ 'cart.button_checkout_title' | t }}"
+            data-terms="{{ 'cart.button_checkout_terms' | t }}"
+            {% if checkbox %} disabled{% endif %}>
+      {%- liquid
+        if drawer
+          assign size = 12
+        else
+          assign size = 18
+        endif
+        if block.settings.enable_checkout_lock_icon
+          render 'icons.theme', id: 'checkout-lock', size: size
+        endif
+      -%}
+      <span>{% if checkbox %}{{ 'cart.button_checkout_terms' | t }}{% else %}{{ 'cart.button_checkout_title' | t }}{% endif %}</span>
+      </a>
+    {% unless drawer %}
+      {% if additional_checkout_buttons %}
+        <div class="additional-checkout-buttons{% if checkbox %} hidden{% endif %} additional-checkout-buttons--vertical">{{ content_for_additional_checkout_buttons }}</div>
+      {% endif %}
+    {% endunless %}
+  </div>
+</div>

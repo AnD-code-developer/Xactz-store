@@ -1,0 +1,40 @@
+{%- liquid
+   if section.settings.image_size and request.design_mode
+    echo '<div class="image-sizes">'
+      if size != blank
+        echo 'general.general.size' | t
+        echo size | round
+        if padding and padding != 'original'
+          assign height = padding | divided_by: 100.0 | times: new_size | round
+          echo ' x '
+          echo height
+        endif
+        echo 'px'      
+      else      
+        echo 'general.general.mobile' | t
+        echo mobile_size | round         
+        if padding_mobile and padding_mobile != 'original'
+          assign mobile_height = padding_mobile | divided_by: 100.0 | times: new_size_mobile | round
+          echo ' x '
+          echo mobile_height
+        endif
+        echo 'px'
+        if padding_desktop and padding_desktop != 'original' and note
+          echo '*'
+        endif        
+       echo '<br/>'        
+        echo 'general.general.desktop' | t
+        echo desktop_size | round         
+        if padding_desktop and padding_desktop != 'original'
+          assign desktop_height = padding_desktop | divided_by: 100.0 | times: new_size_desktop | round
+          echo ' x '
+          echo desktop_height
+        endif                        
+        echo 'px'
+        if padding_desktop and padding_desktop != 'original' and note
+          echo '*'
+        endif
+      endif      
+    echo '</div>'
+  endif   
+-%}

@@ -1,0 +1,40 @@
+<div class="block-element search-section-form-container{% if is_page %} container-inner bottompad{% endif %}{% if build %} dynamic-block-{{ block.id }} text-{{ block.settings.text_alignment | default: 'left' }} section-card slide section-card-{{ layout_y }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout{% if block.settings.include_border %} section-card-borders{% endif %}{% if text_background_opacity > 0 and text_background_color %} section-layout-card-overlay-padding{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{{ forloop.index0 }}{% endif %}{% endif %}" {{ block.shopify_attributes }}>
+  {%- liquid
+    if text_background_opacity > 0 and text_background_color
+      echo '<div class="section-layout-card-overlay"></div>'
+    endif
+  -%}
+  <div class="search-section-form">    
+    {%- liquid
+      if image_columns == 1
+        assign four = true
+      else
+        assign four = false
+      endif
+      render 'block.search.results', icon: true, four: four, size: 18
+    -%}
+    {% if type_count > 1 %}
+      {% assign data_index = 0 %}
+      <div class="search-results-tabs search-results-tabs-{{ type_count }}">
+        {% if product_count > 0 %}          
+          {% assign data_index = data_index | plus: 1 %}
+          <span class="collection-sortby-option{% if product_first %} collection-sortby-option-selected{% endif %}">
+            <button type="button" data-id="search-products" data-index="slide-h-{{ data_index }}" class="search-results-tab{% if product_first %} search-results-tab-selected{% endif %} keyed-inside"><span class="underline">{{ 'search.results.product_count' | t: count: product_count }}</span></button>
+          </span>
+        {% endif %}
+        {% if page_count > 0 %} 
+          {% assign data_index = data_index | plus: 1 %}
+          <span class="collection-sortby-option{% if page_first %} collection-sortby-option-selected{% endif %}">
+            <button type="button" data-id="search-pages" data-index="slide-h-{{ data_index }}" class="search-results-tab{% if page_first %} search-results-tab-selected{% endif %} keyed-inside"><span class="underline">{{ 'search.results.page_count' | t: count: page_count }}</span></button>
+          </span>
+        {% endif %}
+        {% if article_count > 0 %} 
+          {% assign data_index = data_index | plus: 1 %}
+          <span class="collection-sortby-option{% if article_first %} collection-sortby-option-selected{% endif %}">
+            <button type="button" data-id="search-articles" data-index="slide-h-{{ data_index }}" class="search-results-tab{% if article_first %} search-results-tab-selected{% endif %} keyed-inside"><span class="underline">{{ 'search.results.article_count' | t: count: article_count }}</span></button>
+          </span>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>

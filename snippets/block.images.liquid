@@ -1,0 +1,127 @@
+{% assign has_image = false %}
+{% if block.settings.image_desktop != blank or is_collection and collection.image %}  
+  {% assign has_image = true %}
+  <figure class="{{ block.settings.insta_filter }} section-layout-wrapper{% if padding %}{% unless gallery %} height-padding-{{ padding }}{% endunless %}{% endif %}{% if gallery %} gallery{% endif %}{% if bottompad %} bottompad{% endif %}{% if image_background %} image-height-desktop{% endif %}{% if block.settings.image_mobile != blank %} desktop{% endif %} rounded{% if class %}{{ class }}{% endif %}">
+    {% if image_background %}<div class="height-padding-custom desktop">{% endif %}
+      {%- liquid
+        if is_collection
+          assign img_src = collection.image
+        else
+          assign img_src = block.settings.image_desktop
+        endif
+        if new_size
+          assign final_size = 1240
+        elsif desktop_size
+          assign size = desktop_size
+          assign sizes = desktop_sizes
+          if build_background or gallery
+            assign final_size = 1240
+          else
+            assign final_size = desktop_size
+          endif
+        else
+          assign final_size = size
+        endif
+        if padding or padding != blank
+          assign padding_desktop = padding
+          if padding == 'original'
+            assign use_padding = false
+          else
+            assign use_padding = true
+          endif
+        elsif padding_desktop != blank
+          assign padding_desktop = padding_desktop
+        else
+          assign padding_desktop = section.settings.section_height_desktop
+          assign use_padding = false
+        endif      
+        capture alt
+          if img_src.alt != blank
+            echo img_src.alt | escape
+          else
+            echo img_src | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+          endif
+        endcapture
+        if image_background or use_padding
+          render 'image.load', img_src: img_src, size: size, new_size: final_size, padding: padding_desktop, build_background: build_background, sizes: sizes, alt: alt, background: true, lazy: lazy, full_width: full_width
+        else
+          render 'image.load', img_src: img_src, size: size, new_size: size, sizes: sizes, alt: alt, lazy: lazy, full_width: full_width, custom: custom
+        endif
+      -%}
+    {% if image_background %}</div>{% endif %}
+  </figure>  
+{% endif %}
+{% if block.settings.image_mobile != blank %}  
+  {% assign has_image = true %}
+  <figure class="{{ block.settings.insta_filter_mobile }} section-layout-wrapper{% if padding %}{% unless gallery %} height-padding-{{ padding }}{% endunless %}{% endif %}{% if gallery %} gallery{% endif %}{% if bottompad %} bottompad{% endif %}{% if block.settings.image_desktop != blank %} mobile{% endif %} rounded{% if class %}{{ class }}{% endif %}">
+    {% if image_background %}<div class="height-padding-custom mobile">{% endif %}
+      {%- liquid
+        assign img_src = block.settings.image_mobile
+        if full_width
+          assign size = img_src.width
+        endif
+        if new_size
+          assign final_size = 768
+        elsif mobile_size
+          assign size = mobile_size
+          assign sizes = mobile_sizes
+          if build_background or gallery
+            assign final_size = 768
+          else
+            assign final_size = mobile_size
+          endif
+        else
+          assign final_size = size
+        endif
+        if padding
+          assign padding_mobile = padding
+          if padding == 'original'
+            assign use_padding = false
+          else
+            assign use_padding = true
+          endif
+        elsif padding_mobile != blank
+          assign padding_mobile = padding_mobile
+        else
+          assign padding_mobile = section.settings.section_height_mobile
+          assign use_padding = false
+        endif
+        capture alt
+          if img_src.alt != blank
+            echo img_src.alt | escape
+          else
+            echo img_src | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+          endif
+        endcapture                            
+        if image_background or use_padding
+          render 'image.load', img_src: img_src, size: size, new_size: final_size, padding: padding_mobile, build_background: build_background, sizes: sizes, alt: alt, background: true, lazy: lazy, full_width: full_width
+        else
+          render 'image.load', img_src: img_src, size: size, sizes: sizes, alt: alt, lazy: lazy, full_width: full_width, custom: custom
+        endif                            
+      -%}
+    {% if image_background %}</div>{% endif %}
+  </figure>
+{% endif %}
+{%- liquid
+  if has_image == false and has_onboard
+    echo '<figure class="section-layout-wrapper'
+      if image_background
+        echo ' image-height-desktop'
+      endif
+    echo '">'
+      if image_background
+        echo '<div class="height-padding-custom desktop">'
+      endif   
+        if forloop
+          assign title = 'hero-apparel-'
+          assign index = forloop.index0 | modulo: 3 | plus: 1
+          echo title | append: index | placeholder_svg_tag: 'placeholder-svg'
+        else
+          echo 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg'
+        endif   
+      if image_background
+        echo '</div>'
+      endif
+    echo '</figure>'
+  endif
+-%}

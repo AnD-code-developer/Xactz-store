@@ -1,0 +1,234 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-cart",
+      "blocks": {
+        "shipping_message_64MnNE": {
+          "type": "shipping_message",
+          "settings": {}
+        },
+        "complementary_dCKczM": {
+          "type": "complementary",
+          "settings": {
+            "heading": "You may also like",
+            "product_count": 5,
+            "enable_slide": false,
+            "block_icon": "none",
+            "block_icon_color": "",
+            "block_icon_color_h": "",
+            "icon_size": 14,
+            "title_size": 14
+          }
+        },
+        "attribute_TyV4aU": {
+          "type": "attribute",
+          "settings": {
+            "attribute_placeholder": "PO Number",
+            "enable_slide": true,
+            "block_icon": "information-pencil",
+            "block_icon_color": "#000000",
+            "block_icon_color_h": "",
+            "icon_size": 16,
+            "heading": "Add a  PO number",
+            "title_size": 12
+          }
+        },
+        "notes_Emz8Xr": {
+          "type": "notes",
+          "settings": {
+            "notes_placeholder": "Write any special instructions for your shipment here",
+            "enable_slide": true,
+            "block_icon": "information-edit",
+            "block_icon_color": "#000000",
+            "block_icon_color_h": "",
+            "icon_size": 16,
+            "heading": "Add a note",
+            "title_size": 12
+          }
+        },
+        "shipping_calculator_LXCGnb": {
+          "type": "shipping_calculator",
+          "settings": {
+            "heading": "Calculate Shipping",
+            "shipping_calculator_default_country": "United States",
+            "enable_slide": true,
+            "block_icon": "vehicles-truck",
+            "block_icon_color": "#000000",
+            "block_icon_color_h": "",
+            "icon_size": 18,
+            "title_size": 12
+          }
+        },
+        "share_HneFwb": {
+          "type": "share",
+          "settings": {
+            "subject": "Check out these products",
+            "body": "Click the link to checkout",
+            "link_text": "Share the Cart",
+            "link_style": "text",
+            "enable_slide": false,
+            "block_icon": "none",
+            "block_icon_color": "#000000",
+            "block_icon_color_h": "",
+            "icon_size": 16,
+            "heading": "Show share link",
+            "title_size": 12
+          }
+        },
+        "totals_TaYebK": {
+          "type": "totals",
+          "settings": {
+            "show_msg": false,
+            "enable_slide": false,
+            "block_icon": "none",
+            "block_icon_color": "",
+            "block_icon_color_h": "",
+            "icon_size": 14,
+            "heading": "Show totals",
+            "title_size": 14
+          }
+        },
+        "checkout_eTbGQf": {
+          "type": "checkout",
+          "settings": {
+            "cart_terms_enable": false,
+            "cart_terms": "Add an agree to terms checkbox",
+            "enable_checkout_lock_icon": true
+          }
+        },
+        "payments_YUFCct": {
+          "type": "payments",
+          "settings": {
+            "center_payments": true,
+            "include_shop": false
+          }
+        }
+      },
+      "block_order": [
+        "shipping_message_64MnNE",
+        "complementary_dCKczM",
+        "attribute_TyV4aU",
+        "notes_Emz8Xr",
+        "shipping_calculator_LXCGnb",
+        "share_HneFwb",
+        "totals_TaYebK",
+        "checkout_eTbGQf",
+        "payments_YUFCct"
+      ],
+      "settings": {
+        "title_enable": true,
+        "title_h1": true,
+        "title_font": "primary",
+        "title_outline": "none",
+        "title_size": 42,
+        "responsive_size": true,
+        "title_sub": "",
+        "title_sub_font": "secondary",
+        "title_sub_outline": "none",
+        "title_sub_size": 30,
+        "title_alignment": "center",
+        "text_color": "",
+        "text_color_hover": "",
+        "button_color": "",
+        "line_color": "",
+        "enable_lazy": false,
+        "quantity_enable": true,
+        "image_size": false,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
+        "margin_bottom_mobile": 10,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40,
+        "margin_bottom_desktop": 0,
+        "padding_border": true
+      }
+    },
+    "section_product_recent_AcR77V": {
+      "type": "section-product-recent",
+      "blocks": {
+        "text_6jEeEQ": {
+          "type": "text",
+          "settings": {
+            "layout_x": "left",
+            "layout_y": "middle",
+            "content_width": 2,
+            "include_border": false,
+            "title": "Remember these?",
+            "title_h1": false,
+            "title_font": "primary",
+            "title_outline": "none",
+            "title_size": 42,
+            "responsive_size": true,
+            "title_sub": "",
+            "title_sub_font": "secondary",
+            "title_sub_outline": "none",
+            "title_sub_size": 30,
+            "text_border": true,
+            "content": "",
+            "link_1": "",
+            "link_1_seo": "",
+            "button_text_1": "Read More",
+            "link_style_1": "primary",
+            "link_2": "",
+            "link_2_seo": "",
+            "button_text_2": "Read More",
+            "link_style_2": "secondary",
+            "text_alignment": "center",
+            "text_color": "",
+            "text_color_hover": "",
+            "button_color": "",
+            "line_color": "",
+            "text_background_color": "",
+            "text_background_gradient": "",
+            "text_background_opacity": 90
+          }
+        }
+      },
+      "block_order": [
+        "text_6jEeEQ"
+      ],
+      "settings": {
+        "items_count": 4,
+        "items_per_row_mobile": 2,
+        "padding_grid_mobile": 20,
+        "items_per_row_desktop": 4,
+        "padding_grid_desktop": 20,
+        "layout_x": "left",
+        "enable_lazy": true,
+        "text_color": "",
+        "text_color_hover": "",
+        "button_color": "",
+        "line_color": "",
+        "enable_slider_mobile": true,
+        "enable_slider_desktop": true,
+        "slider_color": "",
+        "image_size": false,
+        "full_width": true,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
+        "margin_bottom_mobile": 10,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40,
+        "margin_bottom_desktop": 0,
+        "padding_border": true
+      }
+    }
+  },
+  "order": [
+    "main",
+    "section_product_recent_AcR77V"
+  ]
+}

@@ -1,0 +1,629 @@
+{%- liquid
+  assign text_color = false
+  if section.settings.text_color.alpha != 0.0 and section.settings.text_color.alpha != blank
+    assign text_color = true
+    assign text_color_section = section.settings.text_color
+  endif
+  assign text_color_hover = false
+  if section.settings.text_color_hover.alpha != 0.0 and section.settings.text_color_hover.alpha != blank
+    assign text_color_hover = true
+    assign text_color_hover_section = section.settings.text_color_hover
+  endif
+  assign button_color = false
+  if section.settings.button_color.alpha != 0.0 and section.settings.button_color.alpha != blank
+    assign button_color = true
+    assign button_color_section = section.settings.button_color
+  endif
+  assign line_color = false
+  if section.settings.line_color.alpha != 0.0 and section.settings.line_color.alpha != blank
+    assign line_color = true
+    assign line_color_section = section.settings.line_color
+  endif
+  assign background_color = false
+  if section.settings.background_color.alpha != 0.0 and section.settings.background_color.alpha != blank
+    assign background_color = true
+    assign background_color_section = section.settings.background_color
+  endif
+  if section.settings.background_gradient != blank
+    assign background_color = true
+    assign background_color_section = section.settings.background_gradient
+  endif
+  if section.settings.enable_lazy
+    assign lazy = 'lazy'
+  else
+    assign lazy = 'eager'
+  endif
+-%}
+{% style %}
+  .dynamic-section-{{ section.id }} {
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    --section-margin-bottom-mobile: {{ section.settings.margin_bottom_mobile }}px;
+    --section-margin-bottom-desktop: {{ section.settings.margin_bottom_desktop }}px;
+    {%- if text_color -%}
+      --color_title_text:{{ text_color_section }};
+      --color_text:{{ text_color_section }};
+      --color_text_modify_5:{{ text_color_section | color_modify: 'alpha', 0.5 }};
+      --color_label:{{ text_color_section }};
+      --color_sale:{{ text_color_section }};
+      --color_accent:{{ text_color_section }};
+      --button_primary_background:{{ text_color_section }};
+      --button_primary_border:{{ text_color_section }};
+      --button_secondary_border:{{ text_color_section }};
+      --button_secondary_text:{{ text_color_section }};
+      --slider_color:{{ text_color_section }};
+      --slider_color_modify_25:{{ text_color_section | color_modify: 'alpha', 0.25 }};
+    {%- endif -%}
+    {%- if text_color_hover -%}
+      --color_text_hover:{{ text_color_hover_section }};
+    {%- endif -%}
+    {%- if button_color -%}  
+      --button_primary_text:{{ button_color_section }};
+      --button_secondary_background:{{ button_color_section }};
+    {%- endif -%}        
+    {%- if line_color -%}
+      --color_border:{{ line_color_section }};
+      --slider_color:{{ line_color_section }};
+      --slider_color_modify_25:{{ line_color_section | color_modify: 'alpha', 0.25 }};
+    {%- endif -%}
+    {%- if background_color -%}
+      --color_background_outline:{{ section.settings.background_color }};
+      --color_background:{{ background_color_section }};
+      --color_background_section:{{ background_color_section }};
+    {%- endif -%}
+  }
+{% endstyle %}
+<div class="dynamic-section dynamic-section-{{ section.id }} section-background">
+  <section id="customer" 
+           data-section-type="customer" 
+           class="customer-template container container-inner">
+    <div class="section-padding-top section-padding-bottom section-margin-bottom{% if section.settings.padding_border %} section-border{% endif %}">
+      <div class="template-account table-scroll">
+        {%- liquid
+          assign page_title = 'customers.order.header' | t: order_number: order.name
+          capture link
+            echo '<a href="'
+            echo routes.account_url
+            echo '" title="'
+            echo 'customers.account.header' | t | escape
+            echo '" class="btn btn-primary account-register-button-submit">'
+            echo 'customers.account.header' | t
+            echo '</a>'
+          endcapture
+          render 'block.masthead', section: section, page_title: page_title, link: link
+        -%}        
+        <p class="details order-details">
+          {%- liquid
+            capture reorder
+              echo '/'
+              for line_item in order.line_items
+                echo line_item.variant_id
+                echo ':'
+                echo line_item.quantity
+                unless forloop.last
+                  echo ','
+                endunless
+              endfor
+            endcapture
+          -%}
+          <a class="btn btn-secondary" href="{{ routes.cart_url | append: reorder }}" title="{{ 'customers.order.reorder' | t }}">{{ 'customers.order.reorder' | t }}</a>            
+          <a class="btn btn-secondary" href="{{ order.order_status_url }}" title="{{ 'customers.order.check_html' | t: order: order.name | escape }}" target="_blank">{{ 'customers.order.check' | t | escape }}</a>
+        </p>        
+          <div class="account-top account-columns template-account-order-shipping-info">
+          {% if order.shipping_address %}
+            <div class="account-address account-column">
+              <h3 class="section-title-24">{{ 'customers.order.shipping_address' | t }}</h3>
+              {%- render 'account.address', address: order.shipping_address, account: true %}
+            </div>
+          {% endif %}
+          <div class="account-address account-column">
+            <h3 class="section-title-24">{{ 'customers.order.billing_address' | t }}</h3>
+            {%- render 'account.address', address: order.billing_address, account: true %}
+          </div>
+        </div>
+        <div class="table-container no-pad scroll-bar-h">
+          <table class="account-order no-container">
+            <thead class="account-order-header">
+              <tr class="account-order-header-row">
+                <th class="order-item-image-title first text-left">{{ 'customers.order.item' | t }}</th>
+                <td class="order-item-title-title">&nbsp;</td>
+                <th class="order-item-quantity-title text-center">{{ 'customers.order.quantity' | t }}</th>
+                <th class="order-item-price-title text-center">{{ 'customers.order.price' | t }}</th>
+                <th class="order-item-total-title last text-center">{{ 'customers.order.total' | t }}</th>
+              </tr>
+            </thead>  
+            <tbody>
+              {% for line_item in order.line_items %}
+                {%- liquid
+                  if line_item.variant.featured_media
+                    assign line_item_featured_media = line_item.variant.featured_media.preview_image
+                  elsif line_item.product.featured_media
+                    assign line_item_featured_media = line_item.product.featured_media.preview_image
+                  endif
+                -%}                
+                <tr class="order-item{% if order.cancelled %} cancelled_order{% endif %}">    
+                  <td class="order-item-image first text-center">
+                    <a href="{{ line_item.url }}" title="{{ line_item.title | escape }}" class="{{ settings.insta_filter }}" tabindex="-1">
+                      {%- liquid
+                        if line_item.image
+                          render 'image.load', img_src: line_item_featured_media, size: 80, sizes: '(min-width: 380px) 80px, 40px', alt: line_item.title, lazy: lazy
+                        elsif settings.product_item_placeholder != blank
+                        capture alt
+                          if settings.product_item_placeholder.alt != blank
+                            echo settings.product_item_placeholder.alt | escape
+                          else
+                            echo line_item.title | escape
+                          endif
+                        endcapture
+                        render 'image.load', img_src: settings.product_item_placeholder, size: 80, sizes: '(min-width: 380px) 80px, 40px', alt: alt, lazy: lazy                      
+                        else
+                          echo 'product-1' | placeholder_svg_tag: 'placeholder-svg'
+                        endif
+                      -%}
+                    </a>                        
+                    {%- liquid
+                      capture buyagain
+                        echo '/'
+                        echo line_item.variant_id
+                        echo ':'
+                        echo line_item.quantity
+                      endcapture
+                    -%}            
+                    <a href="{{ routes.cart_url | append: buyagain }}" class="btn btn-secondary" title="{{ 'customers.order.reorder' | t | escape }}">{{ 'customers.order.reorder' | t }}</a>                    
+                  </td>    
+                  <td class="order-item-info">    
+                    <div class="order-item-details">
+                      {%- capture line_item_options -%}
+                        {% unless line_item.variant.title == 'Default Title' %}
+                          <span class="order-item-options">{% if line_item.variant.title != 'Default title' %}{{ line_item.variant.title | replace: ' /', ',' }}{% endif %}</span>
+                        {% endunless %}
+                      {%- endcapture -%}    
+                      <span class="order-item-title"><a href="{{ line_item.url }}" title="{{ line_item.product.title | escape }}">{{ line_item.product.title }}</a></span>    
+                      {% unless line_item_options == blank %}
+                        <span class="order-item-options">{{ line_item_options }}</span>
+                      {% endunless %}    
+                      {%- liquid
+                        if line_item.selling_plan_allocation
+                          echo '<p>'
+                          echo line_item.selling_plan_allocation.selling_plan.name
+                          echo '</p>'
+                        endif
+                        assign property_size = line_item.properties | size
+                        if property_size > 0
+                          echo '<p>'
+                          for p in line_item.properties
+                            assign property_first_char = p.first | slice: 0
+                            if p.last != blank and property_first_char != '_'
+                              echo '<strong>'
+                              echo p.first
+                              echo ':</strong> '
+                              if p.last contains '/uploads/'
+                                echo '<a href="'
+                                echo p.last
+                                echo '" title="'
+                                echo p.last | split: '/' | last | escape
+                                echo '">'
+                                echo p.last | split: '/' | last
+                                echo '</a>'
+                              else
+                                echo p.last
+                              endif
+                              unless forloop.last
+                                echo '<br/>'
+                              endunless
+                            endif
+                          endfor
+                          echo '</p>'
+                        endif
+                      -%}
+                      {% if line_item.line_level_discount_allocations != blank %}
+                        <div class="order-item-discounts">
+                          {% for discount_allocation in line_item.line_level_discount_allocations %}
+                            <span class="order-item-discount">
+                              {%- render 'icons.theme', id: 'sale-tag', class: ' order-item-discount-sale-tag' -%}
+                              {{ discount_allocation.discount_application.title }} (-<span class="money">{% if settings.currency_enable %}{{ discount_allocation.amount | money_with_currency }}{% else %}{{ discount_allocation.amount | money }}{% endif %}</span>)
+                            </span>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>    
+                  </td>    
+                  <td class="order-item-quantity text-center">{{ line_item.quantity }}</td>    
+                  <td class="order-item-prices-wrapper text-center">
+                    <div class="order-item-prices">    
+                      {% if line_item.original_price > line_item.final_price %}
+                        <span class="money order-item-price order-item-original-price">{% if settings.currency_enable %}{{ line_item.original_price | money_with_currency }}{% else %}{{ line_item.original_price | money }}{% endif %}</span>
+                      {% elsif line_item.variant.compare_at_price > line_item.variant.price %}
+                        <span class="money order-item-price order-item-original-price">{% if settings.currency_enable %}{{ line_item.variant.compare_at_price | money_with_currency }}{% else %}{{ line_item.variant.compare_at_price | money }}{% endif %}</span>
+                      {% endif %}    
+                      <span class="money order-item-price order-item-final-price">{% if settings.currency_enable %}{{ line_item.final_price | money_with_currency }}{% else %}{{ line_item.final_price | money }}{% endif %}</span>    
+                      {% if line_item.unit_price %}
+                        {%- assign variant_for_unit_price = line_item -%}      
+                        {%- capture unit_price -%}
+                          <span class="product-price__unit-price-amount money" data-unit-price-amount>{% if settings.currency_enable %}{{ variant_for_unit_price.unit_price | money_with_currency }}{% else %}{{ variant_for_unit_price.unit_price | money }}{% endif %}</span>
+                        {%- endcapture -%}
+                        {%- capture unit_measure -%}
+                        <span class="product-price__unit-price-measure" data-unit-price-measure>
+                          {% if variant_for_unit_price.unit_price_measurement.reference_value != 1 %}{{ variant_for_unit_price.unit_price_measurement.reference_value }}{% endif %}{{ variant_for_unit_price.unit_price_measurement.reference_unit }}
+                        </span>
+                        {% endcapture %}
+                        <div class="product-price__unit-price{% unless variant_for_unit_price.unit_price_measurement %} hidden{% endunless %}" data-unit-price>{{ 'product.price_per_unit_html' | t: unit_price: unit_price, unit_measure: unit_measure | strip_newlines }}</div>
+                        {%- assign variant_for_unit_price = blank -%}
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td class="order-item-total last text-center">
+                    <div class="order-item-line-prices">
+                      {% if line_item.original_line_price != line_item.final_line_price %}
+                        <span class="money order-item-line-price order-item-original-line-price">{% if settings.currency_enable %}{{ line_item.original_line_price | money_with_currency }}{% else %}{{ line_item.original_line_price | money }}{% endif %}</span>
+                      {% elsif line_item.variant.compare_at_price > line_item.original_price %}
+                        <span class="money order-item-line-price order-item-original-line-price">{% if settings.currency_enable %}{{ line_item.variant.compare_at_price | money_with_currency }}{% else %}{{ line_item.variant.compare_at_price | money }}{% endif %}</span>
+                      {% endif %}
+                      <span class="money order-item-line-price order-item-final-line-price">{% if settings.currency_enable %}{{ line_item.final_line_price | money_with_currency }}{% else %}{{ line_item.final_line_price | money }}{% endif %}</span>
+                      {% if line_item.unit_price %}
+                        {%- assign variant_for_unit_price = line_item -%}
+                        {%- capture unit_price -%}
+                          <span class="product-price__unit-price-amount money" data-unit-price-amount>{% if settings.currency_enable %}{{ variant_for_unit_price.unit_price | money_with_currency }}{% else %}{{ variant_for_unit_price.unit_price | money }}{% endif %}</span>
+                        {%- endcapture -%}
+                        {%- capture unit_measure -%}
+                          <span class="product-price__unit-price-measure" data-unit-price-measure>
+                            {% if variant_for_unit_price.unit_price_measurement.reference_value != 1 %}{{ variant_for_unit_price.unit_price_measurement.reference_value }}{% endif %}{{ variant_for_unit_price.unit_price_measurement.reference_unit }}
+                          </span>
+                        {% endcapture %} 
+                        <div class="product-price__unit-price{% unless variant_for_unit_price.unit_price_measurement %} hidden{% endunless %}" data-unit-price>{{ 'product.price_per_unit_html' | t: unit_price: unit_price, unit_measure: unit_measure | strip_newlines }}</div>
+                        {%- assign variant_for_unit_price = blank -%}
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <ul class="account-order-subtotals">
+          <li>
+            <span><strong>{{ 'customers.order.subtotal' | t }}</strong></span>
+            <span class="money" data-money>{% if settings.currency_enable %}{{ order.line_items_subtotal_price | money_with_currency }}{% else %}{{ order.line_items_subtotal_price | money }}{% endif %}</span>
+          </li>
+          {% if order.cart_level_discount_applications.size > 0 %}
+            {% for discount_application in order.cart_level_discount_applications %}
+              <li class="account-order-discounts">
+                <span>
+                  <strong>{%- render 'icons.theme', id: 'sale-tag', class: ' account-order-discount-sale-tag' size: 14 -%}&nbsp;{{ discount_application.title }}</strong>
+                  <small>{{ 'customers.order.discounts' | t }}</small>
+                </span>
+                <span class="money" data-money>-{% if settings.currency_enable %}{{ discount_application.total_allocated_amount | money_with_currency }}{% else %}{{ discount_application.total_allocated_amount | money }}{% endif %}</span>
+              </li>
+            {% endfor %}
+          {% endif %}
+          {% for shipping_method in order.shipping_methods %}
+            <li>
+              <span><strong>{{ shipping_method.title }}</strong><small>{{ 'customers.order.shipping' | t }}</small></span>
+              <span class="money" data-money>{% if settings.currency_enable %}{{ shipping_method.price | money_with_currency }}{% else %}{{ shipping_method.price | money }}{% endif %}</span>
+            </li>
+          {% endfor %}
+          {% for tax_line in order.tax_lines %}
+            <li>
+              <span><strong>{{ tax_line.title }} {{ tax_line.rate | times: 100 }}%</strong><small>{{ 'customers.order.tax' | t }}</small></span>
+              <span class="money" data-money>{% if settings.currency_enable %}{{ tax_line.price | money_with_currency }}{% else %}{{ tax_line.price | money }}{% endif %}</span>
+            </li>
+          {% endfor %}
+        </ul>
+        <ul class="account-order-total">
+          <li>
+            <span><strong>{{ 'customers.order.total' | t }}</strong></span>
+            <span class="money" data-money>{% if settings.currency_enable %}{{ order.total_price | money_with_currency }}{% else %}{{ order.total_price | money }}{% endif %}</span>
+          </li>
+        </ul>
+        {%- liquid
+          for block in section.blocks
+            render block
+          endfor
+        -%}
+      </div>
+    </div>
+  </section>
+</div>
+{% schema %}
+  {
+    "name": "t:sections.section.titles.order.content",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.text.title.label"
+      },
+      {
+        "id": "title_enable",
+        "type": "checkbox",
+        "label": "t:sections.text.enable.label",
+        "default": true
+      },
+      {
+        "id": "title_h1",
+        "type": "checkbox",
+        "label": "t:sections.text.heading_one.label",
+        "default": true,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "select",
+        "id": "title_font",
+        "label": "t:sections.text.heading_font.main.label",
+        "options": [
+          {
+            "value": "primary",
+            "label": "t:sections.text.heading_font.primary.label"
+          },
+          {
+            "value": "secondary",
+            "label": "t:sections.text.heading_font.secondary.label"
+          }
+        ],
+        "default": "primary",
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "select",
+        "id": "title_outline",
+        "label": "t:sections.text.outline.heading_outline.label",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:sections.text.outline.option_1.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          },          
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          }
+        ],
+        "default": "none",
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "id": "title_size",
+        "type": "range",
+        "label": "t:sections.text.heading_size.label",
+        "min": 18,
+        "max": 240,
+        "step": 6,
+        "unit": "px",
+        "default": 42,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "responsive_size",
+        "label": "t:sections.text.responsive_size.label",
+        "default": true,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "id": "title_sub",
+        "type": "text",
+        "label": "t:sections.text.subheading.label"
+      },
+      {
+        "type": "select",
+        "id": "title_sub_font",
+        "label": "t:sections.text.heading_font.sub.label",
+        "options": [
+          {
+            "value": "primary",
+            "label": "t:sections.text.heading_font.primary.label"
+          },
+          {
+            "value": "secondary",
+            "label": "t:sections.text.heading_font.secondary.label"
+          }
+        ],
+        "default": "secondary",
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "type": "select",
+        "id": "title_sub_outline",
+        "label": "t:sections.text.outline.subheading_outline.label",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:sections.text.outline.option_1.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          },          
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          }
+        ],
+        "default": "none",
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "id": "title_sub_size",
+        "type": "range",
+        "label": "t:sections.text.subheading_size.label",
+        "min": 18,
+        "max": 240,
+        "step": 6,
+        "unit": "px",
+        "default": 30,
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "id": "text_color",
+        "type": "color",
+        "label": "t:sections.text.color.label"
+      },
+      {
+        "id": "text_color_hover",
+        "type": "color",
+        "label": "t:sections.text.hover.label"
+      },
+      {
+        "id": "button_color",
+        "type": "color",
+        "label": "t:sections.section.settings.button_color.label"
+      },
+      {
+        "id": "line_color",
+        "type": "color",
+        "label": "t:settings_schema.colors.settings.elements_line.label"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.general.options.label"
+      },
+      {
+        "id": "enable_lazy",
+        "type": "checkbox",
+        "label": "t:sections.general.lazy.single.label",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:sections.section.name.content"
+      },
+      {
+        "id": "background_color",
+        "type": "color",
+        "label": "t:sections.section.settings.background_color.label"
+      },
+      {
+        "id": "background_gradient",
+        "type": "color_background",
+        "label": "t:sections.section.settings.background_gradient.label"
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.mobile.content"
+      },
+      {
+        "id": "padding_top_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 20
+      },
+      {
+        "id": "padding_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "id": "margin_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 10
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.desktop.content"
+      },
+      {
+        "id": "padding_top_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 40
+      },
+      {
+        "id": "padding_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "id": "margin_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "padding_border",
+        "type": "checkbox",
+        "label": "t:sections.section.settings.border.label",
+        "default": false
+      }
+    ],
+    "blocks": [
+      {
+        "type": "@app"
+      }
+    ]
+  }
+{% endschema %}

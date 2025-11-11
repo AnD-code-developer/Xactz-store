@@ -1,0 +1,96 @@
+<ul{% if is_type == 'mega' %} role="menu"{% endif %}
+    id="menu-item-{{ link.handle }}" 
+    class="meganav{% if block.settings.menu_uppercase %} meganav-uppercase{% endif %} slider-v scroll-bar-v text-{% if block.settings.menu_alignment %}center{% else %}left{% endif %}{% if is_type == 'contact' %} contact{% elsif is_type == 'story' %} story{% endif %}{% if is_mobile %} navmenu-depth-2{% endif %}" 
+    data-meganav="{{ link.handle }}" 
+    {% if is_mobile %}data-mobile-trigger{% else %}data-desktop-trigger{% endif %} {{ block.shopify_attributes }}>
+  {%- liquid
+    assign menu_slider = block.settings.menu_slider
+    assign menu_style = block.settings.menu_style
+    assign column_link = block.settings.column_link
+    assign enable_promo = block.settings.enable_promo
+    if enable_promo
+      assign column_link = column_link | minus: 1
+    endif
+  -%}
+  <nav data-nav-trigger class="meganav-menu meganav-show-images{% if enable_promo %} promo{% if block.settings.promo_position == 'last' %} promo-last{% endif %}{% endif %}">
+    {% style %}
+      .dynamic-block-{{ block.id }} {
+        --image-rounded: {{ block.settings.image_rounded }}{% if block.settings.product_item_style == 'medium' %}%{% else %}px{% endif %};
+        {%- if menu_slider -%}
+          --menu_slider: 0.5;    
+        {%- else -%}
+          --menu_slider: 0;    
+        {%- endif -%}
+        {%- if enable_promo -%}
+          --enable_promo: 25dvw;    
+          {%- if menu_slider -%}
+            --enable_promo_width: 910px;  
+          {%- else -%}
+            --enable_promo_width: 100%; 
+          {%- endif -%}
+          --enable_promo_gap: 20px;    
+        {%- else -%}
+          --enable_promo: 0dvw;   
+          {%- if menu_slider -%}
+            --enable_promo_width: 1240px;  
+          {%- else -%}
+            --enable_promo_width: 100%; 
+          {%- endif -%}
+          --enable_promo_gap: 0px;    
+        {%- endif -%}
+      }              
+    {% endstyle %}
+    <section data-section-id="{{ section.id }}"
+             {% if menu_slider and request.design_mode == false %}        
+               data-section-type="slider-{{ section.id }}"
+               data-url="{{ 'script.slider.js' | asset_url }}"
+               data-slider-use="true"
+               data-slider-breakpoint="large-only"
+             {% endif %}
+             class="dynamic-block-{{ block.id }}{% if is_type == 'mega' %} is_mega{% endif %}">      
+      {%- liquid
+        if enable_promo and block.settings.promo_position == 'first'
+          render 'block.promo', block: block, is_mobile: is_mobile, promo_background: true, text: true, skip: true
+        endif
+      -%}
+      <div class="{% if menu_slider and is_type == 'mega' and is_mobile == false %}slider large {% endif %}meganav-menu-panel {% if enable_promo %}meganav-menu-panel-promo {% endif %}scroll-bar-v scroll-bar-h">
+        <div class="meganav-menu-panel-contents meganav-menu-panel-contents-{{ column_link }}{% if enable_promo %} with-promo{% endif %}{% if menu_slider %} with-slider{% endif %}">      
+          {%- liquid
+            if is_type == 'mega'
+              assign crop = block.settings.enable_image_crop
+              assign product_item_style = block.settings.product_item_style
+              if block.settings.enable_image_crop and product_item_style != 'natural'
+                assign product_item_style = product_item_style | prepend: 'cropped-'
+              endif
+              case block.settings.product_item_style
+                when 'natural'
+                  assign padding = image.aspect_ratio | times: 100
+                  assign crop = false
+                when 'small'
+                  assign padding = 75
+                when 'medium'
+                  assign padding = 100
+                when 'large'
+                  assign padding = 150
+              endcase             
+              render 'header.menu.mega', block: block, is_type: is_type, is_mobile: is_mobile, menu_location: menu_location, link: link, menu_style: menu_style, column_link: column_link, enable_promo: enable_promo, menu_slider: menu_slider, crop: crop, product_item_style: product_item_style, padding: padding, image_position: block.settings.image_position
+            elsif is_type == 'story'
+              echo '<div class="contactbar is_desktop">'
+                render 'header.menu.story', block: block
+              echo '</div>'
+            else
+              echo '<div class="contactbar is_desktop">'
+                render 'header.menu.contact', link: link, block: block
+              echo '</div>'
+            endif
+          -%}          
+        </div>
+      </div>      
+      {%- liquid
+        if enable_promo and block.settings.promo_position == 'last'
+          render 'block.promo', block: block, is_mobile: is_mobile, promo_background: true, text: true, skip: true
+        endif
+      -%}      
+    </section>
+  </nav>
+</ul>

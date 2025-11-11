@@ -1,0 +1,403 @@
+{%- liquid
+  assign index_based_on_page = paginate.current_offset | plus: forloop.index
+  assign position = index_based_on_page | minus: 1
+  if lazy_total != blank
+    if forloop <= lazy_total
+      assign lazy = lazy
+    else
+      assign lazy = 'lazy'
+    endif
+  endif
+  for block in section.blocks
+    assign block_index = block.settings.index | times: 1
+    if block.settings.limit_collection == blank or block.settings.limit_collection == collection.handle
+      if block_index == index_based_on_page
+        unless block.type == 'icon' or block.type == 'image_text' or block.type == 'testimonial' or block.type == 'video'
+          assign use_style = false
+          assign text_color = false
+          if block.settings.text_color.alpha != 0.0 and block.settings.text_color.alpha != blank
+            assign use_style = true
+            assign text_color = true
+            assign text_color_block = block.settings.text_color
+          endif
+          assign text_color_hover = false
+          if block.settings.text_color_hover.alpha != 0.0 and block.settings.text_color_hover.alpha != blank
+            assign use_style = true
+            assign text_color_hover = true
+            assign text_color_hover_block = block.settings.text_color_hover
+          endif
+          assign button_color = false
+          if block.settings.button_color.alpha != 0.0 and block.settings.button_color.alpha != blank
+            assign use_style = true
+            assign button_color = true
+            assign button_color_block = block.settings.button_color
+          endif
+          assign line_color = false
+          if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+            assign use_style = true
+            assign line_color = true
+            assign line_color_block = block.settings.line_color
+          endif
+          assign input_text_color = false
+          if block.settings.input_text_color.alpha != 0.0 and block.settings.input_text_color.alpha != blank
+            assign input_text_color = true
+            assign input_text_color_block = block.settings.input_text_color
+          endif
+          assign input_background_color = false
+          if block.settings.input_background_color.alpha != 0.0 and block.settings.input_background_color.alpha != blank
+            assign use_style = true
+            assign input_background_color = true
+            assign input_background_color_block = block.settings.input_background_color
+          endif
+          assign text_background_color = false
+          assign text_background_opacity = block.settings.text_background_opacity | times: 0.01
+          if block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+            assign use_style = true
+            assign text_background_color = true
+            assign text_background_color_block = block.settings.text_background_color
+          endif
+          if block.settings.text_background_gradient != blank
+            assign use_style = true
+            assign text_background_color = true
+            assign text_background_color_block = block.settings.text_background_gradient
+          endif
+          if block.type == 'countdown'
+            assign use_style = true
+          endif
+          if use_style
+            echo '<style>.dynamic-block-'
+            echo block.id
+            echo ' {'            
+              if text_color
+                echo '--color_title_text:'
+                echo text_color_block
+                echo ';'
+                echo '--color_text:'
+                echo text_color_block
+                echo ';'
+                echo '--color_accent:'
+                echo text_color_block
+                echo ';'
+                echo '--color_label:'
+                echo text_color_block
+                echo ';'                  
+                echo '--color_text_modify_5:'
+                echo text_color_block
+                echo ';'
+                echo '--color_text_modify_25:'
+                echo text_color_block | color_modify: 'alpha', 0.25
+                echo ';'
+                echo '--color_accent:'
+                echo text_color_block
+                echo ';'
+                echo '--color_accent_modify_25:'
+                echo text_color_block | color_modify: 'alpha', 0.25
+                echo ';'
+                echo '--button_primary_background:'
+                echo text_color_block
+                echo ';'
+                echo '--button_primary_border:'
+                echo text_color_block
+                echo ';'
+                echo '--button_secondary_border:'
+                echo text_color_block
+                echo ';'
+                echo '--button_secondary_text:'
+                echo text_color_block
+                echo ';'
+              endif
+              if text_color_hover
+                echo '--color_text_hover:'
+                echo text_color_hover_block
+                echo ';'
+              endif            
+              if button_color
+                echo '--button_primary_text:'
+                echo button_color_block
+                echo ';'
+                echo '--button_secondary_background:'
+                echo button_color_block
+                echo ';'
+              endif            
+              if line_color
+                echo '--color_border:'
+                echo line_color_block
+                echo ';'
+              endif
+              if input_background_color
+                echo '--input_background:'
+                echo input_background_color_block
+                echo ';'
+              endif            
+              if text_background_color              
+                echo '--color_background_outline:'
+                echo block.settings.text_background_color
+                echo ';'
+                echo '--text_overlay:'
+                echo text_background_color_block
+                echo ';'
+                echo '--text_overlay_opacity:'
+                echo text_background_opacity
+                echo ';'
+                echo '--color_overlay:'
+                echo text_background_color_block
+                echo ';'
+                echo '--color_overlay_opacity:'
+                echo text_background_opacity
+                echo ';'
+              endif              
+              if block.type == 'countdown'
+                echo '--countdown_gap:'
+                echo block.settings.countdown_number_size
+                echo 'px;'
+              endif
+            echo '}</style>' 
+          endif
+          if use_style and input_text_color
+            echo '<style>.dynamic-block-'
+            echo block.id
+            echo ' form input.newsletter-input:focus-within {'
+              echo '--color_text:'
+              echo input_text_color_block
+              echo ';'
+            echo '}</style>'  
+          endif
+        endunless
+        case block.type
+          when 'countdown'
+            render 'block.countdown', section: block, block: block, is_collection: true, text_background_opacity: text_background_opacity, text_background_color: text_background_color, position: position
+          when 'icon'                
+            render 'block.icon', section: block, block: block, is_collection: true, lazy: lazy, position: position, forloop: forloop
+          when 'image'      
+            echo '<article class="dynamic-block-'
+            echo block.id
+            echo ' section-card collection-center section-layout'                    
+            if block.settings.include_border
+              echo ' section-card-borders'
+            endif
+            if text_background_opacity > 0 and text_background_color
+              echo ' section-layout-card-overlay-padding'
+            endif
+            if settings.animation_enable
+              echo ' animated-item animated-delay-'
+              echo position
+            endif                    
+            echo '"'                        
+            echo block.shopify_attributes
+            echo '>'
+              if text_background_opacity > 0 and text_background_color
+                assign include_padding = 40
+              else
+                assign include_padding = 0
+              endif                     
+              if block.settings.include_border
+                if include_padding > 0
+                  assign include_border = 2
+                else
+                  assign include_border = 42
+                endif
+              else
+                assign include_border = 0
+              endif                     
+              assign total = 0 | plus: include_border | plus: include_padding
+              assign size_new = size | minus: total
+              capture total_new
+                echo '- '
+                echo total
+                echo 'px'
+              endcapture
+              assign sizes_new = sizes | split: 'px,' | last | prepend: 'px, ' | prepend: size_new | prepend: '(min-width: 1280px) ' | replace: '- 0px', total_new
+              if text_background_opacity > 0 and text_background_color
+                echo '<div class="section-layout-card-overlay"></div>'
+              endif              
+              if block.settings.image_desktop != blank or block.settings.image_mobile != blank
+                render 'block.images', section: block, block: block, mobile_size: size_new, mobile_sizes: sizes_new, desktop_size: size_new, desktop_sizes: sizes_new, lazy: lazy
+              else
+                echo '<figure class="section-layout-wrapper">'
+                  assign title = 'hero-apparel-'
+                  assign index = forloop.index0 | modulo: 3 | plus: 1
+                  echo title | append: index | placeholder_svg_tag: 'placeholder-svg'
+                echo '</figure>'              
+              endif
+              render 'image.sizes', size: size_new
+              if block.settings.link
+                echo '<a class="section-layout-link keyed-inside" href="'
+                  echo block.settings.link
+                  echo '"'
+                  if block.settings.link_seo != blank
+                    echo ' title="'
+                    echo block.settings.link_seo | escape
+                    echo '"'
+                  endif
+                echo '></a>'
+              endif
+            echo '</article>'
+          when 'image_text'      
+            assign text_background_color = false
+            assign text_background_opacity = block.settings.text_background_opacity | times: 0.01                 
+            if block.settings.text_background_gradient != blank or block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+              assign text_background_color = true
+            endif
+            if text_background_opacity > 0 and text_background_color
+              assign include_padding = 40
+            else
+              assign include_padding = 0
+            endif
+            if block.settings.include_border
+              if include_padding > 0
+                assign include_border = 2
+              else
+                assign include_border = 42
+              endif
+            else
+              assign include_border = 0
+            endif
+            assign total = 0 | plus: include_border | plus: include_padding
+            assign size_new = size | minus: total
+            capture total_new
+              echo '- '
+              echo total
+              echo 'px'
+            endcapture
+            assign sizes_new = sizes | split: 'px,' | last | prepend: 'px, ' | prepend: size_new | prepend: '(min-width: 1280px) ' | replace: '- 0px', total_new    
+            render 'block.image_text', block: block, is_collection: true, skip: true, mobile_size: size_new, mobile_sizes_final: sizes_new, desktop_size: size_new, desktop_sizes_final: sizes_new, padding: block.settings.image_height, lazy: lazy, position: position
+          when 'image_over'  
+            assign text_background_color = false
+            assign text_background_opacity = block.settings.text_background_opacity | times: 0.01                 
+            if block.settings.text_background_gradient != blank or block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+              assign text_background_color = true
+            endif
+            if text_background_opacity > 0 and text_background_color
+              assign include_padding = 40
+            else
+              assign include_padding = 0
+            endif
+            if block.settings.include_border
+              if include_padding > 0
+                assign include_border = 2
+              else
+                assign include_border = 42
+              endif
+            else
+              assign include_border = 0
+            endif
+            assign total = 0 | plus: include_border | plus: include_padding
+            assign size_new = size | minus: total
+            capture total_new
+              echo '- '
+              echo total
+              echo 'px'
+            endcapture
+            assign sizes_new = sizes | split: 'px,' | last | prepend: 'px, ' | prepend: size_new | prepend: '(min-width: 1280px) ' | replace: '- 0px', total_new    
+            render 'block.image_over', section: block, block: block, is_collection: true, skip: true, mobile_size: size_new, mobile_sizes_final: sizes_new, desktop_size: size_new, desktop_sizes_final: sizes_new, text_background_opacity: text_background_opacity, text_background_color: text_background_color, lazy: lazy, class: class, forloop: forloop               
+          when 'liquid'
+            echo '<article class="dynamic-block-'
+            echo block.id
+            echo ' section-card collection-center section-layout'                    
+            if block.settings.include_border
+              echo ' section-card-borders'
+            endif
+            if text_background_opacity > 0 and text_background_color
+              echo ' section-layout-card-overlay-padding'
+            endif
+            if settings.animation_enable
+              echo ' animated-item animated-delay-'
+              echo position
+            endif                    
+            echo '"'                        
+            echo block.shopify_attributes
+            echo '>'
+              if text_background_opacity > 0 and text_background_color
+                echo '<div class="section-layout-card-overlay"></div>'
+              endif
+              echo block.settings.liquid
+            echo '</article>'      
+          when 'logo'
+            render 'block.logo', block: block, is_collection: true, text_background_opacity: text_background_opacity, text_background_color: text_background_color, lazy: lazy, position: position            
+          when 'menu'
+            render 'block.menu', block: block, is_collection: true, text_background_opacity: text_background_opacity, text_background_color: text_background_color, class: class, position: position      
+          when 'newsletter'
+            echo '<article class="dynamic-block-'
+            echo block.id
+            echo ' text-'
+            echo block.settings.text_alignment | default: 'left'
+            echo ' section-card collection-center section-layout'
+            if block.settings.include_border
+              echo ' section-card-borders'
+            endif
+            if text_background_opacity > 0 and text_background_color
+              echo ' section-layout-card-overlay-padding'
+            endif
+            if settings.animation_enable
+              echo ' animated-item animated-delay-'
+              echo position
+            endif
+            echo '"'                        
+            echo block.shopify_attributes
+            echo '><div>'
+              if text_background_opacity > 0 and text_background_color
+                echo '<div class="section-layout-card-overlay"></div>'
+              endif
+              render 'block.text', section: block, block: block
+              render 'block.newsletter', section: block, block: block
+            echo '</div></article>'
+          when 'promotion'            
+            echo '<article class="section-card slide product-item'
+            if settings.animation_enable
+              echo ' animated-item animated-delay-'
+              echo position
+              endif
+              echo '">'              
+              render 'block.promo', block: block, text: true, skip: true, promo_background: true, size: size, sizes: sizes, lazy: lazy
+            echo '</article>'
+          when 'testimonial'
+            render 'block.testimonial', block: block, is_collection: true, text_background_opacity: text_background_opacity, text_background_color: text_background_color, lazy: lazy, position: position
+          when 'video'
+            assign text_background_color = false
+            assign text_background_opacity = block.settings.text_background_opacity | times: 0.01
+            if block.settings.text_background_gradient != blank or block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+              assign text_background_color = true
+            endif
+            if text_background_opacity > 0 and text_background_color
+              assign include_padding = 40
+            else
+              assign include_padding = 0
+            endif  
+            if block.settings.include_border
+              if include_padding > 0
+                assign include_border = 2
+              else
+                assign include_border = 42
+              endif
+            else
+              assign include_border = 0
+            endif                     
+            assign total = 0 | plus: include_border | plus: include_padding
+            assign size_new = size | minus: total
+            capture total_new
+              echo '- '
+              echo total
+              echo 'px'
+            endcapture
+            assign sizes_new = sizes | split: 'px,' | last | prepend: 'px, ' | prepend: size_new | prepend: '(min-width: 1280px) ' | replace: '- 0px', total_new      
+            render 'block.video', section: block, block: block, is_collection: true, build: true, video_embed: true, is_block: true, text_background_opacity: text_background_opacity, text_background_color: text_background_color, size: size_new, sizes: sizes_new, lazy: lazy, position: position
+          when 'video_background'
+            if block.settings.include_border
+              assign include_border = 42
+            else
+              assign include_border = 0
+            endif      
+            assign total = 0 | plus: include_border
+            assign size_new = size | minus: total
+            capture total_new
+              echo '- '
+              echo total
+              echo 'px'
+            endcapture
+            assign sizes_new = sizes | split: 'px,' | last | prepend: 'px, ' | prepend: size_new | prepend: '(min-width: 1280px) ' | replace: '- 0px', total_new
+            render 'block.image_over', section: block, block: block, skip: true, video: true, mobile_size: size_new, mobile_sizes_final: sizes_new, desktop_size: size_new, desktop_sizes_final: sizes_new, text_background_opacity: text_background_opacity, text_background_color: text_background_color, lazy: lazy, class: class, forloop: forloop               
+        endcase              
+      endif
+    endif
+  endfor
+-%}

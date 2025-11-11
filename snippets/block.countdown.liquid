@@ -1,0 +1,127 @@
+<section data-section-id="{{ section.id }}" 
+         data-section-type="countdown-{{ section.id }}"
+         data-url="{{ 'script.countdown.js' | asset_url }}"
+         {% if build or is_collection %}class="dynamic-block-{{ block.id }} text-{{ block.settings.text_alignment | default: 'left' }} section-card{% if is_collection %} collection-center{% endif %}{% unless is_collection %} slide section-card-{{ layout_y }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }}{% endunless %} section-layout{% if block.settings.include_border %} section-card-borders{% endif %}{% if text_background_opacity > 0 and text_background_color %} section-layout-card-overlay-padding{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}"{% endif %} {{ block.shopify_attributes }}>
+  {%- liquid
+    if text_background_opacity > 0 and text_background_color
+      echo '<div class="section-layout-card-overlay"></div>'
+    endif
+    assign now = 'now' | date: '%s'
+    capture event
+      echo block.settings.countdown_year
+      echo '-'
+      echo block.settings.countdown_month | prepend: '00' | slice: -2, 2
+      echo '-'
+      echo block.settings.countdown_day | prepend: '00' | slice: -2, 2
+      echo ' '
+      if block.settings.countdown_hour == 12
+        if block.settings.countdown_period == 'pm'
+          echo 12
+        else
+          echo 0 | prepend: '00' | slice: -2, 2
+        endif
+      else
+        if block.settings.countdown_period == 'pm'
+          echo block.settings.countdown_hour | plus: 12
+        else
+          echo block.settings.countdown_hour | prepend: '00' | slice: -2, 2
+        endif
+      endif
+      echo ':'
+      echo block.settings.countdown_minute | prepend: '00' | slice: -2, 2
+      echo ':'
+      echo block.settings.countdown_second | prepend: '00' | slice: -2, 2
+    endcapture
+    assign final_event = event | date: '%s'
+    assign time = final_event | minus: now
+    assign time_days = time | divided_by: 86400
+    assign time_hours = time | modulo: 86400 | divided_by: 3600
+    assign time_minutes = time | modulo: 3600 | divided_by: 60
+    assign time_seconds = time | modulo: 60
+  -%}
+  <div class="countdown-text{% if now > final_event %} countdown-text-hide hidden{% endif %}" data-before>
+    <div id="countdown-{{ section.id }}" 
+         class="block-element countdown-text-{{ block.settings.countdown_layout }}"
+         data-countdown
+         data-date="{{ final_event }}">
+      <div class="countdown-time-{{ block.settings.countdown_layout }}">
+        <span class="section-title-{{ block.settings.countdown_time_size }}">{{ 'general.time.days' | t }}</span>
+        <span class="section-title-{{ block.settings.countdown_number_size }} {% if block.settings.countdown_number_font == 'primary' or block.settings.countdown_number_font == 'secondary' %}section-title-{{ block.settings.countdown_number_font }}{% else %}{{ block.settings.countdown_number_font }}{% endif %}" data-days>{{ time_days }}</span>
+      </div>
+      {% if block.settings.countdown_layout == 'top' or block.settings.countdown_layout == 'bottom' %}
+        <div class="seperator countdown-time-{{ block.settings.countdown_layout }}">
+          <span class="section-title-{{ block.settings.countdown_time_size }}">&nbsp;</span>
+          <span class="colon section-title-{{ block.settings.countdown_number_size }} {% if block.settings.countdown_number_font == 'primary' or block.settings.countdown_number_font == 'secondary' %}section-title-{{ block.settings.countdown_number_font }}{% else %}{{ block.settings.countdown_number_font }}{% endif %}">&nbsp;</span>
+        </div>
+      {% endif %}
+      <div class="countdown-time-{{ block.settings.countdown_layout }}">
+        <span class="section-title-{{ block.settings.countdown_time_size }}">{{ 'general.time.hours' | t }}</span>
+        <span class="section-title-{{ block.settings.countdown_number_size }} {% if block.settings.countdown_number_font == 'primary' or block.settings.countdown_number_font == 'secondary' %}section-title-{{ block.settings.countdown_number_font }}{% else %}{{ block.settings.countdown_number_font }}{% endif %}" data-hours>{{ time_hours }}</span>
+      </div>
+      {% if block.settings.countdown_layout == 'top' or block.settings.countdown_layout == 'bottom' %}
+        <div class="seperator countdown-time-{{ block.settings.countdown_layout }}">
+          <span class="section-title-{{ block.settings.countdown_time_size }}">&nbsp;</span>
+          <span class="colon section-title-{{ block.settings.countdown_number_size }} {% if block.settings.countdown_number_font == 'primary' or block.settings.countdown_number_font == 'secondary' %}section-title-{{ block.settings.countdown_number_font }}{% else %}{{ block.settings.countdown_number_font }}{% endif %}">&nbsp;</span>
+        </div>
+      {% endif %}
+      <div class="countdown-time-{{ block.settings.countdown_layout }}">
+        <span class="section-title-{{ block.settings.countdown_time_size }}">{{ 'general.time.minutes' | t }}</span>
+        <span class="section-title-{{ block.settings.countdown_number_size }} {% if block.settings.countdown_number_font == 'primary' or block.settings.countdown_number_font == 'secondary' %}section-title-{{ block.settings.countdown_number_font }}{% else %}{{ block.settings.countdown_number_font }}{% endif %}" data-minutes>{{ time_minutes }}</span>
+      </div>
+      {% if block.settings.countdown_layout == 'top' or block.settings.countdown_layout == 'bottom' %}
+        <div class="seperator countdown-time-{{ block.settings.countdown_layout }}">
+          <span class="section-title-{{ block.settings.countdown_time_size }}">&nbsp;</span>
+          <span class="colon section-title-{{ block.settings.countdown_number_size }} {% if block.settings.countdown_number_font == 'primary' or block.settings.countdown_number_font == 'secondary' %}section-title-{{ block.settings.countdown_number_font }}{% else %}{{ block.settings.countdown_number_font }}{% endif %}">&nbsp;</span>
+        </div>
+      {% endif %}
+      <div class="countdown-time-{{ block.settings.countdown_layout }}">
+        <span class="section-title-{{ block.settings.countdown_time_size }}">{{ 'general.time.seconds' | t }}</span>
+        <span class="section-title-{{ block.settings.countdown_number_size }} {% if block.settings.countdown_number_font == 'primary' or block.settings.countdown_number_font == 'secondary' %}section-title-{{ block.settings.countdown_number_font }}{% else %}{{ block.settings.countdown_number_font }}{% endif %}" data-seconds>{{ time_seconds }}</span>
+      </div>
+    </div>
+    <div data-text>
+      {%- render 'block.text', section: section, block: block -%}
+    </div>
+  </div>            
+  <div class="countdown-text{% if final_event > now %} countdown-text-hide hidden{% endif %}" data-after>  
+    {% if block.settings.title_after != blank %}
+      {%- liquid
+        if block.settings.title_h1_after
+          assign title = 1
+        else
+          assign title = 2
+        endif
+      -%}
+      <h{{ title }} class="block-element section-title section-title-{{ block.settings.title_font_after | default: 'primary' }}{% if block.settings.title_sub_after != blank %} section-title-half{% endif %} section-title-{{ block.settings.title_size_after }}{% if block.settings.responsive_size == false %} static-{{ block.settings.title_size_after }}{% endif %} {{ block.settings.title_outline_after }} no-pad">{{ block.settings.title_after }}</h{{ title }}>
+    {% endif %}  
+    {% if block.settings.title_sub_after != blank %}
+      <h3 class="block-element section-title section-title-{{ block.settings.title_sub_font_after | default: 'secondary' }} section-title-{{ block.settings.title_sub_size_after }}{% if block.settings.responsive_size == false %} static-{{ block.settings.title_sub_size_after }}{% endif %} {{ block.settings.title_sub_outline_after }} no-pad">{{ block.settings.title_sub_after }}</h3>  
+    {% endif %}  
+    {% if block.settings.content_after != blank %}
+      <div class="block-element section-layout-card-content{% if block.settings.text_border_after %} text-border{% endif %}">{{ block.settings.content_after }}</div>
+    {% endif %}  
+    {% if block.settings.link_1_after != blank and block.settings.button_text_1_after != blank or block.settings.link_2_after != blank and block.settings.button_text_2_after != blank %}<div class="block-element section-layout-card-buttons">{% endif %}  
+      {% if block.settings.link_1_after != blank and block.settings.button_text_1_after != blank %}
+        {% if block.settings.link_style_1_after == 'text' %}
+          <a href="{{ block.settings.link_1_after }}" title="{% if block.settings.link_1_seo_after != blank %}{{ block.settings.link_1_seo_after | escape }}{% else %}{{ block.settings.button_text_1_after | escape }}{% endif %}" class="link-group inline-link-group">
+            <span><span class="link-text">{{ block.settings.button_text_1_after }}</span></span>
+            <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+          </a>
+        {% else %}
+          <a href="{{ block.settings.link_1_after }}" title="{% if block.settings.link_1_seo_after != blank %}{{ block.settings.link_1_seo_after | escape }}{% else %}{{ block.settings.button_text_1_after | escape }}{% endif %}" class="btn {% if block.settings.link_style_1_after == 'primary' %}btn-primary{% else %}btn-secondary{% endif %} auto-width"{% unless forloop.first %} tabindex="-1" aria-hidden="true"{% endunless %}>{{ block.settings.button_text_1_after }}</a>
+        {% endif %}
+      {% endif %}
+      {% if block.settings.link_1_after != blank and block.settings.button_text_1_after != blank and block.settings.link_2_after != blank and block.settings.button_text_2_after != blank %}<span class="link-group-seperator" aria-hidden="true">{% if block.settings.link_style_1_after == 'text' and block.settings.link_style_2_after == 'text' %}&bull;{% else %}&nbsp;{% endif %}</span>{% endif %}
+      {% if block.settings.link_2_after != blank and block.settings.button_text_2_after != blank %}
+        {% if block.settings.link_style_2_after == 'text' %}
+          <a href="{{ block.settings.link_2_after }}" title="{% if block.settings.link_2_seo_after != blank %}{{ block.settings.link_2_seo_after | escape }}{% else %}{{ block.settings.button_text_2_after | escape }}{% endif %}" class="link-group inline-link-group">
+            <span><span class="link-text">{{ block.settings.button_text_2_after }}</span></span>
+            <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+          </a>
+        {% else %}
+          <a href="{{ block.settings.link_2_after }}" title="{% if block.settings.link_2_seo_after != blank %}{{ block.settings.link_2_seo_after | escape }}{% else %}{{ block.settings.button_text_2_after | escape }}{% endif %}" class="btn {% if block.settings.link_style_2_after == 'primary' %}btn-primary{% else %}btn-secondary{% endif %} auto-width"{% unless forloop.first %} tabindex="-1" aria-hidden="true"{% endunless %}>{{ block.settings.button_text_2_after }}</a>
+        {% endif %}
+      {% endif %}      
+    {% if block.settings.link_1_after != blank and block.settings.button_text_1_after != blank or block.settings.link_2_after != blank and block.settings.button_text_2_after != blank %}</div>{% endif %}
+  </div>
+</section>

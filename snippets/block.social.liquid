@@ -1,0 +1,91 @@
+{%- liquid 
+  if settings.social_facebook != blank
+    assign title = 'general.social.facebook_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'facebook', title: title, url: settings.social_facebook
+  endif
+  if settings.social_threads != blank
+    assign title = 'general.social.threads_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'threads', title: title, url: settings.social_threads
+  endif
+  if settings.social_x != blank
+    assign title = 'general.social.x_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'x', title: title, url: settings.social_x
+  endif
+  if settings.social_pinterest != blank
+    assign title = 'general.social.pinterest_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'pinterest', title: title, url: settings.social_pinterest
+  endif
+  if settings.social_instagram != blank
+    assign title = 'general.social.instagram_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'instagram', title: title, url: settings.social_instagram
+  endif
+  if settings.social_tiktok != blank
+    assign title = 'general.social.tiktok_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'tiktok', title: title, url: settings.social_tiktok
+  endif
+  if settings.social_youtube != blank
+    assign title = 'general.social.youtube_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'youtube', title: title, url: settings.social_youtube
+  endif
+  if settings.social_vimeo != blank
+    assign title = 'general.social.vimeo_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'vimeo', title: title, url: settings.social_vimeo
+  endif
+  if settings.social_snapchat != blank
+    assign title = 'general.social.snapchat_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'snapchat', title: title, url: settings.social_snapchat
+  endif
+  if settings.social_tumblr != blank
+    assign title = 'general.social.tumblr_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'tumblr', title: title, url: settings.social_tumblr
+  endif  
+  if settings.social_yelp != blank
+    assign title = 'general.social.yelp_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'yelp', title: title, url: settings.social_yelp
+  endif
+  if settings.social_foursquare != blank
+    assign title = 'general.social.foursquare_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'foursquare', title: title, url: settings.social_foursquare
+  endif  
+  if settings.social_whatsapp != blank
+    assign title = 'general.social.whatsapp_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'whatsapp', title: title, url: settings.social_whatsapp
+  endif
+  if settings.social_linkedin != blank
+    assign title = 'general.social.linkedin_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'linkedin', title: title, url: settings.social_linkedin
+  endif
+  if settings.social_medium != blank
+    assign title = 'general.social.medium_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'medium', title: title, url: settings.social_medium
+  endif
+  if settings.social_rss != blank
+    assign title = 'general.social.rss_html' | t: shop: shop.name | escape
+    render 'block.social.link', id: 'rss', title: title, url: settings.social_rss
+  endif
+  if settings.social_email != blank
+    assign url = 'mailto:' | append: settings.social_email
+    assign title = 'general.social.email' | t
+    render 'block.social.link', id: 'email', title: title, url: url
+  endif  
+  if settings.social_custom_1_icon != blank and settings.social_custom_1_title != blank and settings.social_custom_1_link != blank
+    assign title = 'general.social.custom_html' | t: shop: shop.name, title: settings.social_custom_1_title | escape
+    render 'block.social.link', id: 'custom_1', title: title, url: settings.social_custom_1_link, custom: settings.social_custom_1_icon
+  endif  
+  if settings.social_custom_2_icon != blank and settings.social_custom_2_title != blank and settings.social_custom_2_link != blank
+    assign title = 'general.social.custom_html' | t: shop: shop.name, title: settings.social_custom_2_title | escape
+    render 'block.social.link', id: 'custom_2', title: title, url: settings.social_custom_2_link, custom: settings.social_custom_2_icon
+  endif  
+  if settings.social_custom_3_icon != blank and settings.social_custom_3_title != blank and settings.social_custom_3_link != blank
+    assign title = 'general.social.custom_html' | t: shop: shop.name, title: settings.social_custom_3_title | escape
+    render 'block.social.link', id: 'custom_3', title: title, url: settings.social_custom_3_link, custom: settings.social_custom_3_icon
+  endif  
+  if settings.social_custom_4_icon != blank and settings.social_custom_4_title != blank and settings.social_custom_4_link != blank
+    assign title = 'general.social.custom_html' | t: shop: shop.name, title: settings.social_custom_4_title | escape
+    render 'block.social.link', id: 'custom_4', title: title, url: settings.social_custom_4_link, custom: settings.social_custom_4_icon
+  endif  
+  if settings.social_custom_5_icon != blank and settings.social_custom_5_title != blank and settings.social_custom_5_link != blank
+    assign title = 'general.social.custom_html' | t: shop: shop.name, title: settings.social_custom_5_title | escape
+    render 'block.social.link', id: 'custom_5', title: title, url: settings.social_custom_5_link, custom: settings.social_custom_5_icon
+  endif  
+-%}

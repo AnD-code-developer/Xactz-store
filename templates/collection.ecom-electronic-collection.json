@@ -1,0 +1,63 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "layout": "theme",
+  "sections": {
+    "175887621420d7c978": {
+      "type": "apps",
+      "blocks": {
+        "slider_revolution_slider_general_V9dPPt": {
+          "type": "shopify://apps/slider-revolution/blocks/slider_general/d2c2325b-ecb9-42b8-a0b0-ca2ffb6e3203",
+          "settings": {
+            "slider_id": "makeup-collection-hero-14",
+            "hide_on_desktop": false,
+            "hide_on_tablet": false,
+            "hide_on_mobile": false,
+            "rev_section_heading": "",
+            "rev_section_sub_heading": "",
+            "rev_section_heading_size": 30,
+            "rev_section_sub_heading_size": 15,
+            "rev_section_heading_align": "center",
+            "rev_section_heading_color": "",
+            "rev_section_sub_heading_color": "",
+            "rev_section_bg_color": "",
+            "rev_slider_sec_pad_top": 0,
+            "rev_slider_sec_pad_bot": 0,
+            "rev_slider_sec_mar_top": 0,
+            "rev_slider_sec_mar_bot": 0
+          }
+        }
+      },
+      "block_order": [
+        "slider_revolution_slider_general_V9dPPt"
+      ],
+      "settings": {
+        "full_width": false,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "margin_bottom_mobile": 20,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "margin_bottom_desktop": 40,
+        "padding_border": false
+      }
+    },
+    "ecom-electronic-collection-collection": {
+      "type": "ecom-electronic-collection-collection",
+      "settings": {}
+    }
+  },
+  "order": [
+    "175887621420d7c978",
+    "ecom-electronic-collection-collection"
+  ]
+}

@@ -1,0 +1,112 @@
+{%- liquid
+   assign text = block.settings.text
+   assign text_label = block.settings.text_label
+   assign date_label = block.settings.date_label
+   assign select_title = block.settings.select_title
+   assign select_body = block.settings.select_body
+   assign select_label = block.settings.select_label
+   assign checkbox = block.settings.checkbox
+   assign radio_body = block.settings.radio_body
+   assign radio_label = block.settings.radio_label
+   assign heading = block.settings.heading
+   assign enable_slide = block.settings.enable_slide
+-%}
+{% if checkbox != blank or radio_body != blank or text != blank or date_label != blank or select_title != blank and select_body != blank %}
+  <div class="content-block{% if enable_slide %} content-slide{% endif %}"{% if enable_slide %} data-content-slide{% endif %} {{ block.shopify_attributes }}>
+    {%- liquid
+      if enable_slide
+        assign heading = block.settings.heading
+        capture title
+          if heading != blank
+            echo heading
+          else
+            echo 'product.show_more' | t
+          endif
+        endcapture
+        render 'block.button', block: block, title: title, is_ignore: true
+      endif
+    -%}
+    <div class="content-slide-content" data-height>
+      <div class="content-slide-space">
+        {% if checkbox != blank %}
+          <div class="line-items">
+            <div class="input-wrapper input-container">
+              <input type="hidden" name="properties[{{ checkbox | escape }}]" value="{{ 'general.general.no' | t | escape }}">
+              <input id="propCheckbox-{{ block.id }}" 
+                     type="checkbox" 
+                     name="properties[{{ checkbox | escape }}]" 
+                     title="{{ checkbox | escape }}" 
+                     value="{{ 'general.general.yes' | t | escape }}">
+              <label for="propCheckbox-{{ block.id }}">{{ checkbox }}</label>
+            </div>
+          </div>
+        {% endif %}
+        {% if radio_body != blank %}
+          <div class="line-items">
+            <div class="input-wrapper">
+              <fieldset>
+                <legend{% if radio_label == blank %} class="visually-hidden"{% endif %}>{% if radio_label != blank %}{{ radio_label }}{% else %}{{ radio_body }}{% endif %}</legend>
+                {%- assign list = radio_body | split: ',' -%}
+                {%- for l in list -%}
+                  <div class="input-container">
+                    <input type="radio" 
+                           id="Radio-{{ block.id }}" 
+                           name="properties[{% if radio_label != blank %}{{ radio_label | escape }}{% else %}{{ radio_body | escape }}{% endif %}]" 
+                           title="{{ l | escape | lstrip | rstrip }}" 
+                           value="{{ l | escape | lstrip | rstrip }}"> 
+                    <label for="Radio-{{ block.id }}">{{ l | lstrip | rstrip }}</label>
+                  </div>
+                {%- endfor -%}
+              </fieldset>
+            </div>
+          </div>
+        {% endif %}
+        {% if text != blank %}
+          <div class="input-wrapper">
+            <label for="propText-{{ block.id }}"{% if text_label == blank %} class="visually-hidden"{% endif %}>{% if text_label != blank %}{{ text_label }}{% else %}{{ text }}{% endif %}</label>
+            <input type="text" 
+                   id="propText-{{ block.id }}" 
+                   class="input-field"
+                   name="properties[{% if text_label != blank %}{{ text_label | escape }}{% else %}{{ text | escape }}{% endif %}]" 
+                   placeholder="{{ text | escape }}" />
+          </div>
+        {% endif %}
+        {% if date_label != blank %}
+          <div class="input-wrapper">
+            <label for="propDate-{{ block.id }}">{{ date_label }}</label>
+            <input type="date" 
+                   id="propDate-{{ block.id }}" 
+                   class="input-field"
+                   name="properties[{{ date_label | escape }}]" />
+          </div>
+        {% endif %}
+        {% if select_title != blank and select_body != blank %}    
+          {%- liquid
+            if select_label != blank
+              assign label = select_label
+            else
+              assign label = 'contact.form.label' | t | append: '-' | append: block.id
+            endif
+          -%}
+          <div class="option input-wrapper"> 
+            <label for="propSelect-{{ block.id }}"{% if select_label == blank %} class="visually-hidden"{% endif %}>{{ label | split: '-' | first }}</label>
+            <div class="option-values">     
+              <div class="option-select"> 
+                <select id="propSelect-{{ block.id }}" 
+                        class="option-select-input" 
+                        name="properties[{% if select_label != blank %}{{ select_label | escape }}{% else %}{{ select_title | escape }}{% endif %}]">
+                  <option value="">{{ select_title }}</option>
+                  {%- assign list = select_body | split: ',' -%}
+                  {%- for l in list -%}
+                  <option value="{{ l | escape | lstrip | rstrip  }}">{{ l | lstrip | rstrip }}</option>
+                  {%- endfor -%}
+                </select>
+                <span class="option-select-arrow">{%- render 'icons.theme', id: 'arrow', size: 12 -%}</span>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}

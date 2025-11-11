@@ -1,0 +1,66 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-list-collections",
+      "settings": {
+        "title_enable": true,
+        "title_h1": true,
+        "title": "",
+        "title_font": "primary",
+        "title_outline": "none",
+        "title_size": 42,
+        "responsive_size": true,
+        "title_sub": "",
+        "title_sub_font": "secondary",
+        "title_sub_outline": "none",
+        "title_sub_size": 30,
+        "title_alignment": "left",
+        "collections_per_page": 12,
+        "items_per_row_mobile": 1,
+        "padding_grid_mobile": 20,
+        "items_per_row_desktop": 2,
+        "padding_grid_desktop": 20,
+        "enable_lazy": false,
+        "image_location": "inline",
+        "image_type": "collection",
+        "product_item_style": "medium",
+        "enable_image_crop": true,
+        "image_rounded": 100,
+        "image_position": "50-50",
+        "insta_filter": "none",
+        "include_border": true,
+        "show_description": true,
+        "show_description_limit": 25,
+        "text_alignment": "left",
+        "show_products": true,
+        "items_count": 4,
+        "items_count_per_row": 4,
+        "text_color": "",
+        "text_color_hover": "",
+        "line_color": "",
+        "image_size": false,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 40,
+        "margin_bottom_mobile": 10,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40,
+        "margin_bottom_desktop": 0,
+        "padding_border": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,0 +1,490 @@
+{%- liquid
+  assign image_location = section.settings.image_location
+  assign slider_mobile = section.settings.enable_slider_mobile
+  assign slider_desktop = section.settings.enable_slider_desktop
+  assign rows_mobile = section.settings.items_per_row_mobile
+  assign rows_desktop = section.settings.items_per_row_desktop
+  assign rows_mobile_padding = section.settings.padding_grid_mobile
+  assign rows_desktop_padding = section.settings.padding_grid_desktop
+  if section.settings.include_border
+    assign include_border = 42
+  else
+    assign include_border = 0
+  endif
+  assign total = 0 | plus: include_border | append: 'px'
+  if slider_mobile
+    if image_location == 'inline'
+      case rows_mobile
+        when 1
+          assign mobile_size = 237
+          assign mobile_multiplier = 707
+        when 2
+          assign mobile_size = 155
+          assign mobile_multiplier = 471
+        when 3
+          assign mobile_size = 89
+          assign mobile_multiplier = 283
+      endcase
+      capture mobile_sizes
+        echo 'calc(((((100dvw - 40px) - ('
+        echo rows_mobile_padding
+        echo 'px * ('
+        echo rows_mobile
+        echo ' - 1))) / ('
+        echo rows_mobile
+        echo ' - 0.5)) - '
+        echo total
+        echo ') * 0.35 - 20px)'
+      endcapture
+    else
+      case rows_mobile
+        when 1
+          assign mobile_size = 707
+        when 2
+          assign mobile_size = 471
+        when 3
+          assign mobile_size = 283
+      endcase
+      capture mobile_sizes
+        if rows_mobile == 1
+          echo 'calc((100dvw - 40px - '
+          echo total
+          echo ')'
+        else
+          echo 'calc((((100dvw - 40px) - ('
+          echo rows_mobile_padding
+          echo 'px * ('
+          echo rows_mobile
+          echo ' - 1))) / ('
+          echo rows_mobile
+          echo ' - 0.5)) - '
+          echo total
+          echo ')'
+        endif
+      endcapture
+    endif 
+  else
+    if image_location == 'inline'
+      case rows_mobile
+        when 1
+          assign mobile_size = 239
+          assign mobile_multiplier = 710
+        when 2
+          assign mobile_size = 114
+          assign mobile_multiplier = 355
+        when 3
+          assign mobile_size = 73
+          assign mobile_multiplier = 236.66
+      endcase
+      capture mobile_sizes          
+        echo 'calc(((((100dvw - 40px) - ('
+        echo rows_mobile_padding
+        echo 'px * ('
+        echo rows_mobile
+        echo ' - 1))) / '
+        echo rows_mobile
+        echo ') - '
+        echo total
+        echo ') * 0.35 - 20px)'
+      endcapture
+    else
+      case rows_mobile
+        when 1
+          assign mobile_size = 710
+        when 2
+          assign mobile_size = 355
+        when 3
+          assign mobile_size = 236.66
+      endcase
+      capture mobile_sizes
+        echo 'calc((((100dvw - 40px) - ('
+        echo rows_mobile_padding
+        echo 'px * ('
+        echo rows_mobile
+        echo ' - 1))) / '
+        echo rows_mobile
+        echo ') - '
+        echo total
+        echo ')'
+      endcapture
+    endif 
+  endif
+  if slider_desktop
+    if image_location == 'inline'
+      case rows_desktop
+        when 2
+          assign desktop_size = 279
+          assign desktop_multiplier = 827
+        when 3
+          assign desktop_size = 164
+          assign desktop_multiplier = 496
+        when 4
+          assign desktop_size = 114
+          assign desktop_multiplier = 354
+        when 5
+          assign desktop_size = 86
+          assign desktop_multiplier = 276
+      endcase
+      capture desktop_sizes
+        echo 'calc(((((100dvw - 40px) - ('
+        echo rows_desktop_padding
+        echo 'px * ('
+        echo rows_desktop
+        echo ' - 1))) / ('
+        echo rows_desktop
+        echo ' - 0.5)) - '
+        echo total
+        echo ') * 0.35 - 20px)'
+      endcapture
+    else
+      case rows_desktop
+        when 2
+          assign desktop_size = 827
+        when 3
+          assign desktop_size = 496
+        when 4
+          assign desktop_size = 354
+        when 5
+          assign desktop_size = 276
+      endcase
+      capture desktop_sizes
+        echo 'calc((((100dvw - 40px) - ('
+        echo rows_desktop_padding
+        echo 'px * ('
+        echo rows_desktop
+        echo ' - 1))) / ('
+        echo rows_desktop
+        echo ' - 0.5)) - '
+        echo total
+        echo ')'
+      endcapture
+    endif
+  else
+    if image_location == 'inline'
+      case rows_desktop
+        when 2
+          assign desktop_size = 207
+          assign desktop_multiplier = 620
+        when 3
+          assign desktop_size = 135
+          assign desktop_multiplier = 413
+        when 4
+          assign desktop_size = 99
+          assign desktop_multiplier = 310
+        when 5
+          assign desktop_size = 77
+          assign desktop_multiplier = 248
+      endcase
+      capture desktop_sizes
+        echo 'calc(((((100dvw - 40px) - ('
+        echo rows_desktop_padding
+        echo 'px * ('
+        echo rows_desktop
+        echo ' - 1))) / '
+        echo rows_desktop
+        echo ') - '
+        echo total
+        echo ') * 0.35 - 20px)'
+      endcapture
+    else
+      case rows_desktop
+        when 2
+          assign desktop_size = 620
+        when 3
+          assign desktop_size = 413
+        when 4
+          assign desktop_size = 310
+        when 5
+          assign desktop_size = 248
+      endcase
+      capture desktop_sizes        
+        echo 'calc((((100dvw - 40px) - ('
+        echo rows_desktop_padding
+        echo 'px * ('
+        echo rows_desktop
+        echo ' - 1))) / '
+        echo rows_desktop
+        echo ') - '
+        echo total
+        echo ')'
+      endcapture
+    endif
+  endif
+  assign mobile_column_padding = rows_mobile | minus: 1 | times: rows_mobile_padding | divided_by: rows_mobile
+  assign desktop_column_padding = rows_desktop | minus: 1 | times: rows_desktop_padding | divided_by: rows_desktop
+  if mobile_size > desktop_size
+    if image_location == 'inline'
+      assign size = mobile_multiplier | minus: include_border | minus: mobile_column_padding | times: 0.35 | minus: '10'
+    else
+      assign size = mobile_size | minus: include_border | minus: mobile_column_padding
+    endif
+  else
+    if image_location == 'inline'
+      assign size = desktop_multiplier | minus: include_border | minus: desktop_column_padding | times: 0.35 | minus: '10'
+    else
+      assign size = desktop_size | minus: include_border | minus: desktop_column_padding
+    endif
+  endif
+  capture sizes
+    echo '(min-width: 1280px) '
+    if image_location == 'inline'
+      echo desktop_multiplier | minus: include_border | minus: desktop_column_padding | times: 0.35 | minus: '10'
+    else
+      echo desktop_size | minus: include_border | minus: desktop_column_padding
+    endif
+    echo 'px, (min-width: 768px) '
+    echo desktop_sizes
+    echo ', '
+    echo mobile_sizes
+  endcapture
+  assign lazy_total = rows_mobile | times: 2
+  if section.settings.show_products
+    assign items_count_per_row = section.settings.items_count_per_row
+    assign products_column_padding = items_count_per_row | minus: 1 | times: 10
+    if slider_mobile
+      if image_location == 'inline'
+        capture products_mobile_sizes
+          echo 'calc((((((100dvw - 40px) - ('
+          echo rows_mobile_padding
+          echo 'px * ('
+          echo rows_mobile
+          echo ' - 1))) / '
+          echo rows_mobile
+          echo ') - '
+          echo total
+          echo ') * 0.65 - 10px - (10px * ('
+          echo items_count_per_row
+          echo ' - 1))) / ('
+          echo items_count_per_row
+          echo ' - 0.5))'
+        endcapture
+      else
+        capture products_mobile_sizes 
+          if rows_mobile == 1
+            echo 'calc(((100dvw - 40px) - '
+            echo total
+            echo ' - (10px * ('
+            echo items_count_per_row
+            echo ' - 1))) / '
+            echo items_count_per_row
+            echo ')'
+          else
+            echo 'calc(((((100dvw - 40px) - ('
+            echo rows_mobile_padding
+            echo 'px * ('
+            echo rows_mobile
+            echo ' - 1))) / '
+            echo rows_mobile
+            echo ') - '
+            echo total
+            echo ' - (10px * ('
+            echo items_count_per_row
+            echo ' - 1))) / ('
+            echo items_count_per_row
+            echo ' - 0.5))'
+          endif
+        endcapture
+      endif
+    else
+      if image_location == 'inline'  
+        capture products_mobile_sizes
+          echo 'calc((((((100dvw - 40px) - ('
+          echo rows_mobile_padding
+          echo 'px * ('
+          echo rows_mobile
+          echo ' - 1))) / '
+          echo rows_mobile
+          echo ') - '
+          echo total
+          echo ') * 0.65 - 10px - (10px * ('
+          echo items_count_per_row
+          echo ' - 1))) / '
+          echo items_count_per_row
+          echo ')'          
+        endcapture
+      else
+        capture products_mobile_sizes
+          echo 'calc(((((100dvw - 40px) - ('
+          echo rows_mobile_padding
+          echo 'px * ('
+          echo rows_mobile
+          echo ' - 1))) / '
+          echo rows_mobile
+          echo ') - '
+          echo total
+          echo ' - (10px * ('
+          echo items_count_per_row
+          echo ' - 1))) / '
+          echo items_count_per_row
+          echo ')'
+        endcapture
+      endif
+    endif
+    if slider_desktop
+      if image_location == 'inline'  
+        capture products_desktop_sizes
+          echo 'calc((((((100dvw - 40px) - ('
+          echo rows_desktop_padding
+          echo 'px * ('
+          echo rows_desktop
+          echo ' - 1))) / '
+          echo rows_desktop
+          echo ') - '
+          echo total
+          echo ') * 0.65 - 10px - (10px * ('
+          echo items_count_per_row
+          echo ' - 1))) / ('
+          echo items_count_per_row
+          echo ' - 0.5))'
+        endcapture
+      else
+        capture products_desktop_sizes    
+          echo 'calc(((((100dvw - 40px) - ('
+          echo rows_desktop_padding
+          echo 'px * ('
+          echo rows_desktop
+          echo ' - 1))) / '
+          echo rows_desktop
+          echo ') - '
+          echo total
+          echo ' - (10px * ('
+          echo items_count_per_row
+          echo ' - 1))) / ('
+          echo items_count_per_row
+          echo ' - 0.5))'
+        endcapture
+      endif
+    else
+      if image_location == 'inline'  
+        capture products_desktop_sizes
+          echo 'calc((((((100dvw - 40px) - ('
+          echo rows_desktop_padding
+          echo 'px * ('
+          echo rows_desktop
+          echo ' - 1))) / '
+          echo rows_desktop
+          echo ') - '
+          echo total
+          echo ') * 0.65 - 10px - (10px * ('
+          echo items_count_per_row
+          echo ' - 1))) / '
+          echo items_count_per_row
+          echo ')'
+        endcapture
+      else
+        capture products_desktop_sizes
+          echo 'calc(((((100dvw - 40px) - ('
+          echo rows_desktop_padding
+          echo 'px * ('
+          echo rows_desktop
+          echo ' - 1))) / '
+          echo rows_desktop
+          echo ') - '
+          echo total
+          echo ' - (10px * ('
+          echo items_count_per_row
+          echo ' - 1))) / '
+          echo items_count_per_row
+          echo ')'
+        endcapture
+      endif
+    endif    
+    if mobile_size > desktop_size
+      if image_location == 'inline'
+        assign products_size = mobile_multiplier | minus: include_border | minus: mobile_column_padding | times: 0.65 | minus: '10' | minus: products_column_padding | divided_by: items_count_per_row
+      else
+        assign products_size = mobile_size | minus: include_border | minus: products_column_padding | minus: mobile_column_padding | divided_by: items_count_per_row
+      endif
+    else
+      if image_location == 'inline'
+        assign products_size = desktop_multiplier | minus: include_border | minus: desktop_column_padding | times: 0.65 | minus: '10' | minus: products_column_padding | divided_by: items_count_per_row
+      else
+        assign products_size = desktop_size | minus: include_border | minus: products_column_padding | minus: desktop_column_padding | divided_by: items_count_per_row
+      endif
+    endif    
+    capture products_sizes
+      echo '(min-width: 1280px) '
+      if image_location == 'inline'
+        echo desktop_multiplier | minus: include_border | minus: desktop_column_padding | times: 0.65 | minus: '10' | minus: products_column_padding | divided_by: items_count_per_row
+      else
+        echo desktop_size | minus: include_border | minus: products_column_padding | minus: desktop_column_padding | divided_by: items_count_per_row
+      endif
+      echo 'px, (min-width: 768px) '
+      echo products_desktop_sizes
+      echo ', '
+      echo products_mobile_sizes
+    endcapture    
+  endif
+  if is_subs
+    capture collection_subs
+      for link in linklists[settings.sub_collection].links
+        render 'collection.subs', section: section, link: link, image_ratio: image_ratio, is_subs: is_subs, size: size, sizes: sizes, padding: section.settings.image_height, forloop: forloop, lazy: lazy
+        if link.links != blank
+          for link in link.links
+            render 'collection.subs', section: section, link: link, image_ratio: image_ratio, is_subs: is_subs, size: size, sizes: sizes, padding: section.settings.image_height, forloop: forloop, lazy: lazy
+          endfor
+        endif
+      endfor
+    endcapture
+  endif
+  if build
+    render 'block.collection.loop', section: section, block: block, build: true, collection: block.settings.collection, layout_y: layout_y, image_ratio: image_ratio, size: size, new_size: size, sizes: sizes, products_size: products_size, products_new_size: products_size, products_sizes: products_sizes, text_background_opacity: text_background_opacity, text_background_color: text_background_color, lazy: lazy, padding: block.settings.image_height, class: class, forloop: forloop
+  endif  
+-%}
+{% unless build or is_subs and collection_subs == blank %}
+  {%- liquid
+    assign use_style = false
+    assign text_color = false
+    if block.settings.text_color.alpha != 0.0 and block.settings.text_color.alpha != blank
+      assign use_style = true
+      assign text_color = true
+      assign text_color_block = block.settings.text_color
+    endif
+    assign text_color_hover = false
+    if block.settings.text_color_hover.alpha != 0.0 and block.settings.text_color_hover.alpha != blank
+      assign use_style = true
+      assign text_color_hover = true
+      assign text_color_hover_block = block.settings.text_color_hover
+    endif
+    assign line_color = false
+    if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+      assign use_style = true
+      assign line_color = true
+      assign line_color_block = block.settings.line_color
+    endif    
+  -%}  
+  {% if use_style %}
+    {% style %}
+      .dynamic-block-{{ block.id }} {             
+        {%- if text_color -%}
+          --color_title_text:{{ text_color_block }};
+          --color_text:{{ text_color_block }};
+          --color_accent:{{ text_color_block }};
+        {%- endif -%}
+        {%- if text_color_hover -%}
+          --color_text_hover:{{ text_color_hover_block }};
+        {%- endif -%}
+        {%- if line_color -%}
+          --color_border:{{ line_color_block }};
+        {%- endif -%}
+      }              
+    {% endstyle %}
+  {% endif %}
+  <div class="dynamic-block-{{ block.id }} section-card-rows mobile-rows-of-{{ items_per_row_mobile }} desktop-rows-of-{{ items_per_row_desktop }}" {{ block.shopify_attributes }}>
+    {%- liquid
+      if is_subs
+        echo collection_subs
+      else
+        if collections != blank
+          for collection in collections limit: items_count
+            render 'block.collection.loop', section: section, collection: collection, image_ratio: image_ratio, size: size, new_size: size, sizes: sizes, products_size: products_size, products_new_size: products_size, products_sizes: products_sizes, padding: section.settings.image_height, forloop: forloop, lazy: lazy
+          endfor
+        else
+          for i in (1..onboard_count)
+            render 'block.onboard', section: section, size: size, collection: true, forloop: forloop      
+          endfor
+        endif
+      endif
+    -%}
+  </div>
+{% endunless %}

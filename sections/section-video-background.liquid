@@ -1,0 +1,1356 @@
+{%- liquid
+  assign full_width = section.settings.full_width  
+  if section.settings.enable_lazy
+    assign lazy = 'lazy'
+  else
+    assign lazy = 'eager'
+  endif
+  assign background_color = false
+  if section.settings.background_color.alpha != 0.0 and section.settings.background_color.alpha != blank
+    assign background_color = true
+    assign background_color_section = section.settings.background_color
+  endif
+  if section.settings.background_gradient != blank
+    assign background_color = true
+    assign background_color_section = section.settings.background_gradient
+  endif
+  assign overlay_color = false
+  assign overlay_color_opacity = section.settings.overlay_opacity | times: 0.01
+  if section.settings.overlay_background_color.alpha != 0.0 and section.settings.overlay_background_color.alpha != blank
+    assign overlay_color = true
+    assign overlay_color_section = section.settings.overlay_background_color
+  endif                       
+  if section.settings.overlay_background_gradient != blank
+    assign overlay_color = true
+    assign overlay_color_section = section.settings.overlay_background_gradient
+  endif
+-%}  
+{% style %}
+  .dynamic-section-{{ section.id }} {
+    --section_height_mobile: {{ section.settings.section_height_mobile }}vh; 
+    --section_height_desktop: {{ section.settings.section_height_desktop }}vh; 
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    --section-margin-bottom-mobile: {{ section.settings.margin_bottom_mobile }}px;
+    --section-margin-bottom-desktop: {{ section.settings.margin_bottom_desktop }}px; 
+    {%- if section.settings.video != blank -%}--video_height_desktop: {{ section.settings.video.height }}px;{%- endif -%}
+    {%- if section.settings.image_desktop != blank -%}--image_height_desktop: {{ section.settings.image_desktop.height }}px;{%- endif -%}
+    {%- if overlay_color -%}
+      --color_overlay:{{ overlay_color_section }};
+      --color_overlay_opacity:{{ overlay_color_opacity }};
+    {%- endif -%}
+    {%- if background_color -%}
+      --color_background_outline:{{ section.settings.background_color }};
+      --color_background:{{ background_color_section }};
+      --color_background_section:{{ background_color_section }};
+    {%- endif -%}
+  }    
+{% endstyle %}  
+{%- liquid
+  for block in section.blocks
+    if block.settings.layout_mobile == 'below'
+      assign layout_mobile = true
+    else
+      assign layout_mobile = false
+    endif
+    capture block_subject
+      render 'block.subject', section: section, block: block, is_background: true, layout_mobile: layout_mobile
+    endcapture
+  endfor
+-%}
+<div class="dynamic-section dynamic-section-{{ section.id }}{% if full_width %} section-background{% endif %}">
+  <section class="relative{% if full_width %} section-skip{% endif %}">
+    <div class="section-layout {% if layout_mobile %}section-layout-stack {% endif %}section-padding-top section-padding-bottom section-margin-bottom{% if section.settings.padding_border %} section-border{% endif %}{% unless full_width %} section-background{% endunless %}">
+      <div class="relative section-layout{% if full_width %} full_width skip{% endif %}">
+        {%- liquid
+          assign image_background = section.settings.image_background
+          render 'block.video', section: section, video_background: true, is_section: true, build: false, build_background: false, image_background: image_background, full_width: full_width, lazy: lazy
+          if section.settings.video == blank
+            echo '<figure class="section-layout-wrapper'
+              if image_background
+                echo ' image-height-desktop'
+              endif
+            echo '">'
+              if image_background
+                echo '<div class="height-padding-custom desktop">'
+              endif
+                echo 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg'
+              if image_background
+                echo '</div>'
+              endif
+            echo '</figure>'     
+            if full_width
+              assign size = 1900
+            else
+              assign size = 1240
+            endif
+            if section.settings.image_background
+              render 'image.sizes', note: true,  mobile_size: 768, desktop_size: size, padding_mobile: section.settings.section_height_mobile, padding_desktop: section.settings.section_height_desktop, new_size_mobile: 768, new_size_desktop: 1240
+            else
+              render 'image.sizes', note: true, mobile_size: 768, desktop_size: size
+            endif
+          endif
+          unless section.settings.video == blank
+            if section.settings.overlay_opacity != 0 and overlay_color
+              echo '<div class="section-layout-overlay"></div>'
+            endif
+          endunless
+        -%}
+      </div>      
+      {{ block_subject }}
+    </div>
+  </section>
+</div>
+{% schema %}
+  {
+    "name": "t:sections.section.titles.video_background.content",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.general.video.height.label"
+      },
+      {
+        "id": "image_background",
+        "type": "checkbox",
+        "label": "t:sections.general.video.height.video_background.label",
+        "info": "t:sections.general.video.height.video_background.info",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "section_height_mobile",
+        "label": "t:sections.section.settings.mobile.content",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 50
+      },
+      {
+        "type": "range",
+        "id": "section_height_desktop",
+        "label": "t:sections.section.settings.desktop.content",
+        "min": 10,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 50
+      },
+      {
+        "type": "header",
+        "content": "t:sections.general.overlay.label"
+      },
+      {
+        "id": "overlay_background_color",
+        "type": "color",
+        "label": "t:sections.section.settings.background_color.label"
+      },
+      {
+        "id": "overlay_background_gradient",
+        "type": "color_background",
+        "label": "t:sections.section.settings.background_gradient.label"
+      },
+      {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "t:sections.general.overlay.color_opacity.label",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 10
+      },
+      {
+        "type": "header",
+        "content": "t:sections.general.video.label"
+      },
+      {
+        "type": "url",
+        "id": "link",
+        "label": "t:sections.general.link.title.label"
+      },
+      {
+        "type": "text",
+        "id": "link_seo",
+        "label": "t:sections.general.link.seo.label"
+      },
+      {
+        "type": "video",
+        "id": "video",
+        "label": "t:sections.general.video.label",
+        "info": "t:sections.general.video.link.background.info"
+      },
+      {
+        "id": "enable_lazy",
+        "type": "checkbox",
+        "label": "t:sections.general.lazy.single.label",
+        "default": true
+      },
+      {
+        "type": "image_picker",
+        "id": "image_desktop",
+        "label": "t:sections.image.placeholder.label"
+      },
+      {
+        "type": "select",
+        "id": "insta_filter",
+        "label": "t:sections.image.insta.label",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:sections.image.insta.option_0.label"
+          },
+          {
+            "value": "insta insta-seventy-seven",
+            "label": "t:sections.image.insta.option_1.label"
+          },
+          {
+            "value": "insta insta-aden",
+            "label": "t:sections.image.insta.option_2.label"
+          },
+          {
+            "value": "insta insta-amaro",
+            "label": "t:sections.image.insta.option_3.label"
+          },
+          {
+            "value": "insta insta-ashby",
+            "label": "t:sections.image.insta.option_4.label"
+          },
+          {
+            "value": "insta insta-brannan",
+            "label": "t:sections.image.insta.option_5.label"
+          },
+          {
+            "value": "insta insta-brooklyn",
+            "label": "t:sections.image.insta.option_6.label"
+          },
+          {
+            "value": "insta insta-charmes",
+            "label": "t:sections.image.insta.option_7.label"
+          },
+          {
+            "value": "insta insta-clarendon",
+            "label": "t:sections.image.insta.option_8.label"
+          },
+          {
+            "value": "insta insta-crema",
+            "label": "t:sections.image.insta.option_9.label"
+          },
+          {
+            "value": "insta insta-dogpatch",
+            "label": "t:sections.image.insta.option_10.label"
+          },
+          {
+            "value": "insta insta-earlybird",
+            "label": "t:sections.image.insta.option_11.label"
+          },
+          {
+            "value": "insta insta-gingham",
+            "label": "t:sections.image.insta.option_12.label"
+          },
+          {
+            "value": "insta insta-ginza",
+            "label": "t:sections.image.insta.option_13.label"
+          },
+          {
+            "value": "insta insta-hefe",
+            "label": "t:sections.image.insta.option_14.label"
+          },
+          {
+            "value": "insta insta-helena",
+            "label": "t:sections.image.insta.option_15.label"
+          },
+          {
+            "value": "insta insta-hudson",
+            "label": "t:sections.image.insta.option_16.label"
+          },
+          {
+            "value": "insta insta-inkwell",
+            "label": "t:sections.image.insta.option_17.label"
+          },
+          {
+            "value": "insta insta-juno",
+            "label": "t:sections.image.insta.option_18.label"
+          },
+          {
+            "value": "insta insta-kelvin",
+            "label": "t:sections.image.insta.option_19.label"
+          },
+          {
+            "value": "insta insta-lark",
+            "label": "t:sections.image.insta.option_20.label"
+          },
+          {
+            "value": "insta insta-lofi",
+            "label": "t:sections.image.insta.option_21.label"
+          },
+          {
+            "value": "insta insta-ludwig",
+            "label": "t:sections.image.insta.option_22.label"
+          },
+          {
+            "value": "insta insta-maven",
+            "label": "t:sections.image.insta.option_23.label"
+          },
+          {
+            "value": "insta insta-mayfair",
+            "label": "t:sections.image.insta.option_24.label"
+          },
+          {
+            "value": "insta insta-moon",
+            "label": "t:sections.image.insta.option_25.label"
+          },
+          {
+            "value": "insta insta-nashville",
+            "label": "t:sections.image.insta.option_26.label"
+          },
+          {
+            "value": "insta insta-perpetua",
+            "label": "t:sections.image.insta.option_27.label"
+          },
+          {
+            "value": "insta insta-poprocket",
+            "label": "t:sections.image.insta.option_28.label"
+          },
+          {
+            "value": "insta insta-reyes",
+            "label": "t:sections.image.insta.option_29.label"
+          },
+          {
+            "value": "insta insta-rise",
+            "label": "t:sections.image.insta.option_30.label"
+          },
+          {
+            "value": "insta insta-sierra",
+            "label": "t:sections.image.insta.option_31.label"
+          },
+          {
+            "value": "insta insta-skyline",
+            "label": "t:sections.image.insta.option_32.label"
+          },
+          {
+            "value": "insta insta-slumber",
+            "label": "t:sections.image.insta.option_33.label"
+          },
+          {
+            "value": "insta insta-stinson",
+            "label": "t:sections.image.insta.option_34.label"
+          },
+          {
+            "value": "insta insta-sutro",
+            "label": "t:sections.image.insta.option_35.label"
+          },
+          {
+            "value": "insta insta-toaster",
+            "label": "t:sections.image.insta.option_36.label"
+          },
+          {
+            "value": "insta insta-valencia",
+            "label": "t:sections.image.insta.option_37.label"
+          },
+          {
+            "value": "insta insta-vesper",
+            "label": "t:sections.image.insta.option_38.label"
+          },
+          {
+            "value": "insta insta-walden",
+            "label": "t:sections.image.insta.option_39.label"
+          },
+          {
+            "value": "insta insta-willow",
+            "label": "t:sections.image.insta.option_40.label"
+          },
+          {
+            "value": "insta insta-xpro2",
+            "label": "t:sections.image.insta.option_41.label"
+          }
+        ],
+        "default": "none"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.section.name.content"
+      },
+      {
+        "type": "checkbox",
+        "id": "image_size",
+        "label": "t:sections.image.editor.size.label",
+        "info": "t:sections.image.editor.size.info_note",
+        "default": false
+      },
+      {
+        "id": "full_width",
+        "type": "checkbox",
+        "label": "t:sections.image.full.label",
+        "default": true
+      },
+      {
+        "id": "background_color",
+        "type": "color",
+        "label": "t:sections.section.settings.background_color.label"
+      },
+      {
+        "id": "background_gradient",
+        "type": "color_background",
+        "label": "t:sections.section.settings.background_gradient.label"
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.mobile.content"
+      },
+      {
+        "id": "padding_top_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "padding_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "margin_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 20
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.desktop.content"
+      },
+      {
+        "id": "padding_top_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "padding_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "margin_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 40
+      },
+      {
+        "id": "padding_border",
+        "type": "checkbox",
+        "label": "t:sections.section.settings.border.label",
+        "default": false
+      }
+    ],
+    "max_blocks": 1,
+    "blocks": [
+      {
+        "type": "text",
+        "limit": 1,
+        "name": "t:sections.text.title.label",
+        "settings": [
+          {
+            "type": "select",
+            "id": "layout_x",
+            "label": "t:sections.general.position.position_x.label",
+            "options": [
+              {
+                "value": "left",
+                "label": "t:sections.general.position.left.label"
+              },
+              {
+                "value": "center",
+                "label": "t:sections.general.position.center.label"
+              },
+              {
+                "value": "right",
+                "label": "t:sections.general.position.right.label"
+              }
+            ],
+            "default": "left"
+          },
+          {
+            "type": "select",
+            "id": "layout_y",
+            "label": "t:sections.general.position.position_y.label",
+            "options": [
+              {
+                "value": "top",
+                "label": "t:sections.general.position.top.label"
+              },
+              {
+                "value": "middle",
+                "label": "t:sections.general.position.middle.label"
+              },
+              {
+                "value": "bottom",
+                "label": "t:sections.general.position.bottom.label"
+              }
+            ],
+            "default": "middle"
+          },
+          {
+            "type": "select",
+            "id": "layout_mobile",
+            "label": "t:sections.general.position.position_mobile.label",
+            "options": [
+              {
+                "value": "overlay",
+                "label": "t:sections.general.position.position_mobile.overlay.label"
+              },
+              {
+                "value": "below",
+                "label": "t:sections.general.position.position_mobile.below.label"
+              }
+            ],
+            "default": "overlay"
+          },
+          {
+            "type": "header",
+            "content": "t:sections.section.width.content.label"
+          },
+          {
+            "type": "range",
+            "id": "content_width_mobile",
+            "label": "t:sections.section.settings.mobile.content",
+            "min": 25,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          },
+          {
+            "type": "range",
+            "id": "content_width_desktop",
+            "label": "t:sections.section.settings.desktop.content",
+            "min": 25,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          },
+          {
+            "id": "title",
+            "type": "text",
+            "label": "t:sections.text.heading.label",
+            "default": "t:onboarding.video.title_background"
+          },
+          {
+            "id": "title_h1",
+            "type": "checkbox",
+            "label": "t:sections.text.heading_one.label",
+            "default": false
+          },
+          {
+            "type": "select",
+            "id": "title_font",
+            "label": "t:sections.text.heading_font.main.label",
+            "options": [
+              {
+                "value": "primary",
+                "label": "t:sections.text.heading_font.primary.label"
+              },
+              {
+                "value": "secondary",
+                "label": "t:sections.text.heading_font.secondary.label"
+              }
+            ],
+            "default": "primary"
+          },
+          {
+            "type": "select",
+            "id": "title_outline",
+            "label": "t:sections.text.outline.heading_outline.label",
+            "options": [
+              {
+                "value": "none",
+                "label": "t:sections.text.outline.option_1.label"
+              },
+              {
+                "group": "t:sections.text.outline.background_no.label",
+                "value": "title-outline title-outline-1",
+                "label": "t:sections.text.outline.option_2.label"
+              },
+              {
+                "group": "t:sections.text.outline.background_no.label",
+                "value": "title-outline title-outline-2",
+                "label": "t:sections.text.outline.option_3.label"
+              },
+              {
+                "group": "t:sections.text.outline.background_no.label",
+                "value": "title-outline title-outline-3",
+                "label": "t:sections.text.outline.option_4.label"
+              },          
+              {
+                "group": "t:sections.text.outline.background.label",
+                "value": "title-outline title-outline-bg title-outline-1",
+                "label": "t:sections.text.outline.option_2.label"
+              },
+              {
+                "group": "t:sections.text.outline.background.label",
+                "value": "title-outline title-outline-bg title-outline-2",
+                "label": "t:sections.text.outline.option_3.label"
+              },
+              {
+                "group": "t:sections.text.outline.background.label",
+                "value": "title-outline title-outline-bg title-outline-3",
+                "label": "t:sections.text.outline.option_4.label"
+              }
+            ],
+            "default": "none"
+          },
+          {
+            "id": "title_size",
+            "type": "range",
+            "label": "t:sections.text.heading_size.label",
+            "min": 18,
+            "max": 240,
+            "step": 6,
+            "unit": "px",
+            "default": 42
+          },
+          {
+            "type": "checkbox",
+            "id": "responsive_size",
+            "label": "t:sections.text.responsive_size.label",
+            "default": true
+          },
+          {
+            "id": "title_sub",
+            "type": "text",
+            "label": "t:sections.text.subheading.label",
+            "default": "t:onboarding.video.text"
+          },
+          {
+            "type": "select",
+            "id": "title_sub_font",
+            "label": "t:sections.text.heading_font.sub.label",
+            "options": [
+              {
+                "value": "primary",
+                "label": "t:sections.text.heading_font.primary.label"
+              },
+              {
+                "value": "secondary",
+                "label": "t:sections.text.heading_font.secondary.label"
+              }
+            ],
+            "default": "secondary"
+          },
+          {
+            "type": "select",
+            "id": "title_sub_outline",
+            "label": "t:sections.text.outline.subheading_outline.label",
+            "options": [
+              {
+                "value": "none",
+                "label": "t:sections.text.outline.option_1.label"
+              },
+              {
+                "group": "t:sections.text.outline.background_no.label",
+                "value": "title-outline title-outline-1",
+                "label": "t:sections.text.outline.option_2.label"
+              },
+              {
+                "group": "t:sections.text.outline.background_no.label",
+                "value": "title-outline title-outline-2",
+                "label": "t:sections.text.outline.option_3.label"
+              },
+              {
+                "group": "t:sections.text.outline.background_no.label",
+                "value": "title-outline title-outline-3",
+                "label": "t:sections.text.outline.option_4.label"
+              },          
+              {
+                "group": "t:sections.text.outline.background.label",
+                "value": "title-outline title-outline-bg title-outline-1",
+                "label": "t:sections.text.outline.option_2.label"
+              },
+              {
+                "group": "t:sections.text.outline.background.label",
+                "value": "title-outline title-outline-bg title-outline-2",
+                "label": "t:sections.text.outline.option_3.label"
+              },
+              {
+                "group": "t:sections.text.outline.background.label",
+                "value": "title-outline title-outline-bg title-outline-3",
+                "label": "t:sections.text.outline.option_4.label"
+              }
+            ],
+            "default": "none"
+          },
+          {
+            "id": "title_sub_size",
+            "type": "range",
+            "label": "t:sections.text.subheading_size.label",
+            "min": 18,
+            "max": 240,
+            "step": 6,
+            "unit": "px",
+            "default": 30
+          },
+          {
+            "id": "text_border",
+            "type": "checkbox",
+            "label": "t:sections.text.border.label",
+            "default": true
+          },
+          {
+            "type": "richtext",
+            "id": "content",
+            "label": "t:sections.general.text.label",
+            "default": "t:onboarding.html.video_html"
+          },
+          {
+            "type": "url",
+            "id": "link_1",
+            "label": "t:sections.general.link.title_1.label"
+          },
+          {
+            "type": "text",
+            "id": "link_1_seo",
+            "label": "t:sections.general.link.seo.label"
+          },
+          {
+            "type": "text",
+            "id": "button_text_1",
+            "label": "t:sections.general.link.title_1_text.label",
+            "default": "t:onboarding.text.read"
+          },
+          {
+            "type": "select",
+            "id": "link_style_1",
+            "label": "t:sections.general.link.title_1_style.label",
+            "options": [
+              {
+                "value": "text",
+                "label": "t:sections.general.text.label"
+              },
+              {
+                "value": "primary",
+                "label": "t:settings_schema.buttons.settings.primary.content"
+              },
+              {
+                "value": "secondary",
+                "label": "t:settings_schema.buttons.settings.secondary.content"
+              }
+            ],
+            "default": "primary"
+          },
+          {
+            "type": "url",
+            "id": "link_2",
+            "label": "t:sections.general.link.title_2.label"
+          },
+          {
+            "type": "text",
+            "id": "link_2_seo",
+            "label": "t:sections.general.link.seo.label"
+          },
+          {
+            "type": "text",
+            "id": "button_text_2",
+            "label": "t:sections.general.link.title_2_text.label",
+            "default": "t:onboarding.text.read"
+          },
+          {
+            "type": "select",
+            "id": "link_style_2",
+            "label": "t:sections.general.link.title_2_style.label",
+            "options": [
+              {
+                "value": "text",
+                "label": "t:sections.general.text.label"
+              },
+              {
+                "value": "primary",
+                "label": "t:settings_schema.buttons.settings.primary.content"
+              },
+              {
+                "value": "secondary",
+                "label": "t:settings_schema.buttons.settings.secondary.content"
+              }
+            ],
+            "default": "secondary"
+          },
+          {
+            "id": "text_alignment",
+            "type": "text_alignment",
+            "label": "t:sections.text.alignment.text.label",
+            "default": "left"
+          },
+          {
+            "id": "text_color",
+            "type": "color",
+            "label": "t:sections.text.color.label"
+          },
+          {
+            "id": "text_color_hover",
+            "type": "color",
+            "label": "t:sections.text.hover.label"
+          },
+          {
+            "id": "button_color",
+            "type": "color",
+            "label": "t:sections.section.settings.button_color.label"
+          },
+          {
+            "id": "line_color",
+            "type": "color",
+            "label": "t:settings_schema.colors.settings.elements_line.label"
+          },
+          {
+            "id": "text_background_color",
+            "type": "color",
+            "label": "t:sections.section.settings.background_color.label"
+          },
+          {
+            "id": "text_background_gradient",
+            "type": "color_background",
+            "label": "t:sections.section.settings.background_gradient.label"
+          },
+          {
+            "type": "range",
+            "id": "text_background_opacity",
+            "label": "t:sections.section.settings.background_opacity.label",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 100
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "limit": 1,
+        "name": "t:sections.image.title.label",
+        "settings": [
+          {
+            "type": "select",
+            "id": "layout_x",
+            "label": "t:sections.general.position.position_x.label",
+            "options": [
+              {
+                "value": "left",
+                "label": "t:sections.general.position.left.label"
+              },
+              {
+                "value": "center",
+                "label": "t:sections.general.position.center.label"
+              },
+              {
+                "value": "right",
+                "label": "t:sections.general.position.right.label"
+              }
+            ],
+            "default": "left"
+          },
+          {
+            "type": "select",
+            "id": "layout_y",
+            "label": "t:sections.general.position.position_y.label",
+            "options": [
+              {
+                "value": "top",
+                "label": "t:sections.general.position.top.label"
+              },
+              {
+                "value": "middle",
+                "label": "t:sections.general.position.middle.label"
+              },
+              {
+                "value": "bottom",
+                "label": "t:sections.general.position.bottom.label"
+              }
+            ],
+            "default": "middle"
+          },
+          {
+            "type": "select",
+            "id": "layout_mobile",
+            "label": "t:sections.general.position.position_mobile.label",
+            "options": [
+              {
+                "value": "overlay",
+                "label": "t:sections.general.position.position_mobile.overlay.label"
+              },
+              {
+                "value": "below",
+                "label": "t:sections.general.position.position_mobile.below.label"
+              }
+            ],
+            "default": "overlay"
+          },
+          {
+            "type": "header",
+            "content": "t:sections.section.width.content.label"
+          },
+          {
+            "type": "range",
+            "id": "content_width_mobile",
+            "label": "t:sections.section.settings.mobile.content",
+            "min": 25,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          },
+          {
+            "type": "range",
+            "id": "content_width_desktop",
+            "label": "t:sections.section.settings.desktop.content",
+            "min": 25,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+          },
+          {
+            "type": "header",
+            "content": "t:sections.image.title.label"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "t:sections.general.link.title.label"
+          },
+          {
+            "type": "text",
+            "id": "link_seo",
+            "label": "t:sections.general.link.seo.label"
+          },
+          {
+            "type": "paragraph",
+            "content": "t:sections.image.editor.label"
+          },
+          {
+            "type": "image_picker",
+            "id": "image_desktop",
+            "label": "t:sections.image.title.desktop.label"
+          },
+          {
+            "type": "select",
+            "id": "insta_filter",
+            "label": "t:sections.image.insta.label",
+            "options": [
+              {
+                "value": "none",
+                "label": "t:sections.image.insta.option_0.label"
+              },
+              {
+                "value": "insta insta-seventy-seven",
+                "label": "t:sections.image.insta.option_1.label"
+              },
+              {
+                "value": "insta insta-aden",
+                "label": "t:sections.image.insta.option_2.label"
+              },
+              {
+                "value": "insta insta-amaro",
+                "label": "t:sections.image.insta.option_3.label"
+              },
+              {
+                "value": "insta insta-ashby",
+                "label": "t:sections.image.insta.option_4.label"
+              },
+              {
+                "value": "insta insta-brannan",
+                "label": "t:sections.image.insta.option_5.label"
+              },
+              {
+                "value": "insta insta-brooklyn",
+                "label": "t:sections.image.insta.option_6.label"
+              },
+              {
+                "value": "insta insta-charmes",
+                "label": "t:sections.image.insta.option_7.label"
+              },
+              {
+                "value": "insta insta-clarendon",
+                "label": "t:sections.image.insta.option_8.label"
+              },
+              {
+                "value": "insta insta-crema",
+                "label": "t:sections.image.insta.option_9.label"
+              },
+              {
+                "value": "insta insta-dogpatch",
+                "label": "t:sections.image.insta.option_10.label"
+              },
+              {
+                "value": "insta insta-earlybird",
+                "label": "t:sections.image.insta.option_11.label"
+              },
+              {
+                "value": "insta insta-gingham",
+                "label": "t:sections.image.insta.option_12.label"
+              },
+              {
+                "value": "insta insta-ginza",
+                "label": "t:sections.image.insta.option_13.label"
+              },
+              {
+                "value": "insta insta-hefe",
+                "label": "t:sections.image.insta.option_14.label"
+              },
+              {
+                "value": "insta insta-helena",
+                "label": "t:sections.image.insta.option_15.label"
+              },
+              {
+                "value": "insta insta-hudson",
+                "label": "t:sections.image.insta.option_16.label"
+              },
+              {
+                "value": "insta insta-inkwell",
+                "label": "t:sections.image.insta.option_17.label"
+              },
+              {
+                "value": "insta insta-juno",
+                "label": "t:sections.image.insta.option_18.label"
+              },
+              {
+                "value": "insta insta-kelvin",
+                "label": "t:sections.image.insta.option_19.label"
+              },
+              {
+                "value": "insta insta-lark",
+                "label": "t:sections.image.insta.option_20.label"
+              },
+              {
+                "value": "insta insta-lofi",
+                "label": "t:sections.image.insta.option_21.label"
+              },
+              {
+                "value": "insta insta-ludwig",
+                "label": "t:sections.image.insta.option_22.label"
+              },
+              {
+                "value": "insta insta-maven",
+                "label": "t:sections.image.insta.option_23.label"
+              },
+              {
+                "value": "insta insta-mayfair",
+                "label": "t:sections.image.insta.option_24.label"
+              },
+              {
+                "value": "insta insta-moon",
+                "label": "t:sections.image.insta.option_25.label"
+              },
+              {
+                "value": "insta insta-nashville",
+                "label": "t:sections.image.insta.option_26.label"
+              },
+              {
+                "value": "insta insta-perpetua",
+                "label": "t:sections.image.insta.option_27.label"
+              },
+              {
+                "value": "insta insta-poprocket",
+                "label": "t:sections.image.insta.option_28.label"
+              },
+              {
+                "value": "insta insta-reyes",
+                "label": "t:sections.image.insta.option_29.label"
+              },
+              {
+                "value": "insta insta-rise",
+                "label": "t:sections.image.insta.option_30.label"
+              },
+              {
+                "value": "insta insta-sierra",
+                "label": "t:sections.image.insta.option_31.label"
+              },
+              {
+                "value": "insta insta-skyline",
+                "label": "t:sections.image.insta.option_32.label"
+              },
+              {
+                "value": "insta insta-slumber",
+                "label": "t:sections.image.insta.option_33.label"
+              },
+              {
+                "value": "insta insta-stinson",
+                "label": "t:sections.image.insta.option_34.label"
+              },
+              {
+                "value": "insta insta-sutro",
+                "label": "t:sections.image.insta.option_35.label"
+              },
+              {
+                "value": "insta insta-toaster",
+                "label": "t:sections.image.insta.option_36.label"
+              },
+              {
+                "value": "insta insta-valencia",
+                "label": "t:sections.image.insta.option_37.label"
+              },
+              {
+                "value": "insta insta-vesper",
+                "label": "t:sections.image.insta.option_38.label"
+              },
+              {
+                "value": "insta insta-walden",
+                "label": "t:sections.image.insta.option_39.label"
+              },
+              {
+                "value": "insta insta-willow",
+                "label": "t:sections.image.insta.option_40.label"
+              },
+              {
+                "value": "insta insta-xpro2",
+                "label": "t:sections.image.insta.option_41.label"
+              }
+            ],
+            "default": "none"
+          },
+          {
+            "type": "image_picker",
+            "id": "image_mobile",
+            "label": "t:sections.image.title.mobile.label"
+          },
+          {
+            "type": "select",
+            "id": "insta_filter_mobile",
+            "label": "t:sections.image.insta.label",
+            "options": [
+              {
+                "value": "none",
+                "label": "t:sections.image.insta.option_0.label"
+              },
+              {
+                "value": "insta insta-seventy-seven",
+                "label": "t:sections.image.insta.option_1.label"
+              },
+              {
+                "value": "insta insta-aden",
+                "label": "t:sections.image.insta.option_2.label"
+              },
+              {
+                "value": "insta insta-amaro",
+                "label": "t:sections.image.insta.option_3.label"
+              },
+              {
+                "value": "insta insta-ashby",
+                "label": "t:sections.image.insta.option_4.label"
+              },
+              {
+                "value": "insta insta-brannan",
+                "label": "t:sections.image.insta.option_5.label"
+              },
+              {
+                "value": "insta insta-brooklyn",
+                "label": "t:sections.image.insta.option_6.label"
+              },
+              {
+                "value": "insta insta-charmes",
+                "label": "t:sections.image.insta.option_7.label"
+              },
+              {
+                "value": "insta insta-clarendon",
+                "label": "t:sections.image.insta.option_8.label"
+              },
+              {
+                "value": "insta insta-crema",
+                "label": "t:sections.image.insta.option_9.label"
+              },
+              {
+                "value": "insta insta-dogpatch",
+                "label": "t:sections.image.insta.option_10.label"
+              },
+              {
+                "value": "insta insta-earlybird",
+                "label": "t:sections.image.insta.option_11.label"
+              },
+              {
+                "value": "insta insta-gingham",
+                "label": "t:sections.image.insta.option_12.label"
+              },
+              {
+                "value": "insta insta-ginza",
+                "label": "t:sections.image.insta.option_13.label"
+              },
+              {
+                "value": "insta insta-hefe",
+                "label": "t:sections.image.insta.option_14.label"
+              },
+              {
+                "value": "insta insta-helena",
+                "label": "t:sections.image.insta.option_15.label"
+              },
+              {
+                "value": "insta insta-hudson",
+                "label": "t:sections.image.insta.option_16.label"
+              },
+              {
+                "value": "insta insta-inkwell",
+                "label": "t:sections.image.insta.option_17.label"
+              },
+              {
+                "value": "insta insta-juno",
+                "label": "t:sections.image.insta.option_18.label"
+              },
+              {
+                "value": "insta insta-kelvin",
+                "label": "t:sections.image.insta.option_19.label"
+              },
+              {
+                "value": "insta insta-lark",
+                "label": "t:sections.image.insta.option_20.label"
+              },
+              {
+                "value": "insta insta-lofi",
+                "label": "t:sections.image.insta.option_21.label"
+              },
+              {
+                "value": "insta insta-ludwig",
+                "label": "t:sections.image.insta.option_22.label"
+              },
+              {
+                "value": "insta insta-maven",
+                "label": "t:sections.image.insta.option_23.label"
+              },
+              {
+                "value": "insta insta-mayfair",
+                "label": "t:sections.image.insta.option_24.label"
+              },
+              {
+                "value": "insta insta-moon",
+                "label": "t:sections.image.insta.option_25.label"
+              },
+              {
+                "value": "insta insta-nashville",
+                "label": "t:sections.image.insta.option_26.label"
+              },
+              {
+                "value": "insta insta-perpetua",
+                "label": "t:sections.image.insta.option_27.label"
+              },
+              {
+                "value": "insta insta-poprocket",
+                "label": "t:sections.image.insta.option_28.label"
+              },
+              {
+                "value": "insta insta-reyes",
+                "label": "t:sections.image.insta.option_29.label"
+              },
+              {
+                "value": "insta insta-rise",
+                "label": "t:sections.image.insta.option_30.label"
+              },
+              {
+                "value": "insta insta-sierra",
+                "label": "t:sections.image.insta.option_31.label"
+              },
+              {
+                "value": "insta insta-skyline",
+                "label": "t:sections.image.insta.option_32.label"
+              },
+              {
+                "value": "insta insta-slumber",
+                "label": "t:sections.image.insta.option_33.label"
+              },
+              {
+                "value": "insta insta-stinson",
+                "label": "t:sections.image.insta.option_34.label"
+              },
+              {
+                "value": "insta insta-sutro",
+                "label": "t:sections.image.insta.option_35.label"
+              },
+              {
+                "value": "insta insta-toaster",
+                "label": "t:sections.image.insta.option_36.label"
+              },
+              {
+                "value": "insta insta-valencia",
+                "label": "t:sections.image.insta.option_37.label"
+              },
+              {
+                "value": "insta insta-vesper",
+                "label": "t:sections.image.insta.option_38.label"
+              },
+              {
+                "value": "insta insta-walden",
+                "label": "t:sections.image.insta.option_39.label"
+              },
+              {
+                "value": "insta insta-willow",
+                "label": "t:sections.image.insta.option_40.label"
+              },
+              {
+                "value": "insta insta-xpro2",
+                "label": "t:sections.image.insta.option_41.label"
+              }
+            ],
+            "default": "none"
+          },
+          {
+            "id": "text_background_color",
+            "type": "color",
+            "label": "t:sections.section.settings.background_color.label"
+          },
+          {
+            "id": "text_background_gradient",
+            "type": "color_background",
+            "label": "t:sections.section.settings.background_gradient.label"
+          },
+          {
+            "type": "range",
+            "id": "text_background_opacity",
+            "label": "t:sections.section.settings.background_opacity.label",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 90
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.section.titles.video_background.content",
+		"category": "t:categories.banners",
+        "blocks": [
+          {
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "disabled_on": {
+	  "templates": ["password"]
+    }
+  }
+{% endschema %}

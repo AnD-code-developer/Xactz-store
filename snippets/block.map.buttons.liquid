@@ -1,0 +1,67 @@
+{%- liquid
+  assign blocks_size = section.blocks.size | minus: 1
+  assign blocks_index = 0
+  if blocks_size > 0
+    for block in section.blocks
+      case block.type
+        when 'subject'
+          echo '<div class="content-slide" '
+          echo block.shopify_attributes
+          echo '>' 
+            render 'block.text', section: section, block: block    
+          echo '</div>'
+        when 'map'
+          assign blocks_index = blocks_index | plus: 1
+          unless blocks_size == 1 and block.settings.location_text == blank          
+            echo '<div class="content-slide" data-content-slide>'             
+              capture title
+                if block.settings.location_title != blank
+                  echo block.settings.location_title
+                else
+                  echo 'pagination.slide_html' | t: number: blocks_index
+                endif
+              endcapture               
+              echo '<button value="slide-'
+              echo section.id
+              echo '-'
+              echo blocks_index
+              echo '" data-index="'
+              echo blocks_index
+              echo '" class="content-slide-btn slider-button keyed-skip" title="'
+              echo title
+              echo '" aria-label="'                        
+              echo title
+              echo '"'
+              if blocks_size == 1
+                echo ' content-slide-btn'
+              endif
+              echo ' content-slide-btn><span class="content-slide-toggle'
+              if block.settings.block_icon != 'none'
+                echo ' with-icon'
+              endif
+              echo '">'                
+              if block.settings.block_icon != 'none' or block.settings.block_icon_custom != blank
+                render 'icons', block: block, id: block.settings.block_icon, size: 22
+              else
+                if block.settings.location_text != blank
+                  render 'icons.theme', id: 'plus', size: 14
+                else
+                  render 'icons.theme', id: 'arrow-r', size: 14
+                endif
+              endif                
+              echo '</span>'
+              echo title
+              echo '</button>'              
+              if block.settings.location_text != blank
+                echo '<div class="content-slide-content" data-index="'
+                echo blocks_index
+                echo '" data-height><div class="content-slide-space">'
+                  echo block.settings.location_text
+                echo '</div></div>'
+              endif              
+            echo '</div>'
+          endunless          
+      endcase
+    endfor
+  endif
+-%}

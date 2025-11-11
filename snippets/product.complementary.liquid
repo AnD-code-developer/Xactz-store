@@ -1,0 +1,62 @@
+{%- liquid
+  assign enable_slide = block.settings.enable_slide
+  assign is_hidden = true
+  assign complementary_type = blank
+  if product.metafields.shopify--discovery--product_recommendation.complementary_products.value != blank
+    assign is_hidden = false
+    assign complementary_type = 'product'
+  endif
+  if cart_items != blank
+    capture cart_items_ids
+      for p in cart_items
+        for p in p.product.metafields.shopify--discovery--product_recommendation.complementary_products.value
+          echo p.handle
+          echo ','
+        endfor
+      endfor
+    endcapture
+    assign cart_items_ids = cart_items_ids | split: ',' | uniq
+  endif
+  if cart_items_ids != blank
+    assign is_hidden = false
+    assign complementary_type = 'cart'
+  endif
+-%}
+{% unless is_hidden %}
+  <div class="content-block product-recommendations product-complementary{% if enable_slide %} content-slide{% endif %}"{% if enable_slide %} data-content-slide{% endif %} {{ block.shopify_attributes }}>      
+    {%- liquid
+      assign heading = block.settings.heading
+      capture title
+        if heading != blank
+          echo heading
+        else
+          if cart_items != blank
+            echo 'cart.complementary' | t
+          else
+            echo 'product.related' | t
+          endif
+        endif
+      endcapture
+      if enable_slide
+        render 'block.button', block: block, title: title, is_ignore: true
+      endif
+    -%}
+    <div class="content-slide-content" data-height>
+      <section data-section-id="{{ block.id }}" 
+               data-section-type="slider-{{ block.id }}"
+               data-url="{{ 'script.slider.js' | asset_url }}"
+               data-slider-use="true"
+               data-slider-breakpoint="large"
+               class="content-slide-space relative">        
+        {% if title != blank and enable_slide == false %}
+          <div class="label">{{ title }}</div>
+        {% endif %}
+        <div class="slider-container section-card-wrapper">
+          <div class="slider large scroll-bar-h recommendations">              
+            {%- render 'block.products', block: section, products: product.metafields.shopify--discovery--product_recommendation.complementary_products.value, complementary: true, complementary_type: complementary_type, cart_items_ids: cart_items_ids, items_count: block.settings.product_count, items_per_row_mobile: 4, items_per_row_desktop: 6, onboard_count: block.settings.product_count, lazy: lazy -%}  
+          </div>
+        </div>
+      </section>
+    </div>    
+  </div>
+{% endunless %}

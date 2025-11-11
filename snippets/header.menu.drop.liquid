@@ -1,0 +1,138 @@
+<ul{% unless is_story %} role="menu"{% endunless %} class="navmenu{% if section.settings.text_uppercase_navigation %} navmenu-uppercase{% endif %} navmenu-depth-{{ depth }}{% if is_submenu %} navmenu-submenu{% endif %}" data-mobile-trigger>
+  {% for link in menu.links %}
+    {%- liquid
+      assign is_type = blank
+      assign is_color = blank
+      assign menu_item_block = blank
+      assign is_meganav = false
+      assign mega_menu_item_handle = blank
+      assign is_contact = false
+      assign contact_menu_item_handle = blank
+      assign is_story = false
+      assign story_menu_item_handle = blank
+      assign is_button = false
+      assign button_menu_item_handle = blank
+      if depth == 1
+        for block in section.blocks
+          case block.type
+            when 'mega_menu'
+              assign mega_menu_item_handle = block.settings.heading
+              if link.title == mega_menu_item_handle
+                assign is_meganav = true
+                assign is_type = 'mega'
+                assign is_color = block.settings.color_link
+                assign menu_item_block = block
+              endif
+            when 'contact_menu'
+              assign contact_menu_item_handle = block.settings.heading
+              if link.title == contact_menu_item_handle
+                assign is_meganav = true
+                assign is_contact = true
+                assign is_type = 'contact'
+                assign is_color = block.settings.color_link
+                assign menu_item_block = block
+                break
+              endif
+            when 'story_menu'
+              assign story_menu_item_handle = block.settings.heading
+              if link.title == story_menu_item_handle
+                unless is_mobile
+                  assign is_meganav = true
+                endunless
+                assign is_story = true
+                assign is_type = 'story'
+                assign is_color = block.settings.color_link
+                assign menu_item_block = block
+                break
+              endif
+            when 'button_menu'
+              assign button_menu_item_handle = block.settings.heading
+              if link.title == button_menu_item_handle
+                assign is_button = true
+                assign is_type = block.settings.button_style
+                break
+              endif
+            when 'color_menu'
+              assign color_menu_item_handle = block.settings.heading
+              if link.title == color_menu_item_handle
+                assign is_color = block.settings.color_link
+                break
+              endif
+          endcase
+        endfor
+      endif
+      assign d = depth | plus: 1
+    -%}
+    {% if link.links == blank and is_contact == false and is_story == false %}
+      <li class="navmenu-item navmenu-id-{{ link.handle }}{% if is_button %} has_button{% endif %}" role="presentation">
+        <a href="{{ link.url }}" role="menuitem" title="{{ link.title | escape }}"{% if link.url contains 'http://' or link.url contains 'https://' %} target="_blank"{% endif %} class="{% if is_button %}btn btn-{{ is_type }} {% else %}navmenu-link{% unless is_submenu %} navmenu-link-top{% endunless %}{% endif %} body-font-{% if is_submenu %}{{ section.settings.navigation_text_size | minus: depth | plus: 1 }}{% else %}{{ section.settings.navigation_text_size }}{% endif %}{% unless is_button %} keyed-inside{% endunless %}"{% if is_color.alpha != 0.0 and is_color != blank %} style="color: {{ is_color }}"{% endif %}>{{ link.title }}</a>
+      </li>
+    {% else %}
+      <li class="navmenu-item navmenu-item-parent navmenu-{% if is_meganav %}mega{% else %}drop{% endif %} navmenu-id-{{ link.handle }}"
+          {% if is_meganav %} data-meganav-trigger="{{ link.handle }}"{% endif %}
+          data-nav-trigger role="presentation">        
+        <a href="{{ link.url }}" role="menuitem" title="{{ link.title | escape }}"{% if link.url contains 'http://' or link.url contains 'https://' %} target="_blank"{% endif %} class="navmenu-link body-font-{% if is_submenu %}{{ section.settings.navigation_text_size | minus: depth | plus: 1 }}{% else %}{{ section.settings.navigation_text_size }}{% endif %} navmenu-link-parent navmenu-link-parent-{{ depth }}{% if is_meganav and is_mobile == false %} navmenu-link-meganav{% endif %}{% if is_contact %} navmenu-contact{% endif %} keyed-inside"{% if is_color.alpha != 0.0 and is_color != blank %} style="color: {{ is_color }}"{% endif %} aria-expanded="false" aria-haspopup="true">{{ link.title }}{% unless is_contact %}{% if is_mobile %}<span class="navmenu-arrow-toggle"><span class="navmenu-arrow"></span></span>{% endif %}{% endunless %}</a>
+        {%- liquid
+          if is_meganav
+            unless is_mobile and is_contact
+              render 'header.menu', is_type: is_type, is_mobile: is_mobile, block: menu_item_block, menu_location: menu_location, link: link
+            endunless
+          else
+            render 'header.menu.drop', is_mobile: is_mobile, is_story: is_story, menu: link, depth: d, is_submenu: true
+          endif
+        -%}
+      </li>
+    {% endif %}
+  {% endfor %}
+  {%- liquid
+    if depth == 2 and is_mobile and is_story
+      for block in section.blocks
+        case block.type
+          when 'story_menu'
+            assign menu_item_block = block
+        endcase
+      endfor
+      echo '<div class="contactbar is_mobile">'
+      render 'header.menu.story', section: section, block: menu_item_block, is_mobile: true
+      echo '</div>'
+    endif
+  -%}
+  {% if shop.customer_accounts_enabled == true and is_submenu == false and is_mobile and section.settings.account_layout == 'menu' %}
+    <li class="navmenu-item navmenu-mobile-account navmenu-id-account" role="presentation">
+      <span>  
+        {%- liquid
+          if customer
+            render 'account.greeting'
+          else
+            echo 'customers.account.header' | t | escape
+          endif
+        -%}
+      </span>
+      <ul>
+        {% if customer %}
+          <li class="navmenu-item navmenu-mobile-account">
+            <a href="{{ routes.account_url }}" role="menuitem" class="navmenu-link navmenu-link-account" title="{{ 'customers.account.header' | t | escape }}">{{ 'customers.account.header' | t | escape }}</a>
+          </li>
+          <li class="navmenu-item navmenu-mobile-account">
+            <a href="{{ routes.account_url }}" role="menuitem" class="navmenu-link navmenu-link-account" title="{{ 'customers.account.order_history' | t | escape }}">{{ 'customers.account.order_history' | t | escape }}</a>
+          </li>
+          <li class="navmenu-item navmenu-mobile-account">
+            <a href="{{ routes.account_addresses_url }}" role="menuitem" class="navmenu-link navmenu-link-account" title="{% if customer.addresses_count == 0 %}{{ 'customers.account.new_address_link' | t | escape }}{% else %}{{ 'customers.account.view_addresses' | t: count: customer.addresses_count | escape }}{% endif %}">{% if customer.addresses_count == 0 %}{{ 'customers.account.new_address_link' | t | escape }}{% else %}{{ 'customers.account.view_addresses' | t: count: customer.addresses_count | escape }}{% endif %}</a>
+          </li>
+          <li class="navmenu-item navmenu-mobile-account">
+            <a href="{{ routes.account_logout_url }}" role="menuitem" class="navmenu-link navmenu-link-account" title="{{ 'customers.account.logout' | t | escape }}">{{ 'customers.account.logout' | t }}</a>
+          </li>
+        {% else %}
+          <li class="navmenu-item navmenu-mobile-account">
+            <a href="{{ routes.account_login_url }}" role="menuitem" class="navmenu-link navmenu-link-account" title="{{ 'customers.account.login' | t | escape }}">{{ 'customers.account.login' | t }}</a>
+          </li>
+          {% if shop.customer_accounts_optional %}
+            <li class="navmenu-item navmenu-mobile-account">
+              <a href="{{ routes.account_register_url }}" role="menuitem" class="navmenu-link navmenu-link-account" title="{{ 'customers.register.submit' | t | escape }}">{{ 'customers.register.submit' | t }}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+    </li>
+  {% endif %}  
+</ul>

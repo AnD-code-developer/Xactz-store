@@ -1,0 +1,65 @@
+<div class="content-block product-gift content-slide" data-content-slide {{ block.shopify_attributes }}>
+  {%- render 'form.errors', form: form -%}  
+  <div class="line-items">
+    <div class="input-wrapper input-container no-pad">
+      <input id="gift-{{ block.id }}" 
+             class="content-slide-btn"
+             type="checkbox" 
+             name="properties[__shopify_send_gift_card_to_recipient]"
+             title="{{ 'product.gift.send' | t | escape }}"
+             content-slide-btn>
+      <label for="gift-{{ block.id }}">{{ 'product.gift.send' | t }}</label>
+    </div>
+  </div>      
+  <div class="content-slide-content ignore" data-height>
+    <div class="content-slide-space">
+        <div class="input-wrapper toppad">
+          <label for="gift-name-{{ product.id }}">{{ 'contact.form.name' | t }}</label>
+          <input id="gift-name-{{ product.id }}" 
+                 class="input-field{% if form.errors contains 'name' %} error{% endif %}"
+                 type="text" 
+                 value="{{ form.name | escape }}" 
+                 name="properties[Recipient name]"
+                 placeholder="{{ 'contact.form.name' | t | escape }}">
+        </div>
+        <div class="input-wrapper">
+          <label for="gift-email-{{ product.id }}">{{ 'contact.form.email' | t }}</label>
+          <input id="gift-email-{{ product.id }}" 
+                 class="input-field{% if form.errors contains 'email' %} error{% endif %}"
+                 type="email" 
+                 autocorrect="off" 
+                 autocapitalize="off" 
+                 autocomplete="email" 
+                 pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                 value="{{ form.email | escape }}"
+                 name="properties[Recipient email]"
+                 placeholder="{{ 'contact.form.email' | t | escape }}">                 
+        </div>
+        <div class="input-wrapper">
+          <label for="gift-message-{{ product.id }}">{{ 'contact.form.message' | t }}</label>
+          <textarea id="gift-message-{{ product.id }}" 
+                    class="input-field{% if form.errors contains 'message' %} error{% endif %}"
+                    name="properties[Message]" 
+                    maxlength="200"
+                    placeholder="{{ 'contact.form.message' | t | escape }}">{{ form.comments }}</textarea>
+        </div>
+        <span class="input-wrapper">
+          <label for="gift-date-{{ product.id }}">{{ 'contact.form.send_on' | t }}</label>
+          <input
+            id="gift-date-{{ product.id }}"
+            class="input-field{% if form.errors contains 'send_on' %} error{% endif %}"
+            type="date"
+            value="{{ form.send_on }}"
+            name="properties[Send on]"
+            min="{{ "now" | date: "%Y-%m-%d" }}"
+            placeholder="{{ 'contact.form.send_on' | t }}"
+            autocomplete="send_on"
+            pattern="\d{4}-\d{2}-\d{2}">
+        </span>      
+        <input type="hidden"
+               name="properties[__shopify_send_gift_card_to_recipient]"
+               value="if_present"
+               disabled>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+{%- liquid
+  assign inventory_minimum = block.settings.inventory_minimum | times: 1
+  assign size = block.settings.text_size
+  assign size_small = size | times: 0.80
+-%}
+<div class="content-block">
+  <span id="inventory-{{ block.id }}" 
+        class="product-inventory" 
+        data-inv="{{ inventory_minimum }}" 
+        role="status">
+    <p class="body-font-{{ size }}">
+      {%- liquid
+        echo '<span class="inventory-text">'  
+          if block.settings.block_icon != 'none' or block.settings.block_icon_custom != blank
+            echo '<span class="inventory-icon available'
+            unless variant.available
+              echo ' hidden'
+            endunless
+            echo '">'
+              render 'icons', block: block, id: block.settings.block_icon, size: size
+            echo '</span>'         
+            echo '<span class="inventory-icon unavailable'
+            if variant.available
+              echo ' hidden'
+            endif
+            echo '">'
+              render 'icons', block: block, id: block.settings.block_icon_out, icon_color: block.settings.block_icon_color_out, icon_color_h: block.settings.block_icon_color_h_out, custom: block.settings.block_icon_custom_out, size: size
+            echo '</span>'
+          endif  
+          echo '<span class="inventory-availability-text">'
+            if variant.available    
+              if variant.inventory_management and variant.inventory_quantity > 0    
+                if variant.inventory_quantity < inventory_minimum
+                  if variant.inventory_policy == 'deny'
+                    echo 'product.item.availability.inventory_1_html' | t: inv: variant.inventory_quantity
+                  else
+                    echo 'product.item.availability.inventory_2_html' | t: inv: variant.inventory_quantity
+                  endif
+                else
+                  echo 'product.item.availability.in_stock' | t
+                endif                    
+              else
+                echo 'product.item.availability.in_stock' | t
+              endif                    
+            else
+              echo 'product.item.availability.out_of_stock' | t
+            endif
+          echo '</span>'                
+        echo '</span>'
+        echo '<span class="inventory-text inventory-transfer'
+        unless variant.incoming
+         echo ' hidden'
+        endunless
+        echo '">'
+          echo '<span class="inventory-icon">'
+            render 'icons', block: block, id: block.settings.block_icon_transfer, icon_color: block.settings.block_icon_color_transfer, icon_color_h: block.settings.block_icon_color_h_transfer, custom: block.settings.block_icon_custom_transfer, size: size_small
+          echo '</span>'
+          echo '<span class="inventory-transfer-text">'
+            assign today_date = 'now' | date: '%s'
+            assign delivery_date = variant.next_incoming_date | date: '%s'
+            assign date = variant.next_incoming_date | date: '%b %e'
+            if variant.next_incoming_date != blank and delivery_date > today_date
+              if variant.available
+                echo 'product.item.availability.inventory_more_html' | t: date: date
+              else
+                echo 'product.item.availability.inventory_in_html' | t: date: date
+              endif
+            else
+              echo 'product.item.availability.inventory_soon' | t
+            endif
+          echo '</span>'
+        echo '</span>'            
+      -%}
+    </p>            
+  </span>
+</div>

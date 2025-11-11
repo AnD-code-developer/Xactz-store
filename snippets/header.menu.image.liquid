@@ -1,0 +1,85 @@
+{%- liquid
+  assign link_type = blank
+  if link.type == 'collection_link' or link.type == 'product_link'
+    assign link_type = link.object
+  endif
+  if block.settings.menu_collection_images != "none"
+    if link.type == 'collection_link' 
+      assign image = link_type.image
+      if image == blank or block.settings.menu_collection_images == 'product'
+        assign image = link_type.products.first.featured_media.preview_image
+      endif
+    elsif link.type == 'product_link'
+      assign image = link_type.featured_media.preview_image
+    endif
+    if image != blank   
+      capture alt
+        if image.alt != blank
+          echo image.alt | escape
+        else
+          echo link_type.title | escape
+        endif
+      endcapture   
+      echo '<span class="product-item"><figure class="'
+      echo block.settings.menu_collection_images_insta_filter
+      echo ' product-item-image'
+      echo ' product-item-style-'
+      echo product_item_style
+      echo ' rounded">'
+      if is_mobile or menu_location == 'mobile'
+        assign size = 40
+        assign sizes = '40px'
+      else
+        if menu_slider
+          assign slider_column = column_link | minus: 0.5
+        else
+          assign slider_column = column_link | minus: 0
+        endif
+        case menu_style
+          when 'one'
+            assign columns = 1
+            assign columns_padding = 0
+          when 'two'
+            assign columns = 2
+            assign columns_padding = 10
+          when 'three'
+            assign columns = 4
+            assign columns_padding = 0
+          when 'four'
+            assign columns = 2.86
+            assign columns_padding = 14
+        endcase
+        if enable_promo
+          assign promo = 25
+          assign promo_gap = 20          
+          assign promo_width = 910
+        else
+          assign promo = 0
+          assign promo_gap = 0          
+          assign promo_width = 1240
+        endif
+        assign size = column_link | minus: 1 | times: 30 | minus: promo_width | times: -1 | divided_by: slider_column | minus: columns_padding | divided_by: columns
+        capture sizes
+          echo '(min-width: 1280px) '
+          echo size
+          echo 'px, calc((((('
+          echo 100 | minus: promo
+          echo 'dvw - '
+          echo promo_gap
+          echo 'px - 40px) - ('
+          echo column_link | minus: 1
+          echo ' * 30px)) / '
+          echo slider_column
+          echo ') - '
+          echo columns_padding
+          echo 'px ) / '
+          echo columns
+          echo ')'
+        endcapture
+      endif
+      render 'image.load', img_src: image, size: size, new_size: size, padding: padding, sizes: sizes, alt: alt, image_position: image_position, loop: true, crop: crop, lazy: 'eager'
+      render 'image.sizes', size: size
+      echo '</figure></span>'
+    endif
+  endif
+-%}

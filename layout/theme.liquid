@@ -1,0 +1,223 @@
+<!doctype html>
+{%- liquid
+  assign rtl = false
+  assign rtl_list = 'ae,ar,arc,bcc,bqi,ckb,dv,fa,glk,ha,he,kwh,ks,ku,mzn,nqo,pnb,ps,sd,ug,ur,yi' | split: ','
+  assign iso_code = localization.language.iso_code | split: '-' | first
+  if rtl_list contains iso_code
+    assign rtl = true
+  endif
+-%}
+<html class="{% unless request.page_type == 'password' %}no-js{% else %}js{% endunless %}" lang="{{ request.locale.iso_code }}" data-currency="{{ localization.country.currency.iso_code }}" dir="{% if rtl %}rtl{% else %}ltr{% endif %}">
+  <head>
+ {%- render 'ecom_header' -%}
+    {%- render 'head' -%}
+    {{ content_for_header }}      
+    {%- liquid
+      render 'javascript'
+      render 'schema'
+	-%}
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1/dist/panzoom/panzoom.css"
+/>
+  </head>
+  <body data-section-type="check" class="page-template-{% if request.page_type == 'page' or request.page_type == 'blog' or request.page_type == 'article' or request.page_type == 'search' or request.page_type == 'list-collections' or request.page_type == 'password' or request.page_type == '404' or request.page_type == blank %}template{% elsif request.page_type == 'collection' or request.page_type == 'search' %}collection{% elsif request.page_type == 'captcha' or request.page_type == 'policy' %}index{% else %}{{ template | split: '.' | first | split: '/' | first | replace: '_', '-' }}{% endif %} isDesktop{% if rtl %} rtl{% else %} ltr{% endif %}{% if settings.animation_enable %} animated animated-{{ settings.animation_title }} animated-{{ settings.animation_grid }}{% endif %}">
+    <div id="ajaxBusy" style="background:var(--color_background);content:'';height:100%;margin:0px;padding:0px;position:fixed;right:0;top:0;width:100%;z-index: 999999;"><div class="spinner"></div></div>
+    <a href="#content" title="{{ 'general.skipto' | t | escape }}" class="skip-to text-center">{{ 'general.skipto' | t }}</a>
+    <div class="product-alert">
+      <div class="product-alert-content container-inner">
+        <button type="button" class="product-alert-dismiss" aria-label="{{ 'general.form.close' | t | escape }}" data-modal-close>{%- render 'icons.theme', id: 'close', size: 18 -%}</button>
+        <div class="product-alert-message"></div>
+      </div>
+    </div>    
+    {% if request.page_type == 'password' %}
+      <main id="content" class="site-main">{{ content_for_layout }}</main>
+    {% else %}
+      <div class="body-slide">
+        {%- liquid
+          render 'noScript'
+          sections 'header-group'
+        -%}
+        <div class="body-slide-background" data-body-slide-background></div>        
+        <main id="content" class="site-main{% if request.page_type == 'index' %} index-wrapper{% endif %}">{{ content_for_layout }}</main>
+        <footer class="site-main"><!--ECOM-FOOTER-->{%-comment-%}eyUtIHNlY3Rpb25zICdmb290ZXItZ3JvdXAnIC0lfQ=={%-endcomment-%}{%- sections 'ecom-footer_footer' -%}<!--/ECOM-FOOTER--></footer>
+      </div>
+    {% endif %}
+    <div class="modal-container" data-modal-container>
+      <div role="dialog" class="modal" aria-labelledby="modal__heading" aria-modal="true" data-modal tab-index="-1">
+        <div class="modal__header-container relative">
+          <div class="modal__header" data-modal-header></div>
+          <button type="button" class="close-button" aria-label="{{ 'general.form.close' | t | escape }}" data-modal-close>{%- render 'icons.theme', id: 'close', size: 18 -%}</button>
+        </div>
+        <div class="modal__content scroll-bar-v" data-modal-content></div>
+      </div>
+    </div>
+    <div class="modal-background" data-modal-background></div>
+  <script id="FormJson"
+          type="application/json">
+      :host {    
+        --container-background-color: var(--color_background)!important;
+        --container-border-radius: 0!important;
+        --form-field-border-radius: 0!important;
+        --form-background-color: var(--color_background)!important;
+        --forms-accent-color: var(--color_accent)!important;
+        --forms-accent-color-hovered-modifier: var(--color_background)!important;
+        --forms-discount-code-color: var(--color_accent)!important;
+        --forms-discount-code-background-color-hover: var(--color_background)!important;
+        --forms-overlay-background-color: var(--color_background)!important;
+        --forms-overlay-background-opacity: 0.75!important;
+        --body-text-color: var(--color_text)!important;
+        --link-text-color: var(--color_border)!important;
+        --heading-text-color: var(--color_title_text)!important;
+        --form-error-color: var(--color_error)!important;
+        --form-text-color: var(--color_text)!important;
+        --form-placeholder-color: var(--color_text_modify_75)!important;
+        --form-background-color: var(--color_background)!important;
+        --button-text-color: var(--button_primary_text)!important;
+        --button-background-color: none!important;
+        --button-background-color-hovered-modifier: opacity(100%)!important;
+        --button-close-background-color: var(--color_background)!important;
+        --button-close-color: var(--color_error)!important;
+        --container-background-color: var(--color_background)!important;
+        --form-field-border: 0 0 0 1px var(--color_border)!important;
+        --form-field-border-focused: 0 0 0 1px var(--color_border)!important;
+        --button-border: var(--button_border) solid var(--button_primary_border)!important;
+        --form-field-border-radius: 0!important;
+        --button-border-radius: var(--button_corner)!important;
+        --container-border-radius: 0!important;
+        --button-padding: 15px!important;
+        --container-shadow: 0 0 0 1px var(--color_border)!important;
+        --input-label-top: 1.2em!important;
+      }
+      [data-layout="overlay"] [data-sizing="form-wrapper"] {
+        border: 1px solid var(--color_border)!important;
+      }    
+      [data-sizing="form-wrapper"] {
+        box-shadow: none!important;
+      }
+      ._grid_stahb_148._left_stahb_195 ._formContainerCloseButtonPosition_stahb_282,
+      ._grid_stahb_148._right_stahb_204 ._formContainerCloseButtonPosition_stahb_282 {
+        top: calc(var(--forms-padding-top) - 22px);
+        right: calc(var(--forms-padding-right) - 26px);
+      }
+      @supports not selector(::-webkit-scrollbar) {    
+        [data-sizing="form-wrapper"] {
+          scrollbar-color: var(--slider_color) var(--slider_color_modify_25)!important;
+          scrollbar-width: thin!important;
+        }        
+      }        
+      [data-sizing="form-wrapper"]::-webkit-scrollbar {
+        -webkit-appearance: none!important;
+        height:20px!important;
+        width: 20px!important;
+      }    
+      [data-sizing="form-wrapper"]::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 20px 20px var(--slider_color_modify_25)!important;
+        border: solid 9px transparent!important;
+        border-radius: 20px!important;
+      }    
+      [data-sizing="form-wrapper"]::-webkit-scrollbar-thumb {
+        box-shadow: inset 0 0 20px 20px var(--slider_color)!important;
+        border: solid 8px transparent!important;
+        border-radius: 20px!important;
+      }    
+      form > div,
+      form > fieldset {
+        margin: 0 0 10px!important;
+      }
+      button[type="submit"] {
+        background: none!important;
+        border: var(--button_border) solid var(--button_primary_border)!important;
+        border-radius: var(--button_corner)!important;
+        font-size: var(--body_font_size_12)!important;
+        letter-spacing: 1px!important;
+        line-height: 1!important;
+        outline: none!important;
+        overflow: hidden!important;
+        position: relative!important;
+        text-align: center!important;
+        text-decoration: none!important;
+        text-transform: uppercase!important;
+        transition: background .25s var(--ease_out_cubic), color .25s var(--ease_out_cubic), border-color .25s var(--ease_out_cubic), padding .25s var(--ease_out_cubic)!important;
+        z-index: 1!important;
+      }
+      button[type="submit"]:after {
+        background: var(--button_primary_background)!important;
+        bottom: 0!important;
+        content: ''!important;
+        right: 0!important;
+        top: 0!important;
+        position: absolute!important;
+        transition: background .25s var(--ease_out_cubic), left .25s var(--ease_out_cubic), width .25s var(--ease_out_cubic)!important;
+        width: 100%!important;
+        z-index: -1!important;
+      }
+      button[type="submit"]:hover {
+        color: var(--button_primary_background)!important;
+      }
+      button[type="submit"]:hover:after {
+        width: 0!important;
+      }
+      span[role="button"] svg {
+        height: 16px!important;
+        margin: 1px!important;
+        transition: all 125ms var(--ease_out_cubic)!important;
+        width: 16px!important;
+      }
+      span[role="button"]:hover svg {
+        height: 18px!important;
+        margin: 0!important;
+        width: 18px!important;
+      }
+      input[type="checkbox"],
+      input[type="radio"] {
+        -webkit-appearance: none!important;
+        -moz-appearance: none!important;
+        appearance: none!important;
+        border: 1px solid var(--color_border)!important;
+        height: 1rem!important;
+        padding: 2px!important;
+        transition: 250ms!important;
+        width: 1rem!important;
+      }
+      input[type="checkbox"]:checked,
+      input[type="radio"]:checked {
+        background: var(--color_text) content-box!important;
+        border-color: var(--color_border)!important;
+      }
+      [data-testid="date-birthday"] > div,
+      legend,
+      p._label_1yit2_10,
+      p._textBody_2aowh_10,
+      div._birthdayText_rzr7e_15,
+      div._textBody_2aowh_10 {
+        color: var(--color_label)!important;
+        font-size: var(--label_font_size_12)!important;
+        font-style: var(--label_font_style)!important;
+        font-weight: 700!important;
+      }
+      ._spinner_10n5y_7 svg path {
+        fill: var(--button_primary_background)!important;
+      }
+      button:focus-visible,  
+      [role="button"]:focus-visible,  
+      input:focus-visible,
+      textarea:focus-visible {
+        outline: 2px dotted var(--color_accent)!important;
+        outline-offset: -0.3rem!important;
+      }
+      button:focus-visible,  
+      [role="button"]:focus-visible,  
+      input[type="checkbox"]:focus-visible,
+      input[type="radio"]:focus-visible {
+        outline-offset: 0.3rem!important;
+      }    
+    </script>
+  {%- render "ecom_footer"-%}
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1/dist/panzoom/panzoom.umd.js"></script>
+</body>
+</html>
+<style>
+  div#shopify-section-sections--19482157088933__ecom-footer-footer {
+  display: none !important;}
+</style>

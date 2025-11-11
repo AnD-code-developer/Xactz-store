@@ -1,0 +1,449 @@
+{%- liquid
+  assign text_color = false
+  if section.settings.text_color.alpha != 0.0 and section.settings.text_color.alpha != blank
+    assign text_color = true
+    assign text_color_section = section.settings.text_color
+  endif
+  assign text_color_hover = false
+  if section.settings.text_color_hover.alpha != 0.0 and section.settings.text_color_hover.alpha != blank
+    assign text_color_hover = true
+    assign text_color_hover_section = section.settings.text_color_hover
+  endif
+  assign button_color = false
+  if section.settings.button_color.alpha != 0.0 and section.settings.button_color.alpha != blank
+    assign button_color = true
+    assign button_color_section = section.settings.button_color
+  endif
+  assign background_color = false
+  if section.settings.background_color.alpha != 0.0 and section.settings.background_color.alpha != blank
+    assign background_color = true
+    assign background_color_section = section.settings.background_color
+  endif
+  if section.settings.background_gradient != blank
+    assign background_color = true
+    assign background_color_section = section.settings.background_gradient
+  endif
+-%}
+{% style %}
+  .dynamic-section-{{ section.id }} {
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    --section-margin-bottom-mobile: {{ section.settings.margin_bottom_mobile }}px;
+    --section-margin-bottom-desktop: {{ section.settings.margin_bottom_desktop }}px;
+    {%- if text_color -%}
+      --color_title_text:{{ text_color_section }};
+      --color_text:{{ text_color_section }};
+      --color_text_modify_5:{{ text_color_section | color_modify: 'alpha', 0.5 }};
+      --color_label:{{ text_color_section }};
+      --button_primary_background:{{ text_color_section }};
+      --button_primary_border:{{ text_color_section }};
+      --button_secondary_border:{{ text_color_section }};
+      --button_secondary_text:{{ text_color_section }};
+      --slider_color:{{ text_color_section }};
+      --slider_color_modify_25:{{ text_color_section | color_modify: 'alpha', 0.25 }};
+    {%- endif -%}
+    {%- if text_color_hover -%}
+      --color_text_hover:{{ text_color_hover_section }};
+    {%- endif -%}
+    {%- if button_color -%}  
+      --button_primary_text:{{ button_color_section }};
+      --button_secondary_background:{{ button_color_section }};
+    {%- endif -%}
+    {%- if background_color -%}
+      --color_background_outline:{{ section.settings.background_color }};
+      --color_background:{{ background_color_section }};
+      --color_background_section:{{ background_color_section }};
+    {%- endif -%}
+  }
+{% endstyle %}
+<div class="dynamic-section dynamic-section-{{ section.id }} section-background">
+  <section id="customer" 
+           data-section-type="customer" 
+           class="customer-template container container-inner">
+    <div class="section-padding-top section-padding-bottom section-margin-bottom{% if section.settings.padding_border %} section-border{% endif %}">
+      <div class="template-account full-width">
+        {%- liquid
+          capture page_title
+            render 'account.greeting'
+          endcapture
+          render 'block.masthead', section: section, page_title: page_title
+        -%}
+        <div class="account-top account-columns">
+          <div class="account-column account-info">
+            <h3 class="section-title-30">{% if customer.name != blank %}{{ customer.name }}{% else %}{{ 'general.form.email' | t }}{% endif %}</h3>
+            <div class="account-options">              
+              <a href="{{ routes.account_logout_url }}" title="{{ 'customers.account.logout' | t | escape }}" class="btn btn-primary account-register-button-submit">{{ 'customers.account.logout' | t }}</a>
+              {% form 'recover_customer_password', id: 'recover-email-form', class: 'form-validation' %}
+              {%- render 'form.errors', form: form -%}              
+                <label for="recover-email" class="visually-hidden">{{ 'customers.account.reset' | t }}</label>
+                <input id="recover-email" 
+                       class="hidden" 
+                       type="email" 
+                       autocorrect="off" 
+                       autocapitalize="off" 
+                       autocomplete="email" 
+                       pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                       name="email" 
+                       value="{{ customer.email }}" />
+                <button id="recover-email-button" class="btn btn-secondary auto-width" type="submit" aria-label="{{ 'customers.account.reset' | t | escape }}">{{ 'customers.account.reset' | t }}</button>
+              {% endform %}
+              <p class="reset"><small>{{ 'customers.account.reset_html' | t: email: customer.email }}</small></p>
+              <p class="email">{{ customer.email }} &#8226; <small class="emailupdate"><a href="mailto:{{ shop.email }}?Subject=E-Mail%20Update" title="{{ 'customers.account.update' | t | escape }}" target="_blank">{{ 'customers.account.update' | t }}</a></small></p>
+            </div>          
+            {% if customer.default_address != nil %}
+              <div class="account-address">
+                <h3 class="section-title-30">{{ 'customers.account.default_address' | t }}</h3>
+                {%- render 'account.address', address: customer.default_address, account: true %}
+              </div>
+            {% endif %}
+            {% if customer.addresses_count == 0 %}
+              <a href="{{ routes.account_addresses_url }}" title="{{ 'customers.account.new_address_link' | t | escape }}" class="btn btn-primary btn-block">{{ 'customers.account.new_address_link' | t }}</a>
+            {% else %}
+              <a href="{{ routes.account_addresses_url }}" title="{{ 'customers.account.view_addresses' | t: count: customer.addresses_count | escape }}" class="btn btn-{% if customer.default_address != nil %}secondary{% else %}primary{% endif %} btn-block">{{ 'customers.account.view_addresses' | t: count: customer.addresses_count }}</a>
+            {% endif %}
+          </div>
+          <div class="account-column account-order-history table-scroll">
+            <h2 class="section-title-30">{{ 'customers.account.order_history' | t }}</h2>
+            {% if customer.orders.size > 0 %}
+              {% paginate customer.orders by 5 %}
+                <div class="table-container no-pad scroll-bar-h">
+                  <table class="account-order-history-orders no-container">
+                    <thead>
+                      <tr>
+                        <th class="first">{{ 'customers.account.order' | t }}</th>
+                        <th>{{ 'customers.account.payment' | t }}</th>
+                        <th>{{ 'customers.account.fulfillment' | t }}</th>
+                        <th class="last">{{ 'customers.account.total' | t }}</th>
+                      </tr>
+                    </thead>      
+                    <tbody>
+                      {% for order in customer.orders %}
+                        <tr class="{% if order.cancelled %}cancelled_order{% endif %}">
+                          <td class="order-number first">
+                            {%- liquid
+                              capture order_title
+                                echo 'customers.account.order' | t
+                                echo ' '
+                                echo order.name
+                              endcapture
+                            -%}
+                            {{ order.name | link_to: order.customer_url, title: order_title }}
+                            <span class="date">- {{ order.created_at | date: format: settings.month_day_year }}</span>
+                          </td>
+                          <td class="payment-status {{ order.financial_status }}">
+                            {{ order.financial_status_label }}
+                          </td>
+                          <td class="fulfillment-status {{ order.fulfillment_status }}">
+                            {{ order.fulfillment_status_label }}
+                          </td>
+                          <td class="total last"><span class="money">{% if settings.currency_enable %}{{ order.total_price | money_with_currency }}{% else %}{{ order.total_price | money }}{% endif %}</span></td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>      
+                  </table>
+                </div>
+                {%- assign title = 'customers.account.order_history' | t -%}
+                {%- render 'pagination', paginate: paginate, title: title -%}
+              {% endpaginate %}
+            {% else %}
+              <p class="empty">{{ 'customers.account.empty' | t }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {%- liquid
+          for block in section.blocks
+            render block
+          endfor
+        -%}
+      </div>
+    </div>
+  </section>
+</div>
+{% schema %}
+  {
+    "name": "t:sections.section.titles.account.content",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.text.title.label"
+      },
+      {
+        "id": "title_enable",
+        "type": "checkbox",
+        "label": "t:sections.text.enable.label",
+        "default": true
+      },
+      {
+        "id": "title_h1",
+        "type": "checkbox",
+        "label": "t:sections.text.heading_one.label",
+        "default": true,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "select",
+        "id": "title_font",
+        "label": "t:sections.text.heading_font.main.label",
+        "options": [
+          {
+            "value": "primary",
+            "label": "t:sections.text.heading_font.primary.label"
+          },
+          {
+            "value": "secondary",
+            "label": "t:sections.text.heading_font.secondary.label"
+          }
+        ],
+        "default": "primary",
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "select",
+        "id": "title_outline",
+        "label": "t:sections.text.outline.heading_outline.label",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:sections.text.outline.option_1.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          },          
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          }
+        ],
+        "default": "none",
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "id": "title_size",
+        "type": "range",
+        "label": "t:sections.text.heading_size.label",
+        "min": 18,
+        "max": 240,
+        "step": 6,
+        "unit": "px",
+        "default": 42,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "responsive_size",
+        "label": "t:sections.text.responsive_size.label",
+        "default": true,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "id": "title_sub",
+        "type": "text",
+        "label": "t:sections.text.subheading.label"
+      },
+      {
+        "type": "select",
+        "id": "title_sub_font",
+        "label": "t:sections.text.heading_font.sub.label",
+        "options": [
+          {
+            "value": "primary",
+            "label": "t:sections.text.heading_font.primary.label"
+          },
+          {
+            "value": "secondary",
+            "label": "t:sections.text.heading_font.secondary.label"
+          }
+        ],
+        "default": "secondary",
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "type": "select",
+        "id": "title_sub_outline",
+        "label": "t:sections.text.outline.subheading_outline.label",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:sections.text.outline.option_1.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          },          
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          }
+        ],
+        "default": "none",
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "id": "title_sub_size",
+        "type": "range",
+        "label": "t:sections.text.subheading_size.label",
+        "min": 18,
+        "max": 240,
+        "step": 6,
+        "unit": "px",
+        "default": 30,
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "id": "text_color",
+        "type": "color",
+        "label": "t:sections.text.color.label"
+      },
+      {
+        "id": "text_color_hover",
+        "type": "color",
+        "label": "t:sections.text.hover.label"
+      },
+      {
+        "id": "button_color",
+        "type": "color",
+        "label": "t:sections.section.settings.button_color.label"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.section.name.content"
+      },
+      {
+        "id": "background_color",
+        "type": "color",
+        "label": "t:sections.section.settings.background_color.label"
+      },
+      {
+        "id": "background_gradient",
+        "type": "color_background",
+        "label": "t:sections.section.settings.background_gradient.label"
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.mobile.content"
+      },
+      {
+        "id": "padding_top_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 20
+      },
+      {
+        "id": "padding_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "id": "margin_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 10
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.desktop.content"
+      },
+      {
+        "id": "padding_top_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 40
+      },
+      {
+        "id": "padding_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "id": "margin_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "padding_border",
+        "type": "checkbox",
+        "label": "t:sections.section.settings.border.label",
+        "default": false
+      }
+    ],
+    "blocks": [
+      {
+        "type": "@app"
+      }
+    ]
+  }
+{% endschema %}

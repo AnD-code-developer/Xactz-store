@@ -1,0 +1,195 @@
+{% if section.settings.video != blank %}
+  {% capture final_video %}
+    {%- liquid       
+      if section.settings.image_desktop != blank
+        if is_section
+          if full_width
+            assign desktop_size = section.settings.image_desktop.width
+            assign desktop_sizes = '100dvw'
+          else
+            assign desktop_size = 1240
+            assign desktop_sizes = '(min-width: 1280px) 1240px, (min-width: 960px) calc(100vw - 40px), 100dvw'
+          endif
+        endif
+        if video_background
+          assign background_class = ' image hidden'
+          render 'block.images', section: section, block: section, desktop_size: desktop_size, desktop_sizes: desktop_sizes, image_background: image_background, full_width: full_width, lazy: lazy, has_onboard: true, class: background_class
+        else    
+          assign img_src = block.settings.image_desktop
+          capture alt
+            if img_src.alt != blank
+              echo img_src.alt | escape
+            else
+              echo img_src | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+            endif
+          endcapture                
+          echo '<figure class="'
+          echo block.settings.insta_filter                  
+          echo ' figure video-placeholder youtube-container no-container">'
+            render 'image.load', img_src: img_src, size: size, new_size: size, sizes: sizes, padding: 56.25, alt: alt, background: true, lazy: lazy          
+            echo '<button aria-label="'
+            echo 'general.video' | t | escape
+            echo '" data-video-play-button>'
+              render 'icons.theme', id: 'play-thumb'
+            echo '<span class="spinner"></span></button>'              
+          echo '</figure>'    
+        endif
+      endif
+      if is_section
+        if full_width
+          assign size = 1900
+        else
+          assign size = 1240
+        endif
+        if image_background
+          render 'image.sizes', note: true,  mobile_size: 768, desktop_size: size, padding_mobile: section.settings.section_height_mobile, padding_desktop: section.settings.section_height_desktop, new_size_mobile: 768, new_size_desktop: 1240
+        else
+          render 'image.sizes', note: true, mobile_size: 768, desktop_size: size
+        endif
+      else
+        render 'image.sizes', size: size            
+      endif
+    -%}    
+    <section data-section-id="{{ section.id }}" 
+             data-section-type="video-{{ section.id }}"
+             data-video-type="{% if video_background %}background{% else %}block{% endif %}"
+             {% if video_background %}
+               {% if section.settings.video != blank %}
+                 data-url="{{ 'script.video.js' | asset_url }}"
+               {% endif %}
+             {% else %}
+               {% if section.settings.video != blank and section.settings.image_desktop != blank %}
+                 data-url="{{ 'script.video.js' | asset_url }}"
+               {% endif %}
+             {% endif %}
+             class="relative{% if full_width %} section-skip{% endif %}"
+             data-video {{ block.shopify_attributes }}>    
+      {% if video_background %}        
+        <figure class="{{ section.settings.insta_filter }} section-layout-wrapper image-height-desktop video loading">
+          {%- liquid
+            if image_background
+              echo '<div class="height-padding-custom desktop">'
+              assign video_class = 'lazybackground'
+            endif
+            if section.settings.video != blank
+              echo '<div class="spinner"></div>'
+              echo section.settings.video | video_tag: autoplay: false, loop: true, muted: true, controls: false, preload: auto, class: video_class
+            endif
+            if image_background
+              echo '</div>'
+            endif
+          -%}
+        </figure>
+        {% if section.settings.link != blank %}
+          <a class="section-layout-link keyed-inside" href="{{ section.settings.link }}"{% if section.settings.link_seo != blank %} title="{{ section.settings.link_seo | escape }}"{% endif %}></a>
+        {% endif %}        
+      {% else %}    
+        {%- liquid
+          assign url = block.settings.video | default: 'https://www.youtube.com/watch?v=_9VUPq3SxOc'
+          assign platform = ''
+          if url.type == 'youtube'
+            assign platform = 'youtube'
+          elsif url.type == 'vimeo'
+            assign platform = 'vimeo'
+          endif
+        -%}
+        <figure class="section-layout-wrapper video loading" data-video="{{ platform }}">
+          <div class="youtube-container no-container" data-{{ platform }}>              
+            {% if platform == 'youtube' %}
+              <iframe src="https://www.youtube.com/embed/{{ url.id }}?controls=0{% if block.settings.enable_loop %}&loop=1{% endif %}&modestbranding=1&playlist={{ url.id }}&rel=0&showinfo=0" 
+                      data-src="https://www.youtube.com/embed/{{ url.id }}?autoplay=1&controls=0{% if block.settings.enable_loop %}&loop=1{% endif %}&modestbranding=1&playlist={{ url.id }}&rel=0&showinfo=0" 
+                      allowfullscreen 
+                      class="no-container"
+                      title="{% if block.settings.link_seo != blank %}{{ block.settings.link_seo | escape }}{% else %}{{ url.type }}{% endif %}"></iframe>
+            {% else %}
+              <iframe src="https://player.vimeo.com/video/{{ url.id }}?{%- if block.settings.enable_loop -%}&loop=1{%- endif -%}&title=0&byline=0&portrait=0" 
+                      data-src="https://player.vimeo.com/video/{{ url.id }}?&autoplay=1{%- if block.settings.enable_loop -%}&loop=1{%- endif -%}&title=0&byline=0&portrait=0" 
+                      allow="autoplay; encrypted-media"
+                      allowfullscreen 
+                      class="no-container"
+                      title="{% if block.settings.link_seo != blank %}{{ block.settings.link_seo | escape }}{% else %}{{ url.type }}{% endif %}"></iframe>
+            {% endif %}      
+          </div>
+        </figure>
+      {% endif %}      
+    </section>
+  {% endcapture %}  
+  {% if is_block %}
+    {%- liquid
+      assign use_style = false
+      if video_background
+        assign use_style = true
+      endif
+      assign play_background = false
+      if block.settings.play_background.alpha != 0.0 and block.settings.play_background.alpha != blank
+        assign use_style = true
+        assign play_background = true
+        assign play_background_block = block.settings.play_background
+      endif
+      assign play_arrow = false
+      if block.settings.play_arrow.alpha != 0.0 and block.settings.play_arrow.alpha != blank
+        assign use_style = true
+        assign play_arrow = true
+        assign play_arrow_block = block.settings.play_arrow
+      endif
+      assign line_color = false
+      if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+        assign use_style = true
+        assign line_color = true
+        assign line_color_block = block.settings.line_color
+      endif     
+      assign text_background_color = false
+      assign text_background_opacity = block.settings.text_background_opacity | times: 0.01
+      if block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+        assign use_style = true
+        assign text_background_color = true
+        assign text_background_color_block = block.settings.text_background_color
+      endif
+      if block.settings.text_background_gradient != blank
+        assign use_style = true
+        assign text_background_color = true
+        assign text_background_color_block = block.settings.text_background_gradient
+      endif       
+    -%}
+    {% if use_style %}
+      {% style %}
+        .dynamic-block-{{ block.id }} {
+          {%- if video_background -%}
+            --section_height_mobile: {{ section.settings.section_height_mobile }}vh; 
+            --section_height_desktop: {{ section.settings.section_height_desktop }}vh; 
+          {%- endif -%}
+          {%- if play_background -%}  
+            --play_background:{{ play_background_block }};
+          {%- endif -%}
+          {%- if play_arrow -%}  
+            --play_arrow:{{ play_arrow_block }};
+          {%- endif -%}
+          {%- if line_color -%}
+            --color_border:{{ line_color_block }};
+          {%- endif -%}
+          {%- if text_background_color -%} 
+            --color_background_outline:{{ block.settings.text_background_color }};
+            --text_overlay:{{ text_background_color_block }};
+            --text_overlay_opacity:{{ text_background_opacity }};
+          {%- endif -%}
+        }
+      {% endstyle %}
+    {% endif %}    
+    <article class="dynamic-block-{{ block.id }} section-card{% if is_collection %} collection-center{% if video_background %} video-background{% endif %}{% endif %}{% if block.settings.include_border %} section-card-borders{% endif %} slide section-card-{{ layout_y | default: 'middle' }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout{% if build or is_collection %}{% if text_background_opacity > 0 and text_background_color %} section-layout-card-overlay-padding{% endif %}{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}" {{ block.shopify_attributes }}>
+      {%- liquid
+        if build or is_collection
+          if text_background_opacity > 0 and text_background_color
+            echo '<div class="section-layout-card-overlay"></div>'
+          endif
+        endif
+        echo '<div class="section-layout-card-wrapper skip">'
+          echo '<div class="section-layout-card section-layout-card-no-padding">'
+            echo final_video
+          echo '</div>'
+        echo '</div>'
+      -%}
+    </article>
+  {% else %}
+    {{ final_video }}
+  {% endif %}  
+{% endif %}

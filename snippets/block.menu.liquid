@@ -1,0 +1,130 @@
+{% if block.settings.menu != blank or footer and shop.customer_accounts_enabled %}
+  {%- liquid
+    assign menu = linklists[block.settings.menu]
+    if block.settings.title != blank
+      assign block_title = block.settings.title
+    elsif footer
+      assign block_title = 'customers.account.header' | t
+    else
+      assign block_title = menu.title
+    endif
+  -%}
+  <nav aria-label="{{ block_title }}" class="dynamic-block-{{ block.id }} section-card{% if block.settings.include_border %} section-card-borders{% if text_background_opacity > 0 and text_background_color %} section-card-borders-no-padding{% endif %}{% endif %} slide section-card-{{ section.settings.layout_y | default: 'top' }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} text-{{ block.settings.text_alignment | default: 'left' }} {{ class }} section-layout{% unless is_footer %}{% unless ignore %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}{% endunless %}{% endunless %}" {{ block.shopify_attributes }}>
+    <div class="section-layout-card-wrapper skip">
+      <div class="section-layout-card{% unless text_background_opacity > 0 and text_background_color %} section-layout-card-no-padding{% endunless %}">
+          {%- liquid
+            if text_background_opacity > 0 and text_background_color
+              echo '<div class="section-layout-card-overlay"></div>'
+            endif
+            unless ignore
+              echo '<h3 class="block-element section-title section-title-'
+              echo block.settings.title_font | default: 'primary'
+              echo ' body-font-'
+              echo block.settings.title_size
+              echo ' '
+              echo block.settings.title_outline | default: 'none'
+              echo '">'
+              echo block_title
+              echo '</h3>'
+            endunless
+            if block.settings.content != blank
+              echo '<div class="block-element section-layout-card-content'
+              if block.settings.text_border
+              echo ' text-border'
+              endif
+              echo ' body-font-'
+              echo block.settings.text_size
+              echo '">'
+              echo block.settings.content
+              echo '</div>'
+            endif
+            echo '<ul class="block-element block-menu">'
+            unless footer             
+              for link in menu.links
+                echo '<li>'
+                  echo '<a href="'
+                  echo link.url
+                  echo '" title="'
+                  echo link.title | escape
+                  echo '"'
+                  if link.url contains 'http://' or link.url contains 'https://'                
+                    echo ' target="_blank"'
+                  endif
+                  echo ' class="underline body-font-'
+                  echo block.settings.link_size
+                  echo '">'
+                  echo link.title
+                  echo '</a></li>'
+              endfor
+            else
+              if customer
+                echo '<li class="footnav-menu-link"><a href="'
+                echo routes.account_url
+                echo '" title="'
+                render account.greeting
+                echo '" class="underline body-font-'
+                echo block.settings.link_size
+                echo '">'
+                  render account.greeting
+                echo '</a></li><li class="footnav-menu-link"><a href="'
+                echo routes.account_url
+                echo '" title="'
+                echo 'customers.account.order_history' | t | escape
+                echo '" class="underline body-font-'
+                echo block.settings.link_size
+                echo '">'
+                  echo 'customers.account.order_history' | t | escape
+                echo '</a></li><li class="footnav-menu-link"><a href="'
+                echo routes.account_addresses_url
+                echo '" title="'
+                if customer.addresses_count == 0
+                  echo 'customers.account.new_address_link' | t | escape
+                else
+                  echo 'customers.account.view_addresses' | t: count: customer.addresses_count | escape
+                endif
+                echo '" class="underline body-font-'
+                echo block.settings.link_size
+                echo '">'
+                  if customer.addresses_count == 0
+                    echo 'customers.account.new_address_link' | t | escape
+                  else
+                    echo 'customers.account.view_addresses' | t: count: customer.addresses_count | escape
+                  endif
+                echo '</a></li><li class="footnav-menu-link"><a href="'
+                echo routes.account_logout_url
+                echo '" title="'
+                echo 'customers.account.logout' | t | escape
+                echo '" class="underline body-font-'
+                echo block.settings.link_size
+                echo '">'
+                  echo 'customers.account.logout' | t
+                echo '</a></li>'
+              else
+                echo '<li class="footnav-menu-link"><a href="'
+                echo routes.account_login_url
+                echo '" title="'
+                echo 'customers.account.login' | t | escape
+                echo '" class="underline body-font-'
+                echo block.settings.link_size
+                echo '">'
+                  echo 'customers.account.login' | t
+                echo '</a></li>'
+                if shop.customer_accounts_optional
+                  echo '<li class="footnav-menu-link"><a href="'
+                  echo routes.account_register_url
+                  echo '" title="'
+                  echo 'customers.register.submit' | t | escape
+                  echo '" class="underline body-font-'
+                  echo block.settings.link_size
+                  echo '">'
+                    echo 'customers.register.submit' | t
+                  echo '</a></li>'
+                endif
+              endif
+            endunless
+            echo '</ul>'
+          -%}
+      </div>
+    </div>
+  </nav>  
+{% endif %}

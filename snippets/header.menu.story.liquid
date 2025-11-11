@@ -1,0 +1,19 @@
+{%- liquid
+  echo '<div class="contactbar-layout section-layout">'
+    if block.settings.image_desktop != blank or block.settings.image_mobile != blank
+      assign has_image = true
+      if is_mobile
+        render 'block.map', section: block, block: block, full_width: false, menu: true, mobile_menu: true, story: true, build_background: true, link: link, blocks_index: 1, blocks_size: 2, blocks_zindex: 1
+      else
+        render 'block.map', section: block, block: block, full_width: false, menu: true, desktop_menu: true, story: true, build_background: true, link: link, blocks_index: 1, blocks_size: 2, blocks_zindex: 1
+      endif
+    endif    
+    echo '<div class="contactbar-items story'
+    if has_image
+      echo ' contactbar-hasmap'
+    endif
+    echo '">'
+      render 'block.image_text', section: section, block: block, menu_story: true
+    echo '</div>'
+  echo '</div>'
+-%}

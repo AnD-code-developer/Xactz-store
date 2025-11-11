@@ -1,0 +1,54 @@
+{% assign enable_slide = block.settings.enable_slide %}
+<div class="content-block{% if enable_slide %} content-slide{% endif %}"{% if enable_slide %} data-content-slide{% endif %} {{ block.shopify_attributes }}>  
+  {%- liquid
+    if enable_slide
+      assign heading = block.settings.heading
+      capture title
+        if heading != blank
+          echo heading
+        else
+          echo 'general.general.click_open' | t
+        endif
+      endcapture
+      render 'block.button', block: block, title: title, is_ignore: true
+    endif
+  -%}
+  <div class="content-slide-content" data-height>
+    <div class="content-slide-space">
+      {% if title != blank and enable_slide == false %}
+        <div class="label">{{ title }}</div>
+      {% endif %}
+      {% if block.settings.link_text != blank %}
+        {%- liquid
+          capture url
+            echo 'mailto:?subject='
+            echo block.settings.subject | replace: ' ', '%20'
+            echo '&body='
+            echo block.settings.body | replace: ' ', '%20'
+            echo '%20'
+            echo shop.url
+            echo routes.cart_url
+            echo '/'
+            for line_item in cart.items
+              echo line_item.variant_id
+              echo ':'
+              echo line_item.quantity
+              unless forloop.last
+                echo ','
+              endunless
+            endfor
+            echo '?storefront=true'
+          endcapture
+        -%}
+        {% if block.settings.link_style == 'text' %}
+          <a href="{{ url }}" role="menuitem" title="{{ block.settings.link_text }}" class="link-group{% if enable_slide %} bottompad{% endif %}" target="_blank">
+            <span><span class="link-text">{{ block.settings.link_text }}</span></span>
+            <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+          </a>
+        {% else %}
+          <a href="{{ url }}" title="{{ block.settings.link_text }}" class="btn {% if block.settings.link_style == 'primary' %}btn-primary{% else %}btn-secondary{% endif %}{% if enable_slide %} bottompad{% endif %} auto-width" target="_blank">{{ block.settings.link_text }}</a>
+        {% endif %} 
+      {% endif %}      
+    </div>
+  </div>    
+</div>

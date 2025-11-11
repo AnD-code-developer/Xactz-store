@@ -1,0 +1,134 @@
+<article class="{% if is_collection %}dynamic-block-{{ block.id }} section-layout {% endif %}product-item {% if section.settings.image_location == 'inline' %}collection-list {% endif %}section-card slide{% if section.settings.include_border %} section-card-borders{% endif %} text-{{ section.settings.text_alignment }}{% if build %} dynamic-block-{{ block.id }} section-card-{{ layout_y }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout{% if text_background_opacity > 0 and text_background_color %} section-layout-card-overlay-padding{% endif %}{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}" {{ block.shopify_attributes }}>
+   {%- liquid
+    if text_background_opacity > 0 and text_background_color
+      echo '<div class="section-layout-card-overlay"></div>'
+    endif
+  -%}  
+  {% if collection.image or collection.products.first.featured_media.preview_image %}
+    {%- liquid       
+      if collection.image != blank and section.settings.image_type == 'collection'
+        assign img_src = collection.image
+      else
+        assign img_src = collection.products.first.featured_media.preview_image
+      endif    
+      capture alt
+        if img_src.alt != blank
+          echo img_src.alt | escape
+        else
+          echo collection.title | escape
+        endif
+      endcapture
+      if lazy_total != blank
+        if forloop.index <= lazy_total
+          assign lazy = lazy
+        else
+          assign lazy = 'lazy'
+        endif
+      endif
+      assign crop = section.settings.enable_image_crop    
+      if image_ratio
+        assign product_item_style = section.settings.product_item_style
+        if section.settings.enable_image_crop and product_item_style != 'natural'
+          assign product_item_style = product_item_style | prepend: 'cropped-'
+        endif
+        case section.settings.product_item_style
+          when 'natural'
+            assign padding = img_src.aspect_ratio | times: 100
+            assign crop = false
+          when 'small'
+            assign padding = 75
+          when 'medium'
+            assign padding = 100
+          when 'large'
+            assign padding = 150
+        endcase
+      endif
+    -%}
+    <div class="relative section-card-figure text-center">
+      <figure class="{% if image_ratio %}product-item-image product-item-style-{{ product_item_style }}{% else %}height-padding-{{ padding }}{% endif %}{% if section.settings.image_rounded %} rounded{% endif %}">
+        {%- liquid
+          if image_ratio and section.settings.product_item_style == 'natural'
+            assign new_padding = 'original'
+          else
+            assign new_padding = padding
+          endif
+          render 'image.sizes', size: size, padding: new_padding, new_size: size
+        -%}
+        <a href="{{ collection.url }}" title="{{ collection.title | escape }}" class="{{ section.settings.insta_filter }}" tabindex="-1">
+          {%- liquid
+            if image_ratio
+              render 'image.load', img_src: img_src, size: size, new_size: size, padding: padding, image_position: section.settings.image_position, sizes: sizes, alt: alt, loop: true, crop: crop, lazy: lazy
+            else
+              if padding == 'original' or section.settings.product_item_style == 'natural'
+                render 'image.load', img_src: img_src, size: size, sizes: sizes, alt: alt, lazy: lazy
+              else
+                render 'image.load', img_src: img_src, size: size, new_size: size, padding: padding, sizes: sizes, alt: alt, image_position: section.settings.image_position, background: true, lazy: lazy
+              endif
+            endif
+          -%}
+        </a>
+      </figure>
+    </div>
+  {% endif %}
+  <div class="section-card-content">
+    <h3 class="section-card-title"><a href="{{ collection.url }}" title="{{ collection.title | escape }}" class="underline keyed inside">{{ collection.title }}</a></h3>
+    {%- liquid
+      if section.settings.show_description and collection.description != blank
+        echo '<div class="section-card-rte">'
+          echo collection.description | truncatewords: section.settings.show_description_limit
+        echo '</div>'
+      endif
+      if section.settings.show_products
+        echo '<div class="section-card-products section-card-products-'
+              echo section.settings.items_count_per_row
+              echo ' text-'
+              echo section.settings.text_alignment
+              echo '">'
+          for product in collections[collection.handle].products limit: section.settings.items_count
+            echo '<div class="relative section-card-products-'
+            echo section.settings.items_count_per_row
+            echo '">'
+              render 'image.sizes', size: products_size
+              echo '<figure class="product-item-image product-item-style-medium"><a href="'
+              unless settings.seo
+                echo product.url | within: collection
+              else
+                echo product.url
+              endunless
+              echo '" title="'
+              echo product.title | escape
+              echo '">'
+                if product.featured_media
+                  capture alt
+                    if product.featured_media.preview_image.alt != blank
+                      echo product.featured_media.preview_image.alt | escape
+                    else
+                      echo product.title | escape
+                    endif
+                  endcapture
+                  render 'image.load', img_src: product.featured_media.preview_image, size: products_size, new_size: products_size, padding: 100, sizes: products_sizes, alt: alt, loop: true, crop: false, lazy: lazy
+                elsif settings.product_item_placeholder != blank
+                  capture alt
+                    if settings.product_item_placeholder.alt != blank
+                      echo settings.product_item_placeholder.alt | escape
+                    else
+                      echo product.title | escape
+                    endif
+                  endcapture
+                  render 'image.load', img_src: settings.product_item_placeholder, size: products_size, new_size: products_size, padding: 100, image_position: '50-50', sizes: products_sizes, alt: alt, loop: true, crop: true, lazy: lazy
+                else          
+                  assign index = forloop.index0 | modulo: 4 | plus: 1
+                  echo 'product-apparel-' | append: index | placeholder_svg_tag: 'placeholder-svg'
+                endif
+              echo '</a></figure>'
+            echo '</div>'
+          endfor            
+        echo '</div>'
+      endif
+    -%}
+    <a href="{{ collection.url }}" title="{{ collection.title | escape }}" class="link-group" tabindex="-1">
+      <span><span class="link-text">{% if section.settings.show_products %}{{ 'collection.item.cta2' | t | escape }}{% else %}{{ 'collection.item.cta' | t | escape }}{% endif %}</span></span>
+      <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+    </a>
+  </div>  
+</article>

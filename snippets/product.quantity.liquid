@@ -1,0 +1,194 @@
+{%- liquid
+  if is_product
+    assign product = product.selected_or_first_available_variant
+  else
+    assign product = variant
+  endif   
+  if product.quantity_rule.increment > 1 or product.quantity_rule.min > 1 or product.quantity_rule.max != null
+    assign quantity_rule = true
+  else
+    assign quantity_rule = false
+  endif
+-%}
+<div class="quantity-block-container">
+  <div id="quantity-container-{{ block.id }}"
+       data-quantity-container
+       data-variant="{{ variant.id }}"
+       data-section="{{ section.id }}"
+       class="quantity-container">  
+    {%- liquid
+      assign name = input_name | default: 'quantity'      
+      assign item_count = cart | item_count_for_variant: variant.id
+      if variant.inventory_management and variant.inventory_policy != 'continue'
+       if product.quantity_rule.max != null
+         assign qrm = product.quantity_rule.max | minus: item_count
+         assign viq = variant.inventory_quantity | minus: item_count       
+         if viq < qrm
+           assign item_max = viq
+         else
+           assign item_max = qrm
+         endif       
+       else
+         assign item_max = variant.inventory_quantity | minus: item_count
+       endif       
+      else
+       if product.quantity_rule.max != null
+         assign item_max = product.quantity_rule.max | minus: item_count
+       else
+         assign item_max = variant.inventory_quantity | minus: item_count
+       endif       
+      endif
+      if item_max <= 0
+        assign item_max = 1
+      endif
+      capture svg_size
+        if size
+          echo size
+        else
+          echo '16'
+        endif
+      endcapture
+    -%}
+    <div id="quantity-{{ block.id }}" 
+         class="quantity" 
+         data-quantity 
+         data-qty-vol="{% if quantity_rule or product.quantity_price_breaks.size > 0 %}true{% else %}false{% endif %}"
+         {{ block.shopify_attributes }}>      
+      <button class="quantity-decrement keyed-skip" 
+              type="button" 
+              aria-label="{{ 'general.form.decrement' | t | escape }}" 
+              data-quantity-decrement
+              {% unless input_name != blank %}disabled{% endunless %}>{%- render 'icons.theme', id: 'minus', size: svg_size -%}</button>    
+      <label class="visually-hidden"
+             for="quantity-{{ section.id }}{{ variant.id }}">{{ 'general.form.input_quantity' | t }}</label>
+      <input id="quantity-{{ section.id }}{{ variant.id }}"
+             class="quantity-input{% if sticky %} sticky{% endif %}" 
+             type="number" 
+             name="{{ name | escape }}"
+             min="{% if value %}0{% else %}{% unless variant.available %}0{% else %}{% if product.quantity_rule.increment > 1 %}{{ product.quantity_rule.min }}{% else %}1{% endif %}{% endunless %}{% endif %}" 
+             {% if product.quantity_rule.max != null or variant.inventory_management and variant.inventory_policy != 'continue' %} max="{% if is_product %}{{ item_max }}{% else %}{{ variant.inventory_quantity }}{% endif %}"{% endif %} 
+             value="{% if value %}{{ value }}{% else %}{% unless variant.available %}0{% else %}{% if product.quantity_rule.min > 1 %}{{ product.quantity_rule.min }}{% else %}1{% endif %}{% endunless %}{% endif %}" 
+             data-quantity-step="{% if product.quantity_rule.increment > 1 %}{{ product.quantity_rule.increment }}{% else %}1{% endif %}"
+             data-quantity-input>    
+      <button class="quantity-increment keyed-skip" 
+              type="button" 
+              aria-label="{{ 'general.form.increment' | t | escape }}" 
+              data-quantity-increment{% if variant.inventory_management and variant.inventory_policy != 'continue' and variant.inventory_quantity == 1 or value >= variant.inventory_quantity %} disabled{% else %}{% unless variant.available %} disabled{% endunless %}{% endif %}>{%- render 'icons.theme', id: 'plus', size: svg_size -%}</button>
+    </div>
+    {%- liquid
+      if is_product
+        assign cart_count = cart | item_count_for_variant: product.id
+        echo '<div id="quantity-cart-'
+        echo block.id
+        echo '" '
+        unless cart_count > 0
+          echo 'class="hidden" '
+        endunless
+        echo 'data-quantity-cart>'
+          if product.quantity_price_breaks_configured?
+            assign in_cart = cart | line_items_for: product
+            if settings.currency_enable
+              assign in_cart_price = in_cart | sum: 'price' | money_with_currency
+            else
+              assign in_cart_price = in_cart | sum: 'price' | money
+            endif
+            echo  'cart.qty_incart_break_html' | t: count: cart_count, price: in_cart_price
+          else
+            echo  'cart.qty_incart_html' | t: count: cart_count
+          endif
+        echo '</div>'
+      endif
+    -%}
+  </div>
+  {% capture quantity_qty_vol %}
+    <div id="quantity-qty-vol-{{ block.id }}"
+         class="slider-v {% if quantity_rule or product.quantity_price_breaks.size > 0 %}visible{% else %}hidden{% endif %}" 
+         {% if quantity_rule or product.quantity_price_breaks.size > 0 %}data-revealer-visible="true"{% endif %}
+         data-quantity-qty-vol>    
+      {%- if quantity_rule or product.quantity_price_breaks.size > 0 -%}  
+        {%- liquid
+          if quantity_rule
+            echo '<div id="quantity-rules-'
+            echo block.id
+            echo '" class="quantity__rules">'
+              if product.quantity_rule.increment > 1
+                echo 'product.qty_vol.qty.multiples_of_html' | t: quantity: product.quantity_rule.increment
+              endif
+              if product.quantity_rule.min > 1
+                if product.quantity_rule.increment > 1
+                  echo '<span class="seperator">&bull;</span>'
+                endif
+                echo 'product.qty_vol.qty.minimum_of_html' | t: quantity: product.quantity_rule.min
+              endif
+              if product.quantity_rule.max != null
+                if product.quantity_rule.increment > 1 or product.quantity_rule.min > 1
+                  echo '<span class="seperator">&bull;</span>'
+                endif
+                echo 'product.qty_vol.qty.maximum_of_html' | t: quantity: product.quantity_rule.max
+              endif
+            echo '</div>'
+          endif
+        -%}        
+        {%- if product.quantity_price_breaks.size > 0 -%}
+          <div id="quantity-volume-{{ block.id}}" class="quantity__volume">            
+            {%- liquid
+              if settings.currency_enable
+                assign variant_price = product.price | money_with_currency
+              else
+                assign variant_price = product.price | money
+              endif
+            -%}          
+            <div class="content-slide-space table-scroll">
+              <div class="table-container no-pad scroll-bar-h">
+                <table class="no-container text-center" width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <th scope="col">Total</th>
+                    <th scope="col">Savings</th>
+                    <th scope="col">Price</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">{{ product.quantity_rule.min }}+</th>
+                    <td>&nbsp;</td>
+                    <td>{{ 'product.qty_vol.vol.price_at_each' | t: price: variant_price }}</td>
+                  </tr>
+                  {%- for price_break in product.quantity_price_breaks -%}
+                    {%- liquid      
+                      assign price_break_save = product.price | minus: price_break.price                       
+                      if settings.currency_enable
+                        assign price_break_price = price_break.price | money_with_currency
+                        assign price_break_save = price_break_save | money_with_currency
+                      else
+                        assign price_break_price = price_break.price | money
+                        assign price_break_save = price_break_save | money
+                      endif
+                    -%}
+                    <tr>
+                      <th scope="row">{{ price_break.minimum_quantity }}+</th>
+                      <td><span>{{ price_break_save }} <span class="seperator">&bull;</span> {{ product.price | minus: price_break.price | times: 100 | divided_by: product.price | append: '%' }}</span></td>
+                      <td>{{ 'product.qty_vol.vol.price_at_each' | t: price: price_break_price }}</td>
+                    </tr>
+                  {%- endfor -%}
+                </table>
+              </div>
+            </div>            
+          </div>
+        {%- endif -%}        
+      {%- endif -%}
+    </div>
+  {% endcapture %}
+  {%- liquid
+    if is_product
+      echo quantity_qty_vol
+    else
+      if quantity_rule or product.quantity_price_breaks.size > 0
+        echo '<div class="content-slide" data-content-slide>'           
+          assign title = 'product.qty_vol.label' | t
+          render 'block.button', title: title
+          echo '<div class="content-slide-content ignore" data-height><div class="content-slide-space">'
+            echo quantity_qty_vol
+          echo '</div></div>'
+        echo '</div>'
+      endif
+    endif
+  -%}  
+</div>

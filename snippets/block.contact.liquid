@@ -1,0 +1,196 @@
+{% capture contact_form %}
+  <section data-section-id="{{ section.id }}" 
+           data-section-type="contact-{{ section.id }}"
+           data-url="{{ 'script.contact.js' | asset_url }}"
+           class="contact-form{% if contact %} toppad{% endif %}{% if build %} dynamic-block-{{ block.id }} text-{{ block.settings.text_alignment | default: 'left' }} section-card slide section-card-{{ layout_y }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout{% if block.settings.include_border %} section-card-borders{% endif %}{% if text_background_opacity > 0 and text_background_color %} section-layout-card-overlay-padding{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{{ forloop.index0 }}{% endif %}{% endif %}" {{ block.shopify_attributes }}>
+    {%- liquid
+      assign form_posted_successfully = false
+      assign form_errors = false
+      if text_background_opacity > 0 and text_background_color
+        echo '<div class="section-layout-card-overlay"></div>'
+      endif
+    -%}  
+    {% if page_content != blank %}
+      <div class="rte bottompad-2">{{ page_content }}</div>
+    {% endif %}
+    {%- capture id -%}contact-form-{{ section.id }}{%- endcapture -%}
+    {% form 'contact', id: id %}
+      {%- liquid
+        if form.errors
+          assign form_errors = true
+        endif
+      -%}
+      {% if form.posted_successfully? %}
+        {% assign form_posted_successfully = true %}
+        <p class="success-message">{{ 'contact.form.success' | t  }}</p>
+      {% else %}    
+        {%- render 'form.errors', form: form -%}
+        <input type="hidden" name="contact[{{ 'contact.form.store' | t | escape }}]" value="{{ shop.name }}">        
+        {% if is_product %}
+          <input type="hidden" name="contact[{{ 'contact.form.product' | t | escape }}]" value="{{ product.title }}">
+        {% endif %}    
+        <div class="input-wrapper">
+          <label for="contact-name"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ 'contact.form.name' | t }}</label>
+          <input id="contact-name" 
+                 class="input-field{% if form.errors contains 'name' %} error{% endif %}"
+                 type="text" 
+                 value="{% if customer and customer.name != blank %}{{ customer.name }}{% else %}{{ form.name }}{% endif %}" 
+                 name="contact[{{ 'contact.form.name' | t | escape }}]"
+                 {% unless section.settings.text == 'labels' %} placeholder="{{ 'contact.form.name' | t | escape }}"{% endunless %}/>
+        </div>    
+        <div class="input-wrapper">
+          <label for="contact-email"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ 'contact.form.email' | t }}</label>
+          <input id="contact-email" 
+                 class="input-field{% if form.errors contains 'email' %} error{% endif %}"
+                 type="email" 
+                 autocorrect="off" 
+                 autocapitalize="off" 
+                 autocomplete="email" 
+                 pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                 value="{% if customer %}{{ customer.email }}{% else %}{{ form.email }}{% endif %}" 
+                 name="contact[email]"{% unless section.settings.text == 'labels' %} 
+                 placeholder="{{ 'contact.form.email' | t | escape }}"{% endunless %}/>
+        </div>    
+        <div class="input-wrapper">
+          <label for="contact-phone"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ 'contact.form.phone' | t }}</label>
+          <input id="contact-phone"  
+                 class="input-field{% if form.errors contains 'phone' %} error{% endif %}"
+                 type="tel" 
+                 value="{{ form.phone | escape }}" 
+                 name="contact[{{ 'contact.form.phone' | t | escape }}]"
+                 {% unless section.settings.text == 'labels' %} placeholder="{{ 'contact.form.phone' | t | escape }}"{% endunless %}/>
+        </div>    
+        {% for block in section.blocks %}
+          {% case block.type %}    
+            {% when 'text' %}
+              <div class="input-wrapper">
+                {%- liquid
+                  if block.settings.label != blank
+                    assign label = block.settings.label
+                  else
+                    assign label = 'contact.form.label' | t | append: '-' | append: block.id
+                  endif
+                  if block.settings.placeholder != blank
+                    assign placeholder = block.settings.placeholder
+                  else
+                    assign placeholder = 'contact.form.placeholder' | t
+                  endif
+                -%}
+                <label for="contact-text-{{ block.id }}"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ label | split: '-' | first }}</label>
+                <input id="contact-text-{{ block.id }}" 
+                       class="input-field"
+                       type="text" 
+                       name="contact[{{ label | escape }}]"
+                       {% unless section.settings.text == 'labels' %} placeholder="{{ placeholder | escape }}"{% endunless %}
+                       {% if block.settings.required %} required{% endif %}/>
+              </div>      
+            {% when 'select' %}      
+              <div class="option">      
+                {%- liquid
+                  if block.settings.label != blank
+                    assign label = block.settings.label
+                  else
+                    assign label = 'contact.form.label' | t | append: '-' | append: block.id
+                  endif
+                  if block.settings.placeholder != blank
+                    assign placeholder = block.settings.placeholder
+                  else
+                    assign placeholder = 'contact.form.select' | t
+                  endif
+                -%}      
+                <label for="contactForm-select-{{ block.id }}"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ label | split: '-' | first }}</label>
+                <div class="option-values">     
+                  <div class="option-select"> 
+                    <select id="contactForm-select-{{ block.id }}" class="option-select-input scroll-bar-v" name="contact[{{ label }}]"{% if block.settings.required %} required{% endif %}>
+                      <option value="">{{ placeholder }}</option>
+                      {%- assign list = block.settings.textarea | split: ',' -%}
+                      {% for l in list %}
+                        <option value="{{ l | escape | lstrip | rstrip  }}">{{ l | lstrip | rstrip }}</option>
+                      {% endfor %}
+                    </select>
+                    <span class="option-select-arrow">{%- render 'icons.theme', id: 'arrow', size: 12 -%}</span>
+                  </div>
+                </div>
+              </div>      
+            {% when 'checkbox' %}      
+              {%- liquid
+                if block.settings.checkbox != blank
+                  assign label = block.settings.checkbox
+                else
+                  assign label = 'contact.form.label' | t | append: '-' | append: block.id
+                endif
+              -%}      
+              <div class="line-items">
+                <div class="input-wrapper input-container bottompad">
+                  <input type="hidden" name="contact[{{ label | escape }}]" value="{{ 'general.general.no' | t }}"/>
+                  <input id="contact-checkbox-{{ block.id }}" 
+                         type="checkbox" 
+                         name="contact[{{ label | escape }}]" 
+                         title="{{ label | escape }}" 
+                         value="{{ 'general.general.yes' | t | escape }}"/>
+                  <label for="contact-checkbox-{{ block.id }}">{{ label | split: '-' | first }}</label>                  
+                </div>
+              </div>      
+            {% when 'radio' %}
+              <div class="line-items">
+                <div class="input-wrapper light bottompad">
+                  <fieldset>
+                    {%- liquid
+                      if block.settings.label != blank
+                        assign label = block.settings.label
+                      else
+                        assign label = 'contact.form.label' | t | append: '-' | append: block.id
+                      endif
+                    -%}
+                    <legend{% if block.settings.label == blank or section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ label | split: '-' | first }}</legend>
+                    {%- assign list = block.settings.textarea | split: ',' -%}
+                    {%- for l in list -%}
+                      <div class="input-container">
+                        <input type="radio" 
+                               id="contact-radio-{{ block.id }}-{{ forloop.index }}" 
+                               name="contact[{{ label | escape }}]" 
+                               title="{{ l | escape | lstrip | rstrip }}" 
+                               value="{{ l | escape | lstrip | rstrip }}"{% if block.settings.required and forloop.first %} required{% endif %}/> 
+                        <label for="contact-radio-{{ block.id }}-{{ forloop.index }}">{{ l | lstrip | rstrip }}</label>
+                      </div>
+                    {%- endfor -%}
+                  </fieldset>
+                </div>
+              </div>
+          {% endcase %}
+        {% endfor %}    
+        <div class="input-wrapper">
+          <label for="contact-message"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ 'contact.form.message' | t }}</label>
+          <textarea id="contact-message" 
+                    name="contact[{{ 'contact.form.message' | t | escape }}]" 
+                    class="input-field{% if form.errors contains 'message' %} error{% endif %}"
+                    {% unless section.settings.text == 'labels' %} placeholder="{{ 'contact.form.message' | t | escape }}"{% endunless %}>{{ form.comments }}</textarea>
+        </div>
+        <div class="input-wrapper hidden extra" aria-hidden="true">
+          <label for="contactFormNumber">Extra</label>
+          <input type="text" id="contactFormNumber" name="Extra" value="" data-form-number />
+        </div>
+        {% if is_product %}
+          <button type="submit" class="contact-form-submit btn btn-primary" data-honeypot>{{ 'contact.form.submit' | t }}</button>
+        {% else %}
+          <button type="submit" class="btn-replace contact-form-submit btn btn-primary" data-honeypot disabled>{{ 'contact.form.submit' | t }}</button>
+          <noscript><div class="toppad"><div class="javascript-error-message">{{ 'general.no_js' | t }}</div></div></noscript>
+        {% endif %}
+      {% endif %}
+    {% endform %}  
+  </section>
+{% endcapture %}
+{% if is_product and is_form and form_posted_successfully == false and form_errors == false %}
+  {% if block.settings.button_text != blank %}
+    <div id="product-contact-{{ section_id }}" class="content-block product-form-inline-atc" {{ block.shopify_attributes }}>
+      <div class="product-contact" aria-hidden="true" hidden>{{ contact_form | json }}</div>
+      <button type="button" class="btn btn-{{ block.settings.button_style }} btn-full-width" title="{{ block.settings.button_text | escape }}">{{ block.settings.button_text }}</button>
+    </div>
+  {% endif %}
+{% elsif is_product and is_message and form_posted_successfully or is_product and is_message and form_errors %}
+  {{ contact_form }}
+{% else %}
+  {% unless is_product or is_message %}
+    {{ contact_form }}
+  {% endunless %}
+{% endif %}

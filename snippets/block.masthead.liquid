@@ -1,0 +1,29 @@
+{% if section.settings.title_enable or section.settings.title_sub != blank or link %}
+  <div class="masthead text-{% if is_center %}center{% else %}{{ section.settings.title_alignment | default: 'left' }}{% endif %}{{ class }}">
+    {% if section.settings.title_enable %}      
+      {%- liquid
+        if section.settings.title_h1 and is_full != true
+          assign title = 1
+        else
+          assign title = 2
+        endif
+      -%}
+      <h{{ title }} class="section-title{% if section.settings.title_sub != blank %} section-title-half{% endif %} section-title-{{ section.settings.title_font | default: 'primary' }} section-title-{{ section.settings.title_size }}{% if section.settings.responsive_size == false %} static-{{ section.settings.title_size }}{% endif %} {{ section.settings.title_outline }}">{{ page_title }}</h{{ title }}>
+      {% endif %}
+    {% if section.settings.title_sub != blank %}         
+      {%- liquid
+        if section.settings.title_h1
+          assign title_sub = 2
+        else
+          assign title_sub = 3
+        endif
+      -%}
+      <h{{ title_sub }} class="section-title section-title-{{ section.settings.title_sub_font | default: 'secondary' }} section-title-{{ section.settings.title_sub_size }}{% if section.settings.responsive_size == false %} static-{{ section.settings.title_sub_size }}{% endif %} {{ section.settings.title_sub_outline }}">{{ section.settings.title_sub }}</h{{ title_sub }}>
+    {% endif %}
+    {%- liquid
+      if link
+        echo link
+      endif
+    -%}
+  </div>
+{% endif %}  

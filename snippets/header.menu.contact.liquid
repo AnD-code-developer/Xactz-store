@@ -1,0 +1,39 @@
+<section data-section-id="{{ section.id }}" 
+         data-section-type="navigation-{{ section.id }}"
+         {% if settings.api_key != blank and block.settings.directions_value != blank %}
+           data-url="https://maps.googleapis.com/maps/api/js?key={{ settings.api_key | default: false }}"
+         {% endif %} 
+         class="contactbar-layout" data-nav-trigger>  
+  {%- liquid
+    if block.settings.address
+      assign directions_address = block.settings.address | replace: ' ', '+'
+      capture directions_url
+        echo 'https://maps.google.com/?saddr=Current+Location&daddr='
+        echo directions_address
+      endcapture
+    endif
+    unless is_mobile
+      if block.settings.image_desktop != blank or block.settings.image_mobile != blank or settings.api_key != blank and block.settings.address != blank
+        assign has_map = true
+        render 'block.map', section: block, block: block, full_width: false, menu: true, desktop_menu: true, build_background: true, contact: true, link: link, blocks_index: 1, blocks_size: 1, blocks_zindex: 1
+      endif
+    endunless
+    render 'header.menu.contact.details', block: block, has_map: has_map, directions_url: directions_url
+  -%}
+  {% if is_mobile %}
+    {% if block.settings.hours_value != blank or block.settings.directions_value != blank %}
+      <div class="contactbar-info loading">
+        <button type="button" class="contactbar-info-close" aria-label="{{ block.settings.hours_value | strip_html | escape }}" data-contactbar-info-close>{%- render 'icons.theme', id: 'close', size: 18 -%}</button>
+        {%- liquid
+          if block.settings.image_desktop != blank or block.settings.image_mobile != blank or settings.api_key != blank and block.settings.address != blank
+            render 'block.map', section: block, block: block, full_width: false, menu: true, mobile_menu: true, build_background: true, contact: true, link: link, blocks_index: 1, blocks_size: 1, blocks_zindex: 1
+          endif
+        -%}
+        <div class="contactbar-info-details">
+          {% if block.settings.directions_value != blank %}<div class="contactbar-info-address">{{ block.settings.directions_value }}</div>{% endif %}
+          {% if block.settings.hours_value != blank %}<div class="contactbar-info-hours">{{ block.settings.hours_value }}</div>{% endif %}
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+</section>

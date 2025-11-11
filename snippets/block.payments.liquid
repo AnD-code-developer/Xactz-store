@@ -1,0 +1,20 @@
+{% if shop.enabled_payment_types.size > 0 or shop.features.follow_on_shop? and block.settings.include_shop %}
+  <div class="content-block" {{ block.shopify_attributes }}>
+    <div class="payment{% if block.settings.center_payments %} center{% endif %}">
+      {% if shop.enabled_payment_types.size > 0 %}
+        {% for type in shop.enabled_payment_types %}
+          <div class="payment-type">{{ type | payment_type_svg_tag }}</div>
+        {% endfor %}
+      {% endif %}
+      {% if shop.features.follow_on_shop? and block.settings.include_shop %}
+        <div class="payment-type follow">
+          {%- liquid
+            # theme-check-disable
+            echo shop | login_button: action: 'follow'
+            # theme-check-enable
+          -%}
+        </div>
+      {% endif %}
+    </div>  
+  </div>
+{% endif %}

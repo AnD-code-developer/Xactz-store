@@ -1,0 +1,31 @@
+{%- liquid
+  assign cart_total = cart.total_price | times: 1.0
+  assign shipping_value = settings.shipping_amount | times: 1.0
+  assign shipping_value_total = cart_total | divided_by: shipping_value | times: 100 | round       
+  capture shipping_value_total
+    if shipping_value_total < 100
+      echo shipping_value_total
+    else
+      echo 100
+    endif
+  endcapture
+  assign shipping_value_left = shipping_value | minus: cart_total
+  capture shipping_value_left_formatted
+    if settings.currency_enable
+      echo shipping_value_left | money_with_currency
+    else
+      echo shipping_value_left | money
+    endif
+  endcapture
+  echo '<p>'    
+  if shipping_value_left > 0          
+    echo 'cart.shipping_value_left_html' | t: shipping_value_left: shipping_value_left_formatted
+  else
+    echo 'cart.shipping_value_met_html' | t
+  endif
+  echo '</p>'      
+-%}
+<div class="sm-container">
+  <div class="sm-container-base"></div>
+  <div class="sm-container-value" data-width="{{ shipping_value_total }}"{% unless ship_msg %} style="width: {{ shipping_value_total }}%"{% endunless %}></div>
+</div>

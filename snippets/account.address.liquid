@@ -1,0 +1,21 @@
+<p class="name details">{% if default %}<span class="success-message">{{ 'customers.addresses.default_address_message' | t }}</span>{% endif %}<strong>{{ address.first_name }} {{ address.last_name }}</strong></p>
+<div class="details">
+  <p>
+    {% if address.company != blank %}<span>{{ address.company }}</span>{% endif %}
+    {% if address.street != blank %}<span>{{ address.street }}</span>{% endif %}
+    {% if address.city != blank or address.province_code != blank %}<span>{{ address.city }}{% if address.province_code %}, {{ address.province_code }}{% endif %}</span>{% endif %}
+    {% if address.country != blank or address.zip != blank %}<span>{{ address.country }} {{ address.zip }}</span>{% endif %}
+    {% if address.phone != blank %}<span class="content-block"><strong>{{ address.phone }}</strong></span>{% endif %}
+  </p>
+</div>
+{% unless account %}
+  <div class="details">
+    <button type="button"
+            class="edit-address btn btn-primary"
+            data-edit-address="{{ address.id }}">{{ 'customers.addresses.edit' | t }}</button>  
+    <button type="button"
+            class="delete-address underline"
+            data-delete-address="{{ address.url }}"
+            data-confirm="{{ 'customers.addresses.confirm' | t }}">{{ 'customers.addresses.delete' | t }}</button>
+  </div>
+{% endunless %}

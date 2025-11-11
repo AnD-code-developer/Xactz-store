@@ -1,0 +1,56 @@
+{% for link in link.links %}
+  <div class="meganav-menu-group{% if block.settings.menu_collection_images != 'none' %} meganav-menu-group-{{ block.settings.menu_style }}{% endif %}">
+    <div class="product-rows slide">
+      <a href="{{ link.url }}" role="menuitem" class="meganav-menu-header{% if link.links == blank and is_mobile %} meganav-menu-empty{% endif %} body-font-{{ section.settings.navigation_text_size }}" title="{{ link.title | escape }}"{% if link.url contains 'http://' or link.url contains 'https://' %} target="_blank"{% endif %}>
+        {%- liquid
+          if block.settings.menu_style == 'one'
+            render 'header.menu.image', block: block, is_mobile: is_mobile, menu_location: menu_location, link: link, menu_style: menu_style, column_link: column_link, enable_promo: enable_promo, menu_slider: menu_slider, menu_style: menu_style, product_item_style: product_item_style, padding: padding, image_position: image_position, crop: crop
+          endif
+        -%}
+        <span class="meganav-menu-title{% unless is_mobile %}{% if block.settings.menu_uppercase %} meganav-uppercase{% endif %} underline{% endunless %}">{{ link.title }}</span>
+        {% if link.links.size > 0 and is_mobile %}
+          <span class="navmenu-arrow-toggle">
+            <span class="navmenu-arrow"></span>
+          </span>
+        {% endif %}            
+      </a>
+      {% if link.links != blank %}
+        <div class="meganav-menu-items{% if image == blank %} no-image{% endif %}">
+          {% for link in link.links %}
+            {%- liquid
+              unless is_mobile
+                if block.settings.menu_style == 'three' or block.settings.menu_style == 'four'    
+                  if link.object.image or link.object.products.first.featured_media.preview_image or link.object.featured_media.preview_image
+                     assign link_image = true
+                  else
+                    assign link_image = false
+                  endif
+                endif
+              endunless
+           -%}
+            <div class="meganav-menu-item{% if forloop.last %} last{% endif %}">
+              <a href="{{ link.url }}" role="menuitem" class="meganav-menu-link{% if block.settings.image_rounded > 0 and block.settings.menu_style == 'four' %} meganav-menu-link-padding{% endif %} body-font-{{ section.settings.navigation_text_size | minus: 1 }}{% unless is_mobile or block.settings.menu_style == 'three' or block.settings.menu_style == 'four' %} underline{% endunless %}{% unless link_image %} no-image{% endunless %}" title="{{ link.title | escape }}"{% if link.url contains 'http://' or link.url contains 'https://' %} target="_blank"{% endif %}>
+                {%- liquid
+                  if block.settings.menu_style == 'two' or block.settings.menu_style == 'three'
+                    render 'header.menu.image', block: block, is_mobile: is_mobile, menu_location: menu_location, link: link, menu_style: menu_style, column_link: column_link, enable_promo: enable_promo, menu_slider: menu_slider, menu_style: menu_style, product_item_style: product_item_style, padding: padding, image_position: image_position, crop: crop
+                  endif
+                  if block.settings.menu_style == 'three' or block.settings.menu_style == 'four'
+                    echo '<span><span class="underline">'
+                  endif
+                    echo link.title
+                  if block.settings.menu_style == 'three' or block.settings.menu_style == 'four'
+                    echo '</span></span>'
+                  endif
+                  if block.settings.menu_style == 'four'
+                    render 'header.menu.image', block: block, is_mobile: is_mobile, menu_location: menu_location, link: link, menu_style: menu_style, column_link: column_link, enable_promo: enable_promo, menu_slider: menu_slider, menu_style: menu_style, product_item_style: product_item_style, padding: padding, image_position: image_position, crop: crop
+                  endif
+                -%}
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {%- assign image = blank -%}
+{% endfor %}

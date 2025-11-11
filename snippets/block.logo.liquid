@@ -1,0 +1,37 @@
+<article class="section-card no-background slide logo{% if footer %} ignore{% endif %}{% if build or is_collection or is_logo %} dynamic-block-{{ block.id }}{% unless footer %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}{% endunless %}{% endif %}{% if build %} section-card-{{ layout_y }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }}{% endif %} section-layout{% if block.settings.include_border %} section-card-borders{% endif %}{% if text_background_opacity > 0 and text_background_color %} section-layout-card-overlay-padding{% endif %}" {{ block.shopify_attributes }}>
+  {%- liquid
+    if text_background_opacity > 0 and text_background_color
+      echo '<div class="section-layout-card-overlay"></div>'
+    endif
+    render 'image.sizes', size: block.settings.block_img_width
+    if block.settings.block_img
+      assign img_src = block.settings.block_img
+      if img_src contains '.svg'
+        assign img_svg = true
+      else
+        assign img_svg = false
+      endif
+      capture alt
+        if img_src.alt != blank
+          echo img_src.alt | escape
+        else
+          echo img_src | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize | escape
+        endif
+      endcapture
+      render 'image.load', img_src: img_src, size: block.settings.block_img_width, img_svg: img_svg, alt: alt, logo: true, lazy: lazy
+    else
+      echo 'logo' | placeholder_svg_tag: 'placeholder-svg'
+    endif
+    if block.settings.link != blank
+      echo '<a class="section-layout-link keyed-inside" href="'
+      echo block.settings.link
+      echo '" title="'
+      echo alt | escape
+      echo '"'      
+      if block.settings.link_new
+        echo ' target="_blank"'
+      endif
+      echo'></a>'
+    endif
+  -%}
+</article>

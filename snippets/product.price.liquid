@@ -1,0 +1,53 @@
+{%- assign variant = product.selected_or_first_available_variant -%}
+<div class="content-block product-details-price section-title-{{ block.settings.title_size | default: settings.quick_price_size }}{% if block.settings.responsive_size == false %} static-{{ block.settings.title_size }}{% endif %}" {{ block.shopify_attributes }}>
+  <span class="money-compare-at{% if variant.compare_at_price == blank or variant.price == variant.compare_at_price %} money-compare-at-hidden{% endif %}" data-variant-compare-at-price>
+    <span class="visually-hidden">{{ 'product.item.price.regular' | t }}</span>
+    <span class="money">{% if settings.currency_enable %}{{ variant.compare_at_price | money_with_currency }}{% else %}{{ variant.compare_at_price | money }}{% endif %}</span>
+  </span>    
+  <span data-variant-price data-regular="{{ 'product.item.price.regular' | t }}" data-sale="{{ 'product.item.price.sale' | t }}">
+    <span class="visually-hidden">
+      {%- liquid
+        if variant.compare_at_price == blank or variant.price == variant.compare_at_price
+          echo 'product.item.price.regular' | t
+        else
+          echo 'product.item.price.sale' | t
+        endif
+      -%}
+    </span>
+    <span class="money">
+      {%- liquid
+        if settings.currency_enable
+          echo variant.price | money_with_currency
+        else
+          echo variant.price | money
+        endif
+      -%}
+    </span> 
+  </span>
+  {% assign variant_for_unit_price = variant %}  
+  {%- capture unit_price -%}
+    <span class="money product-price__unit-price-amount" data-unit-price-amount>{% if settings.currency_enable %}{{ variant_for_unit_price.unit_price | money_with_currency }}{% else %}{{ variant_for_unit_price.unit_price | money }}{% endif %}</span>
+  {%- endcapture -%}  
+  {%- capture unit_measure -%}
+    <span class="product-price__unit-price-measure" data-unit-price-measure>
+      {%- liquid
+        if variant_for_unit_price.unit_price_measurement.reference_value != 1
+          echo variant_for_unit_price.unit_price_measurement.reference_value
+        endif
+        echo variant_for_unit_price.unit_price_measurement.reference_unit
+      -%}
+    </span>
+  {%- endcapture -%}  
+  <div class="money product-price__unit-price slider-v{% if variant_for_unit_price.unit_price_measurement %} visible{% else %} hidden{% endif %}" data-unit-price>{{ 'product.price_per_unit_html' | t: unit_price: unit_price, unit_measure: unit_measure | strip_newlines }}</div>
+  {%- assign variant_for_unit_price = blank -%}
+  {%- if product.quantity_price_breaks_configured? -%}
+    <div class="product-price__qty_note">
+      <span>{{ 'product.qty_vol.note' | t }}</span>
+    </div>
+  {%- endif -%}
+  {% if cart.taxes_included %} 
+    {% if block.settings.tax == false or settings.quick_tax == false %} 
+      <div class="product-price__tax slider-v{% if variant.taxable %} visible{% else %} hidden{% endif %}" data-tax-line>{{ 'product.tax_line_html' | t }}</div>
+    {% endif %}  
+  {% endif %}
+</div>

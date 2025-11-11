@@ -1,0 +1,70 @@
+<div class="content-block{% if product.has_only_default_variant %} hidden{% endif %}" {{ block.shopify_attributes }} data-variant-block>  
+  {%- liquid
+    assign _type = type | default: 'select'
+    assign is_product = true
+    capture options_loop
+      assign optionNumber = 0
+      assign optionBlockNumber = 0
+      assign img_size = 40
+      assign sizes = '40px'
+      if block.settings.variant_color_enable == 'var-img-zoom-block'
+        assign img_size = 120
+        assign sizes = '120px'
+      endif
+      for option in product.options_with_values
+        capture optionNumber
+          echo optionNumber | plus: 1
+        endcapture
+        if product.options_by_name[option.name].values.size == 1 and block.settings.enable_single == false
+          assign hide_variants = true
+        else
+          assign hide_variants = false
+          capture optionBlockNumber
+            echo optionBlockNumber | plus: 1
+          endcapture
+        endif
+        assign is_swatch = false
+        assign is_color = false
+        capture is_swatch_value
+          echo option.values | map: 'swatch' | compact
+        endcapture
+        if is_swatch_value != blank
+          assign is_swatch = true
+          assign is_color = true
+        endif
+        assign optionIndex = forloop.index0
+        render 'product.options.variants', product: product, section: section, option: option, is_product: is_product, _type: _type, size: img_size, sizes: sizes, optionNumber: optionNumber, optionBlockNumber: optionBlockNumber, hide_variants: hide_variants, rounded: block.settings.rounded, is_swatch: is_swatch, is_color: is_color, variant_color_enable: block.settings.variant_color_enable, optionIndex: optionIndex
+      endfor
+    endcapture
+  -%}
+  <div class="product-options product-options-count-{{ optionBlockNumber }} product-options-type-{{ _type }}{% if sticky %} sticky{% endif %}" data-product-options>
+    <div class="relative{% unless product.has_only_default_variant %} nojs{% endunless %} hidden">
+      <label for="product-select-{{ section.id }}" class="visually-hidden">{{ 'product.select_options' | t }}</label>
+      <div class="option-values">     
+        <div class="option-select"> 
+          <select id="product-select-{{ section.id }}" name="id" class="no-pad scroll-bar-v" data-hidden="{{ hidden }}" data-variants>
+            {% for variant in product.variants %}
+              {%- liquid
+                assign item_count = cart | item_count_for_variant: variant.id
+                assign item_max = variant.inventory_quantity | minus: item_count
+              -%}
+              <option value="{{ variant.id }}" 
+                      {% if variant == product.selected_or_first_available_variant %} selected="selected"{% endif %}
+                      {% if variant.available == false -%} disabled{% endif %}
+                      data-min="{% unless variant.available %}0{% else %}1{% endunless %}"
+                      data-inv-pol="{{ variant.inventory_policy }}"
+                      {% if variant.inventory_management and variant.inventory_quantity > 0 %} data-inv="{{ variant.inventory_quantity }}" 
+                      data-inv-msg-1="{{ 'product.item.availability.inventory_1_html' | t: inv: variant.inventory_quantity }}" 
+                      data-inv-msg-2="{{ 'product.item.availability.inventory_2_html' | t: inv: variant.inventory_quantity }}" {% endif %}
+                      data-inc="{{ variant.incoming }}"
+                      {% if variant.incoming %} data-inc-msg="{% assign today_date = 'now' | date: '%s' %}{% assign delivery_date = variant.next_incoming_date | date: '%s' %}{% assign date = variant.next_incoming_date | date: '%b %e' %}{% if variant.next_incoming_date != blank and delivery_date > today_date %}{% if variant.available %}{{ 'product.item.availability.inventory_more_html' | t: date: date }}{% else %}{{ 'product.item.availability.inventory_in_html' | t: date: date }}{% endif %}{% else  %}{{ 'product.item.availability.inventory_soon' | t }}{% endif %}"{% endif %}
+                      {% if variant.inventory_management and variant.inventory_policy != 'continue' %} data-max="{% if variant.inventory_quantity > 0 %}{% if item_max < 1 %}1{% else %}{{ item_max }}{% endif %}{% else %}0{% endif %}"{% endif %}>{{ variant.title }}{%- if variant.available == false %} - {{ 'product.add_to_cart.unavailable' | t }}{% endif %} - {% if settings.currency_enable %}{{ variant.price | money_with_currency }}{% else %}{{ variant.price | money }}{% endif %}</option>
+            {% endfor %}
+          </select>
+          <span class="option-select-arrow">{%- render 'icons.theme', id: 'arrow', size: 12 -%}</span>
+        </div>
+      </div>
+    </div>
+    {{ options_loop }}
+  </div>  
+</div>

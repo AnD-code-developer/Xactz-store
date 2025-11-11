@@ -1,0 +1,74 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page-contact",
+      "blocks": {
+        "map_rUVkdk": {
+          "type": "map",
+          "settings": {
+            "phone_value": "757 555 1212",
+            "email_value": "shop@example.com",
+            "hours_value": "<p>Mon-Fri, 9am-5pm</p>",
+            "directions_value": "<p>Boardwalk<br/>Virginia Beach, VA 23451</p>",
+            "custom_title_1": "<p>Contact Support</p>",
+            "custom_icon_1": "support-support",
+            "custom_title_2": "<p>Ask a question</p>",
+            "custom_icon_2": "information-question",
+            "section_height_mobile": 50,
+            "address": "Sherwood Lakes, Princess Anne Rd, Virginia Beach, VA 23456",
+            "enable_custom_colors": true,
+            "map_foreground_color": "#292929",
+            "map_background_color": "#ffffff",
+            "zoom": 2,
+            "insta_filter": "none"
+          }
+        }
+      },
+      "block_order": [
+        "map_rUVkdk"
+      ],
+      "settings": {
+        "content_width_mobile": 100,
+        "content_width_desktop": 100,
+        "title_enable": true,
+        "title_h1": true,
+        "title_font": "primary",
+        "title_outline": "none",
+        "title_size": 42,
+        "responsive_size": true,
+        "title_sub": "",
+        "title_sub_font": "secondary",
+        "title_sub_outline": "none",
+        "title_sub_size": 30,
+        "title_alignment": "left",
+        "text": "labels",
+        "text_color": "",
+        "text_color_hover": "",
+        "button_color": "",
+        "line_color": "",
+        "image_size": false,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 30,
+        "margin_bottom_mobile": 10,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 20,
+        "margin_bottom_desktop": 0,
+        "padding_border": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

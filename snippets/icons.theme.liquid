@@ -1,0 +1,196 @@
+{%- liquid
+  capture svg_size
+    if size
+      echo size
+    else
+      echo '24'
+    endif
+  endcapture
+-%}
+<svg class="icon{{ class }}" viewBox="0 0 24 24" height="{{ svg_size }}" width="{{ svg_size }}" aria-hidden="true" focusable="false" role="presentation" fill="none" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
+  {%- case id -%}
+    {% when '3D' %}
+      <path fill="currentColor" d="M19.594 5.063l-7.688-4.5c-0.868-0.505-1.945-0.505-2.813 0l-7.688 4.5c-0.863 0.51-1.406 1.436-1.406 2.438v8.969c0 1.004 0.54 1.962 1.406 2.469l7.688 4.469c0.868 0.503 1.944 0.503 2.813 0l7.688-4.469c0.864-0.509 1.408-1.467 1.406-2.469v-8.969c-0.002-1.003-0.541-1.93-1.406-2.438zM2.281 17.406c-0.326-0.195-0.533-0.558-0.531-0.938v-8.969c-0.002-0.379 0.205-0.743 0.531-0.938l7.687-4.5c0.321-0.186 0.74-0.186 1.062 0l7.687 4.5c0.124 0.076 0.229 0.192 0.312 0.312l-8.313 4.25c-0.668 0.327-1.093 1.006-1.094 1.75v8.813l-7.344-4.281z"></path>
+    {% when 'arrow' %}
+      <path d="M.541,5.627,11.666,18.2a.5.5,0,0,0,.749,0L23.541,5.627" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2px"></path>
+    {% when 'arrow-double' %}
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M 7.857 18 L 1.857 12 L 7.857 6" stroke-width="2"></path>
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M 16.143 18 L 22.143 12 L 16.143 6" stroke-width="2"></path>
+    {% when 'arrow-l' %}    
+      <path d="M 18.183 1.155 C 18.017 0.965 17.727 0.948 17.538 1.116 L 6.009 11.315 C 5.846 11.49 5.7 11.788 5.7 12.001 C 5.7 12.213 5.846 12.511 6.008 12.687 L 17.538 22.885 C 17.727 23.054 18.016 23.035 18.183 22.846 C 18.352 22.657 18.333 22.367 18.144 22.199 L 6.617 12.001 C 6.574 11.994 6.617 12.04 6.617 12.001 C 6.617 11.961 6.574 12.007 6.616 12.001 L 18.144 1.802 C 18.333 1.634 18.352 1.345 18.183 1.155 Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+    {% when 'arrow-long-l' %}
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M 8.658 18.001 L 4.094 12.283 C 4.064 12.247 4.039 12.201 4.024 12.153 C 4.009 12.103 4 12.055 4 12 C 4 11.947 4.009 11.897 4.024 11.849 C 4.039 11.801 4.064 11.755 4.094 11.719 L 8.658 6.001" stroke-width="1.5"></path>
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M 18.999 18 L 14.432 12.282 C 14.404 12.246 14.382 12.2 14.364 12.152 C 14.348 12.102 14.34 12.054 14.34 11.999 C 14.34 11.946 14.348 11.896 14.364 11.848 C 14.382 11.8 14.404 11.754 14.432 11.718 L 18.999 6" stroke-width="1.5"></path>
+    {% when 'arrow-long-r' %}
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M 14.342 6 L 18.906 11.718 C 18.936 11.754 18.961 11.8 18.976 11.848 C 18.991 11.898 19 11.946 19 12.001 C 19 12.054 18.991 12.104 18.976 12.152 C 18.961 12.2 18.936 12.246 18.906 12.282 L 14.342 18" stroke-width="1.5"></path>
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M 4 6 L 8.567 11.718 C 8.595 11.754 8.617 11.8 8.635 11.848 C 8.651 11.898 8.659 11.946 8.659 12.001 C 8.659 12.054 8.651 12.104 8.635 12.152 C 8.617 12.2 8.595 12.246 8.567 12.282 L 4 18" stroke-width="1.5"></path>
+    {% when 'arrow-r' %}
+      <path d="M 5.816 22.846 C 5.982 23.036 6.272 23.053 6.461 22.885 L 17.99 12.686 C 18.153 12.511 18.299 12.213 18.299 12 C 18.299 11.788 18.153 11.49 17.991 11.314 L 6.461 1.116 C 6.272 0.947 5.983 0.966 5.816 1.155 C 5.647 1.344 5.666 1.634 5.855 1.802 L 17.382 12 C 17.425 12.007 17.382 11.961 17.382 12 C 17.382 12.04 17.425 11.994 17.383 12 L 5.855 22.199 C 5.666 22.367 5.647 22.656 5.816 22.846 Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+  {%- when 'cart-bag' -%}
+      <path d="M7.5 4.5h15a1 1 0 0 1 1 1v17a1 1 0 0 1 -1 1h-15" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M7.5 23.5v-19h-6a1 1 0 0 0 -1 1v17a1 1 0 0 0 1 1Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m2.04 21.5 1.5 -1.5 1.5 1.5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m3.54 20 0 -15.5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M11.5 4.5v-2a2 2 0 0 1 2 -2h3a2 2 0 0 1 2 2v2" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M7.5 4.5v-2a2 2 0 0 1 2 -2h1" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {%- when 'cart-basket' -%}
+      <path d="M20.661 22.7a1 1 0 0 1 -0.981 0.8H4.32a1 1 0 0 1 -0.981 -0.8L1.5 13.5h21Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M8.5 1.5c-2.921 0 -4.451 2.031 -5.085 4.881L2.5 10.5h19l-0.915 -4.119C19.951 3.531 18.422 1.5 15.5 1.5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M1.5 10.5h21s1 0 1 1v1s0 1 -1 1h-21s-1 0 -1 -1v-1s0 -1 1 -1" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m14.5 15.5 0 5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path><path d="m18.5 15.5 0 5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m9.5 15.5 0 5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path><path d="m5.5 15.5 0 5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M15.5 1.5a1 1 0 0 1 -1 1h-5a1 1 0 0 1 0 -2h5a1 1 0 0 1 1 1Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {%- when 'cart-cart-empty' -%}
+      <path d="M3.921 20.759a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M14.921 20.759a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M23.421 2.259h-2.6a0.5 0.5 0 0 0 -0.487 0.386l-3.913 16.614h-11" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M16.921 17.259H4.281a0.5 0.5 0 0 1 -0.474 -0.342l-2.667 -8a0.5 0.5 0 0 1 0.475 -0.658h17.368" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {%- when 'cart-cart-full' -%}
+      <path d="M3.921 20.759a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M14.921 20.759a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M23.421 2.259h-2.6a0.5 0.5 0 0 0 -0.487 0.386l-3.913 16.614h-11" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M16.921 17.259H4.281a0.5 0.5 0 0 1 -0.474 -0.342l-2.667 -8a0.5 0.5 0 0 1 0.475 -0.658h17.368" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m10.921 8.259 3.65 -3.65a0.5 0.5 0 0 1 0.7 0L19 8.259" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M5.921 8.259 3.13 2.036a0.5 0.5 0 0 0 -0.671 -0.247l-1.6 0.759a0.5 0.5 0 0 0 -0.24 0.658l2.3 5.053" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M6.921 8.259v-2.5a0.5 0.5 0 0 1 0.5 -0.5h4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {% when 'checkmark' %}
+      <path d="m18 7 -6.38 8.66a1 1 0 0 1 -0.68 0.4 1 1 0 0 1 -0.75 -0.21L6 12.5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M0.5 12a11.5 11.5 0 1 0 23 0 11.5 11.5 0 1 0 -23 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {% when 'checkout-lock' %}
+      <path d="M10.083333333333332 13.75a0.9166666666666666 0.9166666666666666 0 1 0 1.8333333333333333 0 0.9166666666666666 0.9166666666666666 0 1 0 -1.8333333333333333 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      <path d="m11 14.666666666666666 0 2.75" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      <path d="M4.125 8.708333333333332h13.75s0.9166666666666666 0 0.9166666666666666 0.9166666666666666v11s0 0.9166666666666666 -0.9166666666666666 0.9166666666666666h-13.75s-0.9166666666666666 0 -0.9166666666666666 -0.9166666666666666v-11s0 -0.9166666666666666 0.9166666666666666 -0.9166666666666666" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      <path d="M5.958333333333333 5.5a5.041666666666666 5.041666666666666 0 0 1 10.083333333333332 0v3.208333333333333h-10.083333333333332Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+    {% when 'close' %}
+      <path d="M 1 1 L 23 23.001" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      <path d="M 23 1 L 1 23.001" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+    {% when 'contact-directions' %}
+      <path d="M12 0.71a7.5 7.5 0 0 1 7.5 7.5c0 3.547 -5.5 12.381 -7.079 14.85a0.5 0.5 0 0 1 -0.842 0C10 20.592 4.5 11.757 4.5 8.21A7.5 7.5 0 0 1 12 0.71Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M9 8.21a3 3 0 1 0 6 0 3 3 0 1 0 -6 0Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {% when 'contact-email' %}
+      <path d="M12 1C5.649 1 0.5 5.253 0.5 10.5a8.738 8.738 0 0 0 3.4 6.741L1.5 23l6.372 -3.641A13.608 13.608 0 0 0 12 20c6.351 0 11.5 -4.253 11.5 -9.5S18.351 1 12 1Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m6.5 7 8 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m6.5 10 11 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m6.5 13 11 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {% when 'contact-hours' %}
+      <path d="M0.5 12.001a11.5 11.5 0 1 0 23 0 11.5 11.5 0 1 0 -23 0Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m18 18.001 -4.943 -4.942" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M10.5 12.001a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m12 6.501 0 4" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {% when 'contact-phone' %}
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M23.5 7.5c0 0.53043 -0.2107 1.03914 -0.5858 1.41421 -0.3751 0.37508 -0.8838 0.58579 -1.4142 0.58579h-4l-2 3v-3c-0.5304 0 -1.0391 -0.21071 -1.4142 -0.58579C13.7107 8.53914 13.5 8.03043 13.5 7.5v-5c0 -0.53043 0.2107 -1.03914 0.5858 -1.41421C14.4609 0.710714 14.9696 0.5 15.5 0.5h6c0.5304 0 1.0391 0.210714 1.4142 0.58579 0.3751 0.37507 0.5858 0.88378 0.5858 1.41421v5Z" stroke-width="1"></path>
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M20.5 3.5h-4" stroke-width="1"></path>
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M20.5 6.5h-4" stroke-width="1"></path>
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M15.5 14.5v7c0 0.5304 -0.2107 1.0391 -0.5858 1.4142S14.0304 23.5 13.5 23.5h-11c-0.53043 0 -1.03914 -0.2107 -1.41421 -0.5858C0.710714 22.5391 0.5 22.0304 0.5 21.5v-17c0 -0.53043 0.210714 -1.03914 0.58579 -1.41421C1.46086 2.71071 1.96957 2.5 2.5 2.5h9" stroke-width="1"></path>
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M5.5 4.5h5" stroke-width="1"></path>
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M12.963 17c-0.408 -0.63 -1.761 -1.088 -3.455 -1.715 -0.478 -0.178 -0.4 -1.426 -0.188 -1.659 0.33717 -0.3652 0.59328 -0.7976 0.7515 -1.2688 0.1582 -0.4712 0.215 -0.9705 0.1665 -1.4652 0.029 -0.3083 -0.0078 -0.6192 -0.1079 -0.91216 -0.1001 -0.293 -0.26123 -0.56142 -0.47276 -0.78751 -0.21154 -0.2261 -0.46866 -0.40472 -0.75436 -0.52407C8.61729 8.54892 8.30951 8.49157 8 8.5c-0.30951 -0.00843 -0.61728 0.04892 -0.90298 0.16826 -0.2857 0.11935 -0.54281 0.29797 -0.75435 0.52407 -0.21154 0.22609 -0.37268 0.49451 -0.47278 0.78751 -0.1001 0.29296 -0.13687 0.60386 -0.10789 0.91216 -0.04845 0.4947 0.0083 0.994 0.16651 1.4652 0.15822 0.4712 0.41432 0.9036 0.75149 1.2688 0.212 0.233 0.29 1.481 -0.188 1.659C4.8 15.912 3.445 16.37 3.037 17" stroke-width="1"></path>
+    {% when 'filter' %}
+      <line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+      <circle id="circle-1" cx="16" cy="6" r="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+      <animate xlink:href="#circle-1" 
+               attributeName="cx" 
+               begin="filter_svg.mouseover" 
+               dur="0.25s"
+               fill="freeze"
+               from="16"
+               to="8"/>
+      <animate xlink:href="#circle-1" 
+               attributeName="cx" 
+               begin="filter_svg.mouseout" 
+               dur="0.25s"
+               fill="freeze"
+               from="8"
+               to="16"/>  
+      <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+      <circle id="circle-2" cx="8" cy="12" r="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+      <animate xlink:href="#circle-2" 
+               attributeName="cx" 
+               begin="filter_svg.mouseover" 
+               dur="0.25s"
+               fill="freeze"
+               from="8"
+               to="16"/>
+      <animate xlink:href="#circle-2" 
+               attributeName="cx" 
+               begin="filter_svg.mouseout" 
+               dur="0.25s"
+               fill="freeze"
+               from="18"
+               to="8"/>
+      <line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+      <circle id="circle-3" cx="16" cy="18" r="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></circle>
+      <animate xlink:href="#circle-3" 
+               attributeName="cx" 
+               begin="filter_svg.mouseover" 
+               dur="0.25s"
+               fill="freeze"
+               from="16"
+               to="8"/>
+      <animate xlink:href="#circle-3" 
+               attributeName="cx" 
+               begin="filter_svg.mouseout" 
+               dur="0.25s"
+               fill="freeze"
+               from="8"
+               to="16"/>
+      <rect id="filter_svg" class="rect" x="0" y="0" width="24" height="24" rx="0" ry="0"></rect>
+    {% when 'home' %}      
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejo0in="round" d="m21.898300000000003 8.605833333333335 -2.2692375 -1.7633333333333334V1.17875h-4.308666666666667v2.415L11.490416666666667 0.71875 1.0825908333333334 8.605833333333335c-0.21696570833333334 0.19796291666666668 -0.3476181666666667 0.47326333333333337 -0.36384083333333334 0.7666666666666667v11.950416666666667c0 0.25415 0.10087704166666667 0.49794999999999995 0.28043708333333334 0.6776375 0.17956291666666668 0.1796875 0.42310416666666667 0.2806958333333333 0.6770433333333333 0.2806958333333333H21.323779166666668c0.25395833333333334 0 0.49747083333333336 -0.10100833333333332 0.6770625 -0.2806958333333333 0.17949583333333333 -0.1796875 0.28040833333333337 -0.4234875 0.28040833333333337 -0.6776375V9.324583333333335c-0.03315833333333333 -0.2791720833333334 -0.16981666666666667 -0.53569875 -0.38295 -0.71875Z" stroke-width="1.5"></path>
+    {% when 'minus' %}
+      <path class="horizontal" d="M23 12 1 12" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+    {%- when 'mobilenav-search-toggle' -%}
+      <path d="M 22 5 L 2 5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M 10 12 L 2 12" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M 9 19 L 2 19" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <ellipse cx="18" cy="15" rx="5" ry="5" fill="none" stroke="currentcolor" stroke-width="1"></ellipse>
+      <path d="M 14 19 L 10 23" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {%- when 'mobilenav-toggle' -%}
+      <path id="line-1" class="line line-opacity" d="M 22 5 L 2 5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path id="line-2" class="line" d="M 22 12 L 2 12" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path id="line-3" class="line" d="M 22 12 L 2 12" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path id="line-4" class="line line-opacity" d="M 22 19 L 2 19" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {% when 'model-thumb' %}
+      <path d="M1,25H25V1H1Z" fill="none"/>
+      <path d="M19.13,8.28,14,5.32a2,2,0,0,0-2,0l-5.12,3a2,2,0,0,0-1,1.76V16a2,2,0,0,0,1,1.76l5.12,3a2,2,0,0,0,2,0l5.12-3a2,2,0,0,0,1-1.76V10A2,2,0,0,0,19.13,8.28Zm-6.4,11.1-5.12-3A.53.53,0,0,1,7.35,16V10a.53.53,0,0,1,.27-.46l5.12-3a.53.53,0,0,1,.53,0l5.12,3-4.72,2.68a1.33,1.33,0,0,0-.67,1.2v6a.53.53,0,0,1-.26,0Z" fill="currentColor" style="isolation:isolate"/>
+    {% when 'play-thumb' %}
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M1 25H25V1H1V25Z" fill="none"/>
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M9.71814 6.71984C9.0517 6.31605 8.19995 6.79588 8.19995 7.5751V18.311C8.19995 19.1138 9.09826 19.5893 9.76217 19.1379L18.1123 13.4612C18.7146 13.0518 18.6912 12.1564 18.0682 11.779L9.71814 6.71984Z" fill="currentColor"/>
+    {% when 'plus' %}
+      <path class="vertical" d="m12 1 0 22" fill="none" stroke="{% if block.settings.block_icon_color.alpha != 0.0 and block.settings.block_icon_color.alpha != blank %}{{ block.settings.block_icon_color }}{% else %}currentcolor{% endif %}" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+      <path class="horizontal" d="M23 12 1 12" fill="none" stroke="{% if block.settings.block_icon_color.alpha != 0.0 and block.settings.block_icon_color.alpha != blank %}{{ block.settings.block_icon_color }}{% else %}currentcolor{% endif %}" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+    {%- when 'quick-cart' -%}
+      <path d="M3.921 20.759a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M14.921 20.759a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M23.421 2.259h-2.6a0.5 0.5 0 0 0 -0.487 0.386l-3.913 16.614h-11" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M 16.921 17.259 L 4.281 17.259 C 4.066 17.259 3.875 17.121 3.807 16.917 L 1.14 8.917 C 1.032 8.593 1.274 8.259 1.615 8.259 L 2.983 8.259" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M 11.208 4.265 L 11.208 12.265" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M 7.208 8.265 L 15.208 8.265" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {%- when 'quick-eye' -%}
+      <path d="M23.5 12s-5.148 6.5 -11.5 6.5S0.5 12 0.5 12 5.648 5.5 12 5.5 23.5 12 23.5 12Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M8 12a4 4 0 1 0 8 0 4 4 0 1 0 -8 0Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M12 10a2 2 0 1 1 -2 2" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {% when 'sale-tag' %}
+      <path d="M17.5 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M0.854 12.646a1.207 1.207 0 0 0 0 1.708l8.792 8.792a1.207 1.207 0 0 0 1.708 0l11.439 -11.439A2.414 2.414 0 0 0 23.5 10V1.5a1 1 0 0 0 -1 -1H14a2.414 2.414 0 0 0 -1.707 0.707Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>          
+    {%- when 'search' -%}
+      <path d="M0.53 9.03a8.5 8.5 0 1 0 17 0 8.5 8.5 0 1 0 -17 0Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m15.041 15.041 2.332 2.332" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M23.03 20.909a1.5 1.5 0 0 1 -2.121 2.121l-3.889 -3.889a1 1 0 0 1 0 -1.414l0.707 -0.707a1 1 0 0 1 1.414 0Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {%- when 'trash' -%}
+      <path d="m0.5 6.507 23 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M20.5 6.5v15a2 2 0 0 1 -2 2h-13a2 2 0 0 1 -2 -2v-15" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M2.5 6.5v-1a2 2 0 0 1 2 -2h15a2 2 0 0 1 2 2v1" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M9 3.5a3 3 0 0 1 6 0" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m12 10 0 9.5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m16.5 10 0 9.5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m7.5 10 0 9.5" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+    {%- when 'user' -%}
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M23 23.5v-3.106c0.0021 -0.3047 -0.0663 -0.6059 -0.1999 -0.8798 -0.1336 -0.2739 -0.3287 -0.5132 -0.5701 -0.6992C20.9 17.8 17.73 16 12 16c-5.73001 0 -8.89501 1.8 -10.23001 2.815 -0.24142 0.186 -0.43655 0.4253 -0.57013 0.6992 -0.13357 0.2739 -0.201982 0.5751 -0.199874 0.8798V23.5" stroke-width="1"></path>
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M18 6.5c0 -1.5913 -0.6321 -3.11742 -1.7574 -4.24264C15.1174 1.13214 13.5913 0.5 12 0.5c-1.5913 0 -3.11742 0.63214 -4.24264 1.75736C6.63214 3.38258 6 4.9087 6 6.5v2c0 1.5913 0.63214 3.1174 1.75736 4.2426C8.88258 13.8679 10.4087 14.5 12 14.5s3.1174 -0.6321 4.2426 -1.7574C17.3679 11.6174 18 10.0913 18 8.5v-2Z" stroke-width="1"></path>
+      <path stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" d="M8.08301 16.312c0.18647 0.901 0.67787 1.7102 1.39138 2.2912 0.71351 0.581 1.60551 0.8982 2.52561 0.8982 0.9201 0 1.8121 -0.3172 2.5256 -0.8982 0.7135 -0.581 1.2049 -1.3902 1.3914 -2.2912" stroke-width="1"></path>      
+    {% when 'xmark' %}
+      <path d="m7 16.999 10 -10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="m17 16.999 -10 -10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+      <path d="M0.5 11.999a11.5 11.5 0 1 0 23 0 11.5 11.5 0 1 0 -23 0Z" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"></path>
+  {%- endcase -%}
+</svg>

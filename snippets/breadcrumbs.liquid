@@ -1,0 +1,251 @@
+<nav class="breadcrumb" role="navigation" aria-label="{{ 'breadcrumbs.breadcrumbs' | t }}" data-breadcrumbs>
+  <a href="{{ routes.root_url }}" title="{{ 'breadcrumbs.home' | t | escape }}" class="breadcrumb-home">
+    <span class="visually-hidden">{{ 'breadcrumbs.home' | t }}</span>
+    {%- liquid
+      assign icon_size = breadcrumbs_size | default: 14
+      render 'icons.theme', id: 'home', size: icon_size
+    -%}
+  </a>
+  <span class="info-separator{% if breadcrumbs_size != blank %} body-font-{{ breadcrumbs_size }}{% endif %}" aria-hidden="true">&middot;</span>
+  <div class="breadcrumb-container">  
+    {%- liquid
+      assign linkCt = 0
+      assign linkCt1 = 0
+      assign linkCt2 = 0
+      assign linkCt3 = 0
+      if settings.sub_collection != blank
+        for link in linklists[settings.sub_collection].links
+          if link.active
+            capture linkCt1
+                increment linkCt
+            endcapture
+          endif
+          if link.links != blank
+            for sub_link in link.links
+              if sub_link.active 
+                capture linkCt2
+                  increment linkCt
+                endcapture
+              endif
+              if sub_link.links != blank
+                for sub_sub_link in sub_link.links
+                  if sub_sub_link.active
+                    capture linkCt3
+                      increment linkCt
+                    endcapture
+                  endif
+                endfor
+              endif
+            endfor
+          endif
+        endfor
+        assign finalCt = linkCt1 | plus:linkCt2 | plus:linkCt3
+      endif
+    -%}  
+    {%- if request.page_type == 'page' -%}
+      <span class="info-separator" aria-hidden="true">&middot;</span>
+      <span>{{ page.title }}</span>    
+    {%- elsif request.page_type == 'product' -%}
+      {%- liquid
+        if finalCt > 0
+          assign is_empty = false         
+          if collection
+            echo '<a href="'
+            echo collection.url
+            echo '" title="'
+            echo collection.title | escape
+            echo '" class="underline'
+            if breadcrumbs_size != blank
+              echo ' body-font-'
+              echo breadcrumbs_size
+            endif
+            echo '">'
+            echo collection.title
+            echo '</a>'
+          else
+            echo '<a href="'
+            echo routes.all_products_collection_url
+            echo '" title="'
+            echo collections.all.title | escape
+            echo '" class="underline'
+            if breadcrumbs_size != blank
+              echo ' body-font-'
+              echo breadcrumbs_size
+            endif
+            echo '">'
+            echo collections.all.title
+            echo '</a>'
+          endif
+        else
+          assign has_collection = false
+          for link in linklists[settings.sub_collection].links
+            if link.active or link.child_active or sub_link.child_active
+              unless link.url == product.url
+                assign has_collection = true
+                echo '<a href="'
+                echo link.url
+                echo '" title="'
+                echo link.title | escape
+                echo '" class="underline'
+                if breadcrumbs_size != blank
+                  echo ' body-font-'
+                  echo breadcrumbs_size
+                endif
+                echo '">'
+                echo link.title
+                echo '</a>'
+                if link.links != blank
+                  for sub_link in link.links
+                    if sub_link.active or sub_link.child_active or sub_sub_link.child_active
+                      unless sub_link.url == product.url
+                        echo '<span class="info-separator'
+                        if breadcrumbs_size != blank
+                          echo ' body-font-'
+                          echo breadcrumbs_size
+                        endif
+                        echo '" aria-hidden="true">&middot;</span>'
+                        echo '<a href="'
+                        echo sub_link.url
+                        echo '" title="'
+                        echo sub_link.title | escape
+                        echo '" class="underline'
+                        if breadcrumbs_size != blank
+                          echo ' body-font-'
+                          echo breadcrumbs_size
+                        endif
+                        echo '">'
+                        echo sub_link.title
+                        echo '</a>'
+                        if sub_link.links != blank
+                          for sub_sub_link in sub_link.links
+                            if sub_sub_link.active and sub_sub_link.url != product.url
+                              echo '<span class="info-separator'
+                              if breadcrumbs_size != blank
+                                echo ' body-font-'
+                                echo breadcrumbs_size
+                              endif
+                              echo '" aria-hidden="true">&middot;</span>'
+                              echo '<a href="'
+                              echo sub_sub_link.url
+                              echo '" title="'
+                              echo sub_sub_link.title | escape
+                              echo '" class="underline'
+                              if breadcrumbs_size != blank
+                                echo ' body-font-'
+                                echo breadcrumbs_size
+                              endif
+                              echo '">'
+                              echo sub_sub_link.title
+                              echo '</a>'
+                            endif
+                          endfor
+                        endif
+                      endunless
+                    endif
+                  endfor
+                endif
+              endunless
+            endif
+          endfor
+          if has_collection == false
+            if collection
+              echo '<a href="'
+              echo collection.url
+              echo '" title="'
+              echo collection.title | escape
+              echo '" class="underline'
+              if breadcrumbs_size != blank
+                echo ' body-font-'
+                echo breadcrumbs_size
+              endif
+              echo '">'
+              echo collection.title | escape
+              echo '</a>'
+            else
+              echo '<a href="'
+              echo routes.all_products_collection_url
+              echo '" title="'
+              echo 'structured_data.breadcrumbs.products' | t | escape
+              echo '" class="underline'
+              if breadcrumbs_size != blank
+                echo ' body-font-'
+                echo breadcrumbs_size
+              endif
+              echo '">'
+              echo 'structured_data.breadcrumbs.products' | t
+              echo '</a>'
+            endif
+          endif         
+        endif
+      -%}    
+    {%- elsif request.page_type == 'collection' and collection.handle -%}      
+      {%- liquid
+        assign is_empty = true         
+        if finalCt > 0
+          assign is_empty = false
+          echo '<span aria-current="page">'
+            echo collection.title
+          echo '</span>'
+        else
+          for link in linklists[settings.sub_collection].links
+            if link.active or link.child_active or sub_link.child_active
+              assign is_empty = false
+              if link.child_active
+                echo '<span><a href="'
+                echo link.url
+                echo '" title="'
+                echo link.title | escape
+                echo '" class="underline" aria-current="page">'
+                echo link.title
+                echo '</a></span>'
+              else
+                echo '<span aria-current="page">'
+                echo link.title
+                echo '</span>'
+              endif
+              if link.links != blank
+                for sub_link in link.links
+                  if sub_link.active or sub_link.child_active or sub_sub_link.child_active
+                    assign is_empty = false
+                    echo '<span class="info-separator" aria-hidden="true">&middot;</span>'
+                    if sub_link.child_active
+                      echo '<span><a href="'
+                      echo sub_link.url
+                      echo '" title="'
+                      echo sub_link.title | escape
+                      echo '" class="underline" aria-current="page">'
+                      echo sub_link.title
+                      echo '</a></span>'
+                    else
+                      echo '<span aria-current="page">'
+                      echo sub_link.title
+                      echo '</span>'
+                    endif
+                    if sub_link.links != blank
+                      for sub_sub_link in sub_link.links
+                        if sub_sub_link.active
+                          assign is_empty = false
+                          echo '<span class="info-separator" aria-hidden="true">&middot;</span>'
+                          echo '<span aria-current="page">'
+                          echo sub_sub_link.title
+                          echo '</span>'
+                        endif
+                      endfor
+                    endif
+                  endif
+                endfor
+              endif
+            endif
+          endfor
+        endif
+        if is_empty 
+          echo '<span aria-current="page">'
+          echo collection.title
+          echo '</span>'
+        endif
+      -%}      
+    {%- else -%}
+      <span aria-current="page">{{ page_title }}</span>
+    {%- endif -%}
+  </div>
+</nav>

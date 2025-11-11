@@ -1,0 +1,120 @@
+{%- liquid
+  assign tag = 1
+  assign filter_1 = 0
+  assign filter_2 = 0
+  assign filter_3 = 0
+  for block in section.blocks
+    case block.type
+      when 'text'
+        echo '<div class="content-slide" '
+        echo block.shopify_attributes
+        echo '>'
+          render 'block.text', section: section, block: block
+        echo '</div>'
+      when 'collection'
+        if block.settings.collection != blank
+          assign collection = collections[block.settings.collection]
+        else
+          assign collection = collections.all
+        endif                      
+        if block.settings.filter_1 != blank
+          assign filter_1 = 1
+        endif
+        if block.settings.filter_2 != blank
+          assign filter_2 = 1
+        endif
+        if block.settings.filter_3 != blank
+          assign filter_3 = 1
+        endif
+    endcase
+  endfor
+  assign tag = tag | plus: filter_1 | plus: filter_2 | plus: filter_3
+-%}
+<section data-section-id="{{ section.id }}" 
+         data-section-type="filter-{{ section.id }}"
+         data-url="{{ 'script.filter.js' | asset_url }}"
+         class="advanced-filter">
+  <form onsubmit="return false;" class="filter-form-{{ section.id }} adv-filter adv-filter-{{ tag | plus: 1 }} {% if section.settings.form_layout %}horizontal{% else %}vertical{% endif %}">
+    {%- liquid
+      if section.settings.directory_label != blank
+        assign label = section.settings.directory_label
+      else
+        assign label = 'contact.form.select' | t | append: '-' | append: block.id
+      endif
+    -%}
+    <div id="select_0_{{ section.id }}"
+         class="option{% if settings.animation_enable %} animated-item animated-delay-0{% endif %}"
+         data-columns="{{ tag }}">      
+      <label for="directory_label_0_{{ section.id }}" class="visually-hidden">{{ label | split: '-' | first }}</label>
+      <div class="option-values">     
+        <div class="option-select"> 
+          <select id="directory_label_0_{{ section.id }}" class="tag-select no-select option-select-input scroll-bar-v">
+            <option disabled selected value>{{ label | split: '-' | first }}</option>    
+            {%- liquid             
+              for block in section.blocks
+                case block.type
+                  when 'collection'
+                    if block.settings.collection != blank
+                      assign collection = collections[block.settings.collection]
+                      echo '<option value="'
+                      echo collection.url | append: '?'
+                      echo '" data-id="'
+                      echo collection.id
+                      echo '" data-tag-1="'
+                      echo block.settings.filter_1
+                      echo '" data-tag-2="'
+                      echo block.settings.filter_2
+                      echo '"  data-tag-3="'
+                      echo block.settings.filter_3
+                      echo '">'
+                        if block.settings.title != blank
+                          echo block.settings.title
+                        else
+                          echo collection.title
+                        endif
+                      echo '</option>'
+                    else
+                      echo '<option value="'
+                      echo routes.all_products_collection_url | append: '?'
+                      echo '" data-id="all" data-tag-1="" data-tag-2=""  data-tag-3="">'
+                      echo 'collection.item.cta2' | t
+                      echo '</option>'
+                    endif                
+                endcase
+              endfor
+            -%}
+          </select>
+          <span class="option-select-arrow">{%- render 'icons.theme', id: 'arrow', size: 12 -%}</span>
+        </div>
+      </div>
+    </div>
+    {%- if tag > 1 -%}      
+      {%- liquid
+        assign tag = tag | minus: 1
+        if section.settings.directory_label_select != blank
+          assign label_select = section.settings.directory_label_select
+        else
+          assign label_select = 'contact.form.select' | t | append: '-' | append: block.id
+        endif
+      -%}      
+      {%- for i in (1..tag) -%}
+        <div id="select_{{ i }}_{{ section.id }}"
+             class="option{% if settings.animation_enable %} animated-item animated-delay-{{ forloop.index }}{% endif %}"
+             data-tag>      
+          <label for="directory_label_0_{{ section.id }}" class="visually-hidden">{{ label_select | split: '-' | first }}</label>
+          <div class="option-values">     
+            <div class="directory_label_{{ i }}_{{ section.id }} option-select"> 
+              <select id="directory_label_{{ i }}_{{ section.id }}" disabled="disabled" class="tag-select no-select option-select-input scroll-bar-v">
+                <option class="first" selected value data-select="{{ label_select | split: '-' | first }}">{{ label_select | split: '-' | first }}</option>
+              </select>
+              <span class="option-select-arrow">{%- render 'icons.theme', id: 'arrow', size: 12 -%}</span>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}                
+    {%- endif -%}
+    <div{% if settings.animation_enable %} class="animated-item animated-delay-{{ tag }}"{% endif %}>
+      <button class="btn btn-secondary btn-full-width">{% if section.settings.button != blank %}{{ section.settings.button }}{% else %}{{ 'search.form.title' | t }}{% endif %}</button>
+    </div>
+  </form>
+</section>

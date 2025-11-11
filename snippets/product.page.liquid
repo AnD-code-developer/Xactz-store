@@ -1,0 +1,28 @@
+{% assign enable_slide = block.settings.enable_slide %}
+<div class="content-block product-rte rte{% if enable_slide %} content-slide{% endif %}"{% if enable_slide %} data-content-slide{% endif %} {{ block.shopify_attributes }}>
+  {%- liquid
+    if enable_slide
+      capture title
+        if block.settings.heading != blank
+          echo block.settings.heading
+        else
+          echo 'product.show_more' | t
+        endif
+      endcapture
+      render 'block.button', block: block, title: title, is_ignore: true
+    endif
+  -%}
+  <div class="content-slide-content" data-height>
+    <div class="content-slide-space">
+      {%- liquid
+        if block.settings.page != blank
+          echo pages[block.settings.page].content
+        else
+          echo '<p>'
+          echo 'general.onboarding.no_body' | t
+          echo '</p>'
+        endif
+      -%}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,135 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-blog-banner",
+      "blocks": {
+        "subject_gNKDwb": {
+          "type": "subject",
+          "settings": {
+            "layout_x": "left",
+            "layout_y": "middle",
+            "content_width_mobile": 90,
+            "content_width_desktop": 65,
+            "title": "{{ blog.title }}",
+            "title_h1": true,
+            "title_font": "primary",
+            "title_outline": "none",
+            "title_size": 48,
+            "responsive_size": true,
+            "title_sub": "",
+            "title_sub_font": "secondary",
+            "title_sub_outline": "none",
+            "title_sub_size": 30,
+            "include_rss": true,
+            "text_border": true,
+            "enable_description": true,
+            "link_1": "",
+            "link_1_seo": "",
+            "button_text_1": "Read More",
+            "link_style_1": "primary",
+            "link_2": "",
+            "link_2_seo": "",
+            "button_text_2": "Read More",
+            "link_style_2": "secondary",
+            "text_alignment": "left",
+            "text_color": "",
+            "text_color_hover": "",
+            "button_color": "",
+            "line_color": "",
+            "text_background_color": "#ffffff",
+            "text_background_gradient": "",
+            "text_background_opacity": 100
+          }
+        },
+        "image_tY8ctg": {
+          "type": "image",
+          "disabled": true,
+          "settings": {
+            "image_background": true,
+            "section_height_mobile": 50,
+            "section_height_desktop": 50,
+            "overlay_background_color": "",
+            "overlay_background_gradient": "",
+            "overlay_opacity": 10,
+            "enable_lazy": false,
+            "insta_filter": "none",
+            "insta_filter_mobile": "none"
+          }
+        }
+      },
+      "block_order": [
+        "subject_gNKDwb",
+        "image_tY8ctg"
+      ],
+      "settings": {
+        "image_size": false,
+        "full_width": true,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 20,
+        "margin_bottom_mobile": 0,
+        "padding_top_desktop": 60,
+        "padding_bottom_desktop": 20,
+        "margin_bottom_desktop": 0,
+        "padding_border": false
+      }
+    },
+    "main": {
+      "type": "main-blog",
+      "settings": {
+        "enable_lazy": false,
+        "image_height_featured": "75",
+        "image_position_featured": "50-50",
+        "insta_filter_featured": "none",
+        "include_author_featured": true,
+        "include_date_featured": true,
+        "title_size_featured": 42,
+        "excerpt_limit_featured": 100,
+        "text_alignment_featured": "left",
+        "enable_social_sharing": true,
+        "enable_newsletter": true,
+        "number_of_articles": 3,
+        "items_per_row_mobile": 1,
+        "padding_grid_mobile": 20,
+        "items_per_row_desktop": 3,
+        "padding_grid_desktop": 20,
+        "include_border": true,
+        "image_height": "50",
+        "image_position": "50-50",
+        "insta_filter": "none",
+        "include_author": true,
+        "include_date": true,
+        "excerpt_limit": 25,
+        "text_alignment": "left",
+        "text_color": "",
+        "text_color_hover": "",
+        "button_color": "",
+        "line_color": "",
+        "image_size": false,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 20,
+        "margin_bottom_mobile": 10,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 20,
+        "margin_bottom_desktop": 0,
+        "padding_border": true
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "main"
+  ]
+}

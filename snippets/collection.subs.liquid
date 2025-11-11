@@ -1,0 +1,26 @@
+{%- liquid
+  assign current = false
+  assign link_handle = link.url | split: '/' | last | url_decode
+  if link_handle == collection.handle
+  	assign current = true
+  endif
+  if current
+    assign sub_linksCt = 0
+    for link in link.links
+      if link.type == 'collection_link' or link.type == 'catalog_link'
+        capture sub_links
+          increment sub_linksCt
+        endcapture
+      endif
+    endfor
+    assign sub_links = sub_links | plus:1
+    if sub_links > 1
+      for link in link.links
+        if link.type == 'collection_link' or link.type == 'catalog_link'   
+          assign sub_collection_url = link.url | split: 'collections/' | last | split: '/' | first | url_decode
+          render 'block.collection.loop', section: section, collection: collections[sub_collection_url], image_ratio: image_ratio, is_subs: is_subs, size: size, sizes: sizes, padding: padding, forloop: forloop, lazy: lazy
+        endif
+      endfor
+    endif
+  endif
+-%}

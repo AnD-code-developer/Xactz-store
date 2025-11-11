@@ -1,0 +1,245 @@
+<div id="filters" class="collection-filters scroll-bar-v" aria-hidden="true" hidden>  
+  <button type="button" class="close-button close-button-filters alt" aria-label="{{ 'general.form.close' | t | escape }}" data-look-close>{%- render 'icons.theme', id: 'close', size: 18 -%}</button>  
+  {% capture active %}
+    {%- for filter in collection.filters -%}
+      {%- if filter.type == 'price_range' -%}
+        {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+          {%- assign min_value = filter.min_value.value | default: 0 -%}
+          {%- assign min = min_value | money_without_trailing_zeros -%}
+          {%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+          {%- assign max = max_value | money_without_trailing_zeros -%}
+          <a href="{{ filter.url_to_remove }}" title="{{ 'collection.refine.remove_min_max' | t: min: min, max: max | escape }}" class="keyed-inside" data-refine="{{ filter.url_to_remove | split: '?' | last | split: '&sort' | first | escape  }}" data-filter-option>
+            {%- render 'icons.theme', id: 'close', size: 8 -%}{{ min_value | money_without_trailing_zeros }} - {{ max_value | money_without_trailing_zeros }}
+          </a>
+        {%- endif -%}
+      {%- else -%}
+        {%- for filter_value in filter.active_values -%}
+          <a href="{{ filter_value.url_to_remove }}" title="{{ 'collection.refine.remove_filter' | t: label: filter.label, value: filter_value.label | escape }}" class="keyed-inside" data-refine="{{ filter_value.url_to_remove | split: '?' | last | split: '&sort' | first | escape  }}" data-filter-option>
+            {%- render 'icons.theme', id: 'close', size: 8 -%}{{ filter.label }}: {{ filter_value.label }}
+          </a>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {% endcapture %}  
+  {%- liquid
+  	if collection.url
+      assign results_url = collection.url | append: '?sort_by=' | append: collection.sort_by
+    else
+      assign terms = collection.terms | escape
+      assign results_url = '?q=' | append: terms | append: '&type=product&options%5Bunavailable_products%5D=show&options%5Bprefix%5D=last&sort_by=' | append: collection.sort_by
+    endif
+  -%}
+  <div id="filters-container">  
+    {% if active != blank %}
+      <div id="filters-active" data-filters-active>
+        <a href="{{ results_url }}" title="{{ 'collection.refine.clear' | t | escape }}" class="keyed-inside" data-filter-option>{%- render 'icons.theme', id: 'close', size: 8 -%}{{ 'collection.refine.clear' | t }}</a>
+        {{ active }}
+      </div>
+    {% endif %}    
+    <form id="filters-form" class="line-items">  
+      {%- if request.page_type == 'search' -%}
+        <input type="hidden" name="q" value="{{ search.terms | escape }}">
+      {%- endif -%}  
+      {%- for filter in collection.filters -%}  
+        {% capture label %}
+          <legend id="label-{{ filter.label | handleize }}" class="option-value-name">{{ filter.label }}{% if filter.active_values.size > 0 %} ({{ filter.active_values.size }})<a href="{{ filter.url_to_remove }}" title="{{ 'collection.refine.reset' | t | escape }}" data-filter-option>{%- render 'icons.theme', id: 'close', size: 10 -%}</a>{% endif %}</legend>
+          {%- if filter.operator == 'AND' -%}
+            <p class="match body-font-12">{{ 'collection.refine.match' | t }}</p>
+          {%- endif -%}
+        {% endcapture %}          
+        {%- case filter.type -%}  
+          {%- when 'boolean' or 'list' -%}          
+            {%- liquid
+              assign visual_filter = false
+              if filter.presentation == 'swatch' or filter.presentation == 'image'
+                assign visual_filter = true
+              endif
+             -%}          
+            {% capture group %}  
+              {%- for filter_value in filter.values -%}        
+                {% capture input %}
+                  <input id="collection-filter-{{ filter.param_name }}-{{ forloop.index }}"
+                         class="option-value-input"
+                         type="checkbox"
+                         name="{{ filter_value.param_name }}"
+                         value="{{ filter_value.value }}"
+                         {% if filter_value.active %} checked{% endif %}
+                         {% if filter_value.count == 0 and filter_value.active == false %} disabled{% endif %}>
+                {% endcapture %}
+                  {% if visual_filter %}                    
+                    {%- liquid
+                      assign limit = 'collection.filter_limit' | t | escape
+                      assign img_src = blank
+                      if filter.presentation == 'swatch'
+                        assign img_src = filter_value.swatch.image           
+                      elsif filter.presentation == 'image'
+                        assign img_src = filter_value.image.src 
+                      else
+                        paginate shop.metaobjects.shopify--color-pattern.values by limit
+                          for v in shop.metaobjects.shopify--color-pattern.values
+                            if v.label == filter_value.label
+                              assign img_src = v.image.value
+                            endif
+                          endfor
+                        endpaginate
+                      endif  
+                      if img_src == blank
+                        capture color
+                          if filter_value.swatch.color
+                            echo filter_value.swatch.color
+                          else                    
+                            capture new_value
+                              paginate shop.metaobjects.shopify--color-pattern.values by limit
+                                for v in shop.metaobjects.shopify--color-pattern.values
+                                  if v.label == filter_value.label
+                                    echo v.color
+                                  endif
+                                endfor
+                              endpaginate
+                            endcapture
+                            if new_value != blank
+                              echo new_value
+                            else           
+                              echo filter_value.label
+                            endif
+                          endif
+                        endcapture
+                      endif
+                    -%}
+                    <div class="option-value{% if filter_value.active %} option-selected{% endif %}{% if filter_value.count == 0 and filter_value.active == false %} option-disabled{% endif %}{% if section.settings.enable_filters_rounded %} option-value-rounded{% endif %} option-value-has-color{% if img_src != blank %} option-value-has-image{% endif %}">
+                      <label for="collection-filter-{{ filter.param_name }}-{{ forloop.index }}">{{ filter_value.label }}</label>
+                      <span class="label option-value-name{% if img_src != blank %} option-value-image{% endif %}"{% if img_src == blank %} style="background-color:{{ color }};"{% endif %}>
+                        {%- liquid
+                          if img_src != blank
+                            assign img_size = 40
+                            assign sizes = '40px'                             
+                            capture alt
+                              if img_src.alt != blank
+                                echo img_src.alt
+                              else
+                                echo filter.label
+                                echo ' '
+                                echo filter_value.label
+                              endif
+                            endcapture                           
+                            render 'image.load', img_src: img_src, size: img_size, sizes: sizes, alt: alt, lazy: 'eager'
+                          endif
+                        -%}
+                      </span>
+                      {{ input }}
+                    </div>
+                  {% else %}                        
+                    <li class="input-wrapper input-container{% if filter_value.count == 0 and filter_value.active == false %} disabled{% endif %}">
+                      {{ input }}
+                      <label for="collection-filter-{{ filter.param_name }}-{{ forloop.index }}" class="{% if filter_value.count == 0 and filter_value.active == false %}disabled{% endif %}"><span{% unless filter_value.count == 0 and filter_value.active == false %} class="underline"{% endunless %}>{{ filter_value.label }}{% if section.settings.enable_filters_number %} ({{ filter_value.count }}){% endif %}</span></label>
+                    </li>{% unless forloop.last %},{% endunless %}
+                  {% endif %}
+              {%- endfor -%}
+            {% endcapture %}
+            {% if group != blank %}
+              <div class="option">
+                {% if visual_filter %}  
+                  <div class="option-values">
+                    <fieldset aria-labelledby="label-{{ filter.label | handleize }}">
+                      {{ label }}
+                      {{ group }}
+                    </fieldset>
+                  </div>
+                {% else %}
+                  <fieldset aria-labelledby="label-{{ filter.label | handleize }}">
+                    {%- liquid
+                      echo label
+                      assign new_group = group | split: ','
+                      echo '<ul>'
+                        if new_group.size > section.settings.enable_filters_limit and section.settings.enable_filters_limit > 0
+                          for f in new_group limit: section.settings.enable_filters_limit
+                            echo f
+                          endfor
+                          echo '<div class="content-slide" data-content-slide>'
+                            echo '<div class="content-slide-content ignore" data-height><div class="content-slide-space">'
+                              for f in new_group offset: section.settings.enable_filters_limit
+                                echo f
+                              endfor
+                            echo '</div></div>'
+                            render 'block.button', block: block, is_filter: true, label: filter.label
+                          echo '</div>'
+                        else
+                          echo new_group
+                        endif
+                      echo '</ul>'
+                    -%}
+                  </fieldset>
+                {% endif %}
+              </div>
+            {% endif %}
+          {%- when 'price_range' -%}
+            {%- liquid
+              assign max_price_value = filter.max_value.value | divided_by: 100.0
+              assign min_price_value = filter.min_value.value | divided_by: 100.0
+              assign min_price = '0'
+              assign max_price = filter.range_max | divided_by: 100.0 | ceil
+              capture mn
+                if filter.min_value.value and filter.min_value.value > 0 and filter.min_value.value < filter.range_max
+                  echo min_price_value
+                else
+                  echo min_price
+                endif
+              endcapture
+              capture mx
+                if filter.max_value.value and filter.max_value.value < filter.range_max and filter.max_value.value > 0
+                  echo max_price_value
+                else
+                  echo max_price
+                endif
+              endcapture
+              assign mxmnhun = 100.0 | divided_by: max_price       
+              assign mxmnhunmn = mxmnhun | times: mn
+              assign mxmnhunmx = mxmnhun | times: mx
+              assign rtl = false
+              assign rtl_list = 'ae,ar,arc,bcc,bqi,ckb,dv,fa,glk,ha,he,kwh,ks,ku,mzn,nqo,pnb,ps,sd,ug,ur,yi' | split: ','
+              assign iso_code = localization.language.iso_code | split: '-' | first
+              if rtl_list contains iso_code
+                assign rtl = true
+              endif
+            -%}
+            <fieldset aria-labelledby="label-{{ filter.label | handleize }}" class="option price-filter">
+              {{ label }}
+              <div slider id="slider-distance">
+                <div>                  
+                  <div inverse-left style="width:{{ mxmnhunmn }}%;"></div>
+                  <div inverse-right style="width:{{ 100.0 | minus: mxmnhunmx }}%;"></div>
+                  {% if rtl %}
+                    <div range style="right:{{ mxmnhunmn }}%;left:{{ 100.0 | minus: mxmnhunmx }}%;"></div>            
+                    <span thumb class="right" style="right:{{ mxmnhunmn }}%;"><span id="price-min-input">{{ mn | times: 100 | round | money_without_trailing_zeros }}</span></span>
+                    <span thumb class="left" style="right:{{ mxmnhunmx }}%;"><span id="price-max-span">{{ mx | times: 100 | round | money_without_trailing_zeros }}</span></span>
+                  {% else %}
+                    <div range style="left:{{ mxmnhunmn }}%;right:{{ 100.0 | minus: mxmnhunmx }}%;"></div>            
+                    <span thumb class="left" style="left:{{ mxmnhunmn }}%;"><span id="price-min-input">{{ mn | times: 100 | round | money_without_trailing_zeros }}</span></span>
+                    <span thumb class="right" style="left:{{ mxmnhunmx }}%;"><span id="price-max-span">{{ mx | times: 100 | round | money_without_trailing_zeros }}</span></span>
+                  {% endif %}
+                </div>  
+                <label for="price-min-slide" class="visually-hidden">{{ 'collection.refine.from' | t }}</label>
+                <input id="price-min-slide"
+                       class="price-input"
+                       name="{{ filter.min_value.param_name }}"
+                       type="range"
+                       value="{{ mn }}" 
+                       max="{{ max_price }}" 
+                       min="{{ min_price }}" 
+                       step="1" />                
+                <label for="price-max-slide" class="visually-hidden">{{ 'collection.refine.to' | t }}</label>
+                <input id="price-max-slide"
+                       class="price-input"                  
+                       name="{{ filter.max_value.param_name }}"                  
+                       type="range"
+                       value="{{ mx }}" 
+                       max="{{ max_price }}" 
+                       min="{{ min_price }}" 
+                       step="1"/>
+              </div>                    
+            </fieldset>
+        {%- endcase -%}
+      {%- endfor -%}
+    </form>
+  </div>  
+</div>

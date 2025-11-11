@@ -1,0 +1,92 @@
+{%- liquid
+  if custom != blank
+    assign custom = custom
+  else
+    assign custom = block.settings.block_icon_custom
+  endif
+-%}
+{% unless custom != blank %}
+  {%- liquid
+    if icon_color != blank
+      assign icon_color = icon_color
+    elsif block.settings.block_icon_color.alpha != 0.0 and block.settings.block_icon_color.alpha != blank
+      assign icon_color = block.settings.block_icon_color
+    else
+      assign icon_color = settings.color_title_text
+    endif
+    if icon_color_h != blank
+      assign icon_color_h = icon_color_h
+    elsif block.settings.block_icon_color_h.alpha != 0.0 and block.settings.block_icon_color_h.alpha != blank
+      assign icon_color_h = block.settings.block_icon_color_h
+    else
+      assign icon_color_h = settings.color_accent
+    endif
+    capture svg_size
+      if size
+        echo size
+      else
+        echo '24'
+      endif
+    endcapture
+  -%}  
+  <svg class="icon{{ class }}" viewBox="0 0 24 24" height="{{ svg_size }}" width="{{ svg_size }}" aria-hidden="true" focusable="false" role="presentation" fill="none" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs">
+    {%- liquid 
+      if id contains 'number-'
+        render 'icons.numbers', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'trust-'
+        render 'icons.trust', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'motivation-'
+        render 'icons.motivation', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'support-'
+        render 'icons.support', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'commerce-'
+        render 'icons.commerce', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'information-'
+        render 'icons.information', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'miscellaneous-'
+        render 'icons.miscellaneous', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'fashion-'
+        render 'icons.fashion', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'laundry-'
+        render 'icons.laundry', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'food-'
+        render 'icons.food', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'people-'
+        render 'icons.people', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'furniture-'
+        render 'icons.furniture', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'vehicles-'
+        render 'icons.vehicles', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'animals-'
+        render 'icons.animals', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'holidays-'
+        render 'icons.holidays', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'sports-'
+        render 'icons.sports', id: id, color: icon_color, color_h: icon_color_h
+      elsif id contains 'health-'
+        render 'icons.health', id: id, color: icon_color, color_h: icon_color_h
+      endif
+    -%}    
+  </svg>
+{% else %}
+  {%- liquid
+    capture alt
+      if custom.alt != blank
+        echo custom.alt | escape
+      else
+        echo custom | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+      endif
+    endcapture
+    assign sizes = size | append: 'px'
+    assign style = sizes | prepend: 'width:'
+    echo '<span'
+    if class != blank
+      echo ' class="'
+      echo class
+      echo '"'
+    endif
+    echo '>'
+    echo custom | image_url: width: size | image_tag: alt: alt, sizes: sizes, style: style, loading: 'eager'
+    echo '</span>'
+  -%}
+{% endunless %}

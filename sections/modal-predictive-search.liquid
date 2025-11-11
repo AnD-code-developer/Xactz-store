@@ -1,0 +1,81 @@
+<div id="predictive-search-results" 
+     class="scroll-bar-v" 
+     data-slider-breakpoint="none"
+     data-predictive-search-list>
+  <div id="predictive-search-results-list" class="search-list section-card-wrapper" role="listbox" aria-labelledby="predictive-search-products">
+    <div class="container-inner">
+      {% style %}
+        .dynamic-block-{{ section.id }} {  
+          --grid-mobile: 20px;
+          --grid-desktop: 20px; 
+        }              
+      {% endstyle %}
+      {%- assign search_results = 0 -%}  
+      {% if predictive_search.performed %}  
+        {%- assign search_terms = predictive_search.terms -%}  
+        {% if predictive_search.resources.queries.size > 0 %}
+          <h2>{{ 'search.results.suggestions' | t }}</h2>
+          {%- assign search_results = search_results | plus: 1 -%}
+          <div class="search-result-query" role="option" aria-selected="false">
+            <ul role="listbox">
+              {% for query in predictive_search.resources.queries %}
+                <li id="search-query-{{ forloop.index }}" role="option">
+                  <a href="{{ query.url }}" title="{{ query.text }}">
+                    <span aria-label="{{ query.text }}">{{ query.styled_text }}</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}  
+        {% if predictive_search.resources.products.size > 0 %}
+          {% if search_results > 0 %}<h2>{{ 'search.results.product_count' | t: count: predictive_search.resources.products.size }}</h2>{% endif %}
+          {%- assign search_results = search_results | plus: 1 -%}
+          <div class="dynamic-block-{{ section.id }} section-card-rows mobile-rows-of-2 desktop-rows-of-4 product-rows" role="option" aria-selected="false">
+            {%- liquid
+              for product in predictive_search.resources.products
+                render 'block.product.loop', product: product, complementary: true, size: 285, sizes: 'auto', lazy: 'eager', forloop_index: forloop.index
+              endfor
+            -%}
+          </div>
+        {% endif %}  
+        {% if predictive_search.resources.collections.size > 0 %}
+          {% if search_results > 0 %}<h2>{{ 'search.results.collection_count' | t: count: predictive_search.resources.collections.size }}</h2>{% endif %}
+          {%- assign search_results = search_results | plus: 1 -%}
+          <div class="dynamic-block-{{ section.id }} section-card-rows mobile-rows-of-2 desktop-rows-of-4" role="option" aria-selected="false">
+            {%- liquid
+              for collection in predictive_search.resources.collections
+                render 'block.collection.loop', section: section, collection: collection, size: 285, sizes: 'auto', lazy: 'eager', padding: 'original', insta_filter: settings.insta_filter, forloop: forloop.index
+              endfor
+            -%}
+          </div>          
+        {% endif %}  
+        {% if predictive_search.resources.articles.size > 0 %}
+          {% if search_results > 0 %}<h2>{{ 'search.results.article_count' | t: count: predictive_search.resources.articles.size }}</h2>{% endif %}
+          {%- assign search_results = search_results | plus: 1 -%}
+          <div class="dynamic-block-{{ section.id }} section-card-rows mobile-rows-of-1 desktop-rows-of-2 product-rows" role="option" aria-selected="false">
+            {%- liquid
+              for article in predictive_search.resources.articles
+                render 'block.article.loop', section: section, article: article, size: 589, sizes: 'auto', lazy: 'eager', padding: 'original', insta_filter: settings.insta_filter, excerpt: 40, forloop: forloop
+              endfor
+            -%}
+          </div>          
+        {% endif %}  
+        {% if predictive_search.resources.pages.size > 0 %}
+          {% if search_results > 0 %}<h2>{{ 'search.results.page_count' | t: count: predictive_search.resources.pages.size }}</h2>{% endif %}
+          {%- assign search_results = search_results | plus: 1 -%}
+          <div class="dynamic-block-{{ section.id }} section-card-rows mobile-rows-of-1 desktop-rows-of-2 product-rows" role="option" aria-selected="false">
+            {%- liquid
+              for page in predictive_search.resources.pages
+                render 'block.article.loop', section: section, article: page, excerpt: 40, forloop: forloop
+              endfor
+            -%}
+          </div>
+        {% endif %}      
+      {% endif %}  
+      <div class="search-list-button" role="option">
+        <button class="btn btn-secondary btn-full-width">{{ 'search.results.results_count' | t: count: search_results, query: search_terms }}</button>
+      </div>
+    </div>
+  </div>
+</div>

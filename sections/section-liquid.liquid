@@ -1,0 +1,151 @@
+{% if section.settings.liquid != blank %}  
+  {%- liquid
+    assign full_width = section.settings.full_width
+    assign background_color = false
+    if section.settings.background_color.alpha != 0.0 and section.settings.background_color.alpha != blank
+      assign background_color = true
+      assign background_color_section = section.settings.background_color
+    endif
+    if section.settings.background_gradient != blank
+      assign background_color = true
+      assign background_color_section = section.settings.background_gradient
+    endif
+  -%}  
+  {% style %}
+    .dynamic-section-{{ section.id }} {
+      --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+      --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+      --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+      --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+      --section-margin-bottom-mobile: {{ section.settings.margin_bottom_mobile }}px;
+      --section-margin-bottom-desktop: {{ section.settings.margin_bottom_desktop }}px; 
+      {%- if background_color -%}
+        --color_background_outline:{{ section.settings.background_color }};
+        --color_background:{{ background_color_section }};
+        --color_background_section:{{ background_color_section }};
+      {%- endif -%}
+    }    
+  {% endstyle %}  
+  <div class="dynamic-section dynamic-section-{{ section.id }}{% if full_width %} section-background{% endif %}">
+    <section data-section-id="{{ section.id }}" 
+             data-section-type="liquid-{{ section.id }}"
+             class="relative{% if full_width %} section-skip{% endif %}">
+      <div class="section-layout section-padding-top section-padding-bottom section-margin-bottom{% if section.settings.padding_border %} section-border{% endif %}{% unless full_width %} section-background{% endunless %}">
+        {{ section.settings.liquid }}
+      </div>
+    </section>
+  </div>
+{% endif %}
+{% schema %}
+  {
+    "name": "t:sections.section.titles.liquid.content",
+    "settings": [
+      {
+         "type": "liquid",
+         "id": "liquid",
+         "label": "t:sections.section.titles.liquid.content",
+         "default": "<div class='text-center'><h2>{{ shop.name }}</h2><p>{{ powered_by_link }}</p></div>"
+      },      
+      {
+        "type": "header",
+        "content": "t:sections.section.name.content"
+      },
+      {
+        "id": "full_width",
+        "type": "checkbox",
+        "label": "t:sections.image.full.label",
+        "default": true
+      },
+      {
+        "id": "background_color",
+        "type": "color",
+        "label": "t:sections.section.settings.background_color.label"
+      },
+      {
+        "id": "background_gradient",
+        "type": "color_background",
+        "label": "t:sections.section.settings.background_gradient.label"
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.mobile.content"
+      },
+      {
+        "id": "padding_top_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "padding_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "margin_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 20
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.desktop.content"
+      },
+      {
+        "id": "padding_top_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "padding_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "margin_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 40
+      },
+      {
+        "id": "padding_border",
+        "type": "checkbox",
+        "label": "t:sections.section.settings.border.label",
+        "default": false
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.section.titles.liquid.content",
+		"category": "t:categories.layout"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,313 @@
+{%- liquid   
+  assign product_item_style = settings.product_item_style
+  if settings.enable_image_crop and product_item_style != 'natural'
+    assign product_item_style = product_item_style | prepend: 'cropped-'
+  endif
+  assign use_badges = settings.badge_enable
+  assign show_vendors = settings.vendor_enable
+  if settings.quick_enable and settings.quick_location == 'quick-grid' and complementary == true
+    assign quick_enable = false
+  else
+    assign quick_enable = settings.quick_enable
+  endif
+  assign variant_color_enable = settings.variant_color_enable   
+  assign variant_color_size = 0   
+  if settings.variant_color_single
+    assign variant_color_single = 0
+  else
+    assign variant_color_single = 1
+  endif
+  assign on_sale = false
+  assign image_hover = settings.image_hover
+  assign variant_for_unit_price = product.variants | sort: 'price' | first
+  for variant in product.variants
+    if variant.price < variant.compare_at_price
+      assign on_sale = true
+    endif
+  endfor
+  capture price
+    echo '<span class="money" data-variant-price>'
+    if settings.currency_enable
+      echo product.price_min | money_with_currency
+    else
+      echo product.price_min | money
+    endif
+    if settings.products_sale
+      unless product.price_varies == false and product.compare_at_price_varies
+        echo '&nbsp;&nbsp;<span class="money compare">'
+        if settings.currency_enable
+          echo product.compare_at_price | money_with_currency
+        else
+          echo product.compare_at_price | money
+        endif
+        echo '</span>'
+      endunless
+    endif
+    echo '</span>'    
+  endcapture   
+-%}
+<article{% if shop_look %} id="hotspot-{{ block.id }}-{{ forloop.index }}"{% endif %} class="section-card slide product-item text-{{ settings.text_alignment }}{% if settings.animation_enable %} animated-item animated-delay-{{ forloop.index0 }}{% endif %}"{% if quick_enable %} data-loaded="false"{% endif %}{% if quick_enable %} data-title="{{ product.title | escape }}" data-product-{{ settings.quick_location }} data-product-item-quick{% endif %} data-product-item="{{ product.id }}">
+  {%- liquid
+    if text_background_opacity > 0 and text_background_color
+      echo '<div class="section-layout-card-overlay"></div>'
+    endif
+    render 'image.sizes', size: size
+  -%}
+  {% if quick_enable %}
+    <div class="product-item-quick scroll-bar-v" aria-hidden="true" hidden></div>
+  {% endif %}  
+  <div class="section-card-content{% if quick_enable %} product-item-slide{% endif %}">
+    <figure class="product-item-image product-item-style-{{ product_item_style }}{% if image_hover and product.media.size > 1 %} product-item-image-hover{% endif %}{% unless product.featured_media %} product-item-no-image{% endunless %} {{ settings.insta_filter }}" data-product-item-image>
+      <a href="{% unless settings.seo %}{{ product.url | within: collection }}{% else %}{{ product.url }}{% endunless %}" title="{{ product.title | escape }}" tabindex="-1">
+        {%- liquid
+          assign crop = settings.enable_image_crop
+          case settings.product_item_style
+            when 'natural'
+              assign padding = product.featured_media.preview_image.aspect_ratio | times: 100
+              assign crop = false
+            when 'small'
+              assign padding = 75
+            when 'medium'
+              assign padding = 100
+            when 'large'
+              assign padding = 150
+          endcase
+          if lazy_total != blank
+            if forloop.index <= lazy_total
+              assign lazy = lazy
+            else
+              assign lazy = 'lazy'
+            endif
+          endif
+          if settings.enable_image_crop
+            assign image_position = '50-50'
+          endif
+          if product.featured_media
+            capture alt
+              if product.featured_media.preview_image.alt != blank
+                echo product.featured_media.preview_image.alt | escape
+              else
+                echo product.title | escape
+
+              endif
+            endcapture
+            render 'image.load', img_src: product.featured_media.preview_image, size: size, new_size: size, padding: padding, image_position: image_position, sizes: sizes, alt: alt, loop: true, crop: crop, lazy: lazy
+            if image_hover and product.media.size > 1
+              capture alt
+                if product.media[1].preview_image.alt != blank
+                  echo product.media[1].preview_image.alt | escape
+                else
+                  echo product.title | escape
+                endif
+              endcapture
+              render 'image.load', img_src: product.media[1].preview_image, size: size, new_size: size, padding: padding, image_position: image_position, sizes: sizes, alt: alt, class: 'product-image-alternate', loop: true, crop: crop, lazy: lazy  
+            endif
+            if variant_color_enable != 'none'
+              for option in product.options_with_values        
+                for value in option.values
+                  if value.swatch
+                    assign variant_color_size = variant_color_size | plus: 1
+                    assign img_src = value.variant.image
+                    if img_src != blank
+                      if settings.product_item_style == 'natural'
+                        assign padding = img_src.aspect_ratio | times: 100
+                      endif
+                      capture class
+                        echo 'product-image-swatch '
+                        echo value | handle
+                        echo '-'
+                        echo forloop.index0
+                        echo '-'
+                        echo product.id
+                        echo section.id      
+                      endcapture
+                      render 'image.load', img_src: img_src, size: size, new_size: size, padding: padding, image_position: image_position, sizes: sizes, alt: alt, class: class, loop: true, crop: crop, lazy: lazy
+                    endif
+                  endif          
+                endfor
+              endfor
+            endif
+          elsif settings.product_item_placeholder != blank
+            capture alt
+              if settings.product_item_placeholder.alt != blank
+                echo settings.product_item_placeholder.alt | escape
+              else
+                echo product.title | escape
+              endif
+            endcapture
+            render 'image.load', img_src: settings.product_item_placeholder, size: size, new_size: size, padding: padding, image_position: image_position, sizes: sizes, alt: alt, loop: true, crop: crop, lazy: lazy
+          else
+            assign index = forloop.index0 | modulo: 4 | plus: 1
+            echo 'product-apparel-' | append: index | placeholder_svg_tag: 'placeholder-svg'
+          endif
+        -%}
+      </a>      
+      {%- liquid
+        if use_badges
+          if product.available != true
+            echo '<span class="product-item-badge">'
+              echo 'product.item.availability.out_of_stock' | t
+            echo '</span>'
+          elsif on_sale
+            echo '<span class="product-item-badge">'
+              echo 'product.item.badges.on_sale' | t
+            echo '</span>'
+          endif
+        endif
+      -%}
+    </figure>            
+    {% if show_vendors %}
+      {%- liquid
+        assign product_vendor_handle = product.vendor | handle
+        if collections[product_vendor_handle].handle == product_vendor_handle
+          assign vendor_url = collections[product_vendor_handle].url
+        else
+          assign vendor_url = product.vendor | url_for_vendor
+        endif
+      -%}
+      <span class="product-item-vendor"><a href="{{ vendor_url }}" title="{{ product.vendor | escape }}" class="underline" tabindex="-1">{{ product.vendor }}</a></span>
+    {% endif %}  
+    <h4 class="product-item-title section-title-{{ settings.title_font | default: 'primary' }} body-font-{{ settings.title_size }}"><a href="{% unless settings.seo %}{{ product.url | within: collection }}{% else %}{{ product.url }}{% endunless %}" title="{{ product.title | escape }}" class="underline keyed product">{{ product.title }}</a></h4>    
+    
+    {%- liquid
+      assign meta = 'meta_enable'
+      assign metafirst = settings[meta] | split:':' | last | split:'.' | first
+      assign metalast = settings[meta] | split:':' | last | split:'.' | last
+      assign metatext = product.metafields[metafirst][metalast]
+      if settings.meta_enable != blank and metatext.value != blank
+        echo '<div class="product-item-details product-meta">'
+          echo metatext | metafield_tag
+        echo '</div>'
+      endif
+      if product.price_min > 0
+        assign variant = product.variants | sort: 'price' | first
+      else
+        if product.price_varies
+          assign variant = product.variants | sort: 'price' | last
+        endif
+      endif
+      if settings.inv_enable and product.available == false and variant.incoming
+        assign size = 14
+        assign size_small = size | times: 0.80
+        echo '<span class="product-inventory" role="status"><p class="body-font-'
+        echo size
+        echo '"><span class="inventory-text inventory-transfer">'
+            echo '<span class="inventory-icon">'
+              render 'icons', id: settings.block_icon_transfer, icon_color: settings.block_icon_color_transfer, icon_color_h: settings.block_icon_color_h_transfer, custom: settings.block_icon_custom_transfer, size: size_small
+            echo '</span>'
+            assign today_date = 'now' | date: '%s'
+            assign delivery_date = variant.next_incoming_date | date: '%s'
+            assign date = variant.next_incoming_date | date: '%b %e'
+            if variant.next_incoming_date != blank and delivery_date > today_date
+              echo 'product.item.availability.inventory_more_html' | t: date: date
+            else
+              echo 'product.item.availability.inventory_soon' | t
+            endif
+          echo '</span></p></span>'
+      endif
+    -%}    
+    <div class="product-item-details-grid{% if quick_enable %} quick{% endif %}">      
+      {%- liquid
+        if variant_color_enable != 'none'
+          assign is_product = false
+          assign optionNumber = 0
+          assign optionBlockNumber = 0
+          assign img_size = 20
+          assign sizes = '20px'
+          if variant_color_enable == 'var-img-zoom-block'
+            assign img_size = 40
+            assign sizes = '40px'
+          endif
+          for option in product.options_with_values
+            capture optionNumber
+              echo optionNumber | plus: 1
+            endcapture
+            capture optionBlockNumber
+              echo optionBlockNumber | plus: 1
+            endcapture
+            capture is_swatch
+              echo option.values | map: 'swatch' | compact
+            endcapture
+            assign is_color = false
+            if is_swatch != blank
+              assign is_color = true
+            endif
+            assign optionIndex = forloop.index0
+            if is_color and variant_color_size > variant_color_single
+              capture product_options_variants
+                echo '<div class="product-item-details scroll-bar-h">'
+                  render 'product.options.variants', product: product, section: section, is_product: is_product, option: option, _type: 'radio', size: img_size, sizes: sizes, optionNumber: optionNumber, optionBlockNumber: optionBlockNumber, rounded: settings.variant_color_rounded, is_swatch: is_swatch, is_color: is_color, variant_color_enable: variant_color_enable, optionIndex: optionIndex
+                echo '</div>'
+              endcapture
+            endif
+          endfor
+        endif
+        if quick_enable
+          echo '<button type="button" class="quick-btn keyed-inside" aria-label="'
+          echo 'product.quickshop' | t
+          echo '" data-quick data-quick-id="'
+          echo product.id
+          echo '" data-quick-url="'
+          echo product.url | split: '?' | first
+          echo '">'
+          render 'icons.theme', id: settings.quick_icon, size: 20
+          echo '</button>'
+        endif
+        if product_options_variants
+          echo product_options_variants
+        endif
+      -%}
+      <div class="product-item-details text-left last">        
+        <div class="product-price product-item-price">
+          {%- liquid
+            unless use_badges
+              if product.available != true
+                echo 'product.item.availability.out_of_stock' | t
+              elsif on_sale and product.price_varies
+                echo 'product.item.price.on_sale_range_html' | t: price: price
+              elsif on_sale
+                echo 'product.item.price.on_sale_html' | t: price: price
+              elsif product.price_varies
+                echo 'product.item.price.range_html' | t: price: price
+              else
+                echo price
+              endif
+            else
+              if on_sale and product.price_varies
+                echo 'product.item.price.on_sale_range_html' | t: price: price
+              elsif on_sale
+                echo 'product.item.price.on_sale_html' | t: price: price
+              elsif product.price_varies
+                echo 'product.item.price.range_html' | t: price: price
+              else
+                echo price
+              endif
+            endunless
+          -%}    
+          {% if variant_for_unit_price.unit_price %}      
+            {%- capture unit_price -%}
+              <span class="product-price__unit-price-amount money" data-unit-price-amount>{% if settings.currency_enable %}{{ variant_for_unit_price.unit_price | money_with_currency }}{% else %}{{ variant_for_unit_price.unit_price | money }}{% endif %}</span>
+            {%- endcapture -%}
+            {%- capture unit_measure -%}
+              <span class="product-price__unit-price-measure" data-unit-price-measure>
+                {%- liquid
+                  if variant_for_unit_price.unit_price_measurement.reference_value != 1
+                    echo variant_for_unit_price.unit_price_measurement.reference_value
+                  endif
+                  echo variant_for_unit_price.unit_price_measurement.reference_unit
+                -%}
+              </span>
+            {%- endcapture -%}
+            <div class="product-price__unit-price{% unless variant_for_unit_price.unit_price_measurement %} hidden{% endunless %}" data-unit-price>{{ 'product.price_per_unit_html' | t: unit_price: unit_price, unit_measure: unit_measure | strip_newlines }}</div>
+            {% assign variant_for_unit_price = blank %}
+          {% endif %}
+        </div>    
+        {%- liquid
+          if settings.reviews_enable
+            render 'product.rating', product: product, grid: true
+          endif
+        -%}        
+      </div>
+    </div>
+  </div>  
+</article>

@@ -1,0 +1,17 @@
+{%- liquid
+  if form.errors
+    echo '<div class="errors"><ul>'
+      for error in form.errors
+        echo '<li>'
+          if error == 'form'
+            echo form.errors.messages[error]
+          else
+            echo form.errors.translated_fields[error] | capitalize
+            echo ' - '
+            echo form.errors.messages[error]
+          endif
+        echo '</li>'
+      endfor
+    echo '</ul></div>'
+  endif
+-%}

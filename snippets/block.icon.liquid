@@ -1,0 +1,139 @@
+{%- liquid
+  assign icon_size = block.settings.icon_size
+  assign icon_container_size = block.settings.icon_container_size
+  assign text_color = false
+  if block.settings.text_color.alpha != 0.0 and block.settings.text_color.alpha != blank
+    assign text_color = true
+    assign text_color_block = block.settings.text_color
+  endif
+  assign line_color = false
+  if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+    assign line_color = true
+    assign line_color_block = block.settings.line_color
+  endif   
+  assign text_background_color = false
+  assign text_background_opacity = block.settings.text_background_opacity | times: 0.01
+  if block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+    assign text_background_color = true
+    assign text_background_color_block = block.settings.text_background_color
+  endif   
+  if block.settings.text_background_gradient != blank
+    assign text_background_color = true
+    assign text_background_color_block = block.settings.text_background_gradient
+  endif   
+-%}
+{% style %}
+  .dynamic-block-{{ block.id }} {
+    h2.section-title {
+      font-size: {{ block.settings.title_size }}px;
+    }
+    h3.section-title {
+      font-size: {{ block.settings.title_sub_size }}px;
+    }    
+    {%- if text_color -%}
+      --color_title_text:{{ text_color_block }};
+      --color_text:{{ text_color_block }};
+    {%- endif -%}
+    --icon_max_height: {% if block.type == 'custom' %}{{ icon_container_size | divided_by: 2 }}{% else %}{{ icon_size }}{% endif %}px;
+    --icon_max_width: {% if block.type == 'custom' %}{{ icon_container_size }}{% else %}{{ icon_size }}{% endif %}px;
+    --icon_fill: {% if block.settings.block_icon_color.alpha != 0.0 and block.settings.block_icon_color.alpha != blank %}{{ block.settings.block_icon_color }}{% else %}var(--color_title_text){% endif %};
+    --icon_spacing: {{ block.settings.icon_spacing }}px;
+    {%- if line_color -%}
+      --color_border:{{ line_color_block }};
+    {%- endif -%}  
+    {%- if text_background_color -%} 
+      --color_background_outline:{{ block.settings.text_background_color }};
+      --text_overlay:{{ text_background_color_block }};
+      --text_overlay_opacity:{{ text_background_opacity }};
+    {%- endif -%}  
+  }              
+{% endstyle %}
+<article class="dynamic-block-{{ block.id }} section-card{% if is_collection %} collection-center{% endif %}{% if section.settings.include_border %} section-card-borders{% if text_background_opacity > 0 and text_background_color %} section-card-borders-no-padding{% endif %}{% endif %} slide section-card-{{ section.settings.layout_y }} text-{{ section.settings.text_alignment | default: 'left' }} section-layout{% if is_product %} product-block{% endif %}{% if build %} section-card-{{ layout_y }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }}{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}" {{ block.shopify_attributes }}>
+  {%- liquid
+    if is_collection
+      if text_background_opacity > 0 and text_background_color
+        echo '<div class="section-layout-card-overlay"></div>'
+      endif
+    endif
+  -%}
+  <div class="section-layout-card-wrapper skip">
+    <div class="section-layout-card{% unless text_background_opacity > 0 and text_background_color %} section-layout-card-no-padding{% endunless %}">      
+      {%- liquid
+        unless is_collection
+          if text_background_opacity > 0 and text_background_color
+            echo '<div class="section-layout-card-overlay"></div>'
+          endif
+        endunless
+        render 'image.sizes', size: icon_size
+        echo '<div class="icons'
+        if section.settings.logo_layout == 'left'
+          echo ' section-layout-card-left'
+        endif         
+        echo '">'         
+          echo '<div class="'
+            unless section.settings.logo_layout == 'left'
+              echo 'block-element '
+            endunless
+            echo 'section-figure icons '
+            if block.type == 'custom'
+              echo 'custom-icon '
+              if block.settings.icon_family == 'primary' or block.settings.icon_family == 'secondary'
+                echo 'section-title-'
+                echo block.settings.icon_family
+                echo ' '
+              else
+                echo block.settings.icon_family
+                echo ' '
+              endif
+            endif
+            if section.settings.logo_layout == 'top'
+              echo 'bottompad '
+            endif
+            echo 'section-card-'
+            echo section.settings.logo_layout_y
+            echo '">'
+            if block.type == 'icon'
+              render 'icons', block: block, id: block.settings.block_icon, class: ' block-element', size: icon_size
+            elsif block.type == 'image'
+              if block.settings.block_icon_custom != blank
+                render 'icons', block: block, id: block.settings.block_icon, class: ' block-element', size: icon_size
+              else
+                assign title = 'product-apparel-'        
+                assign index = forloop.index0 | modulo: 4 | plus: 1            
+                echo title | append: index | placeholder_svg_tag: 'placeholder-svg'
+              endif
+            else
+              echo '<svg viewBox="0 0 '
+              echo icon_container_size
+              echo ' '
+              echo icon_container_size | divided_by: 2
+              echo '"><text x="'
+              echo icon_container_size | divided_by: 2
+              echo '" y="'
+              echo icon_container_size | divided_by: 4
+              echo '" dominant-baseline="central" text-anchor="middle" font-size="'
+              echo icon_size
+              echo '">'
+              echo block.settings.block_icon
+              echo '</text></svg>'            
+            endif
+          echo '</div>'
+          if block.settings.title != blank or block.settings.title_sub != blank or block.settings.content != blank
+            echo '<div class="'
+            unless section.settings.logo_layout == 'left'
+              echo 'block-element '
+            endunless
+            echo 'text-'
+            echo section.settings.text_alignment
+            echo '">'
+              render 'block.text', section: section, block: block
+            echo '</div>'          
+          endif   
+        echo '</div>'
+      -%}      
+      {% if block.settings.link %}
+        <a class="section-layout-link keyed-inside" href="{{ block.settings.link }}"{% if block.settings.link_seo != blank %} title="{{ block.settings.link_seo | escape }}"{% endif %}></a>
+      {% endif %}      
+    </div>
+  </div>
+</article>

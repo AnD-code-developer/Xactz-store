@@ -1,0 +1,46 @@
+{%- liquid
+  for block in section.blocks
+    case block.type
+      when 'text'
+        echo '<div class="content-slide" '
+        echo block.shopify_attributes
+        echo '>' 
+          render 'block.text', section: section, block: block    
+        echo '</div>'
+      when 'slide'
+        echo '<div class="content-slide" '
+          echo block.shopify_attributes
+          echo ' data-content-slide>'             
+          capture title
+            echo block.settings.block_question
+          endcapture               
+          echo '<button type="button" value="slide-'
+          echo block.id
+          echo '-'
+          echo forloop.index
+          echo '" class="content-slide-btn slider-button keyed-skip" title="'
+          echo title
+          echo '" aria-label="'                        
+          echo title
+          echo '" content-slide-btn><span class="content-slide-toggle'
+          if block.settings.block_icon != 'none' or block.settings.block_icon_custom != blank
+            echo ' with-icon'
+          endif
+          echo '">' 
+            if block.settings.block_icon != 'none' or block.settings.block_icon_custom != blank
+              render 'icons', block: block, id: block.settings.block_icon, size: 22
+            else
+              render 'icons.theme', id: 'plus', size: 14
+            endif
+          echo '</span><h3 class="relative">'
+          echo title
+          echo '</h3></button>'              
+          if block.settings.block_text != blank
+            echo '<div class="content-slide-content" data-height><div class="content-slide-space">'
+              echo block.settings.block_text
+            echo '</div></div>'
+          endif
+        echo '</div>'
+    endcase
+  endfor
+-%}

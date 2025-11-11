@@ -1,0 +1,142 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "content_width_mobile": 100,
+        "content_width_desktop": 55,
+        "title_enable": true,
+        "title_h1": true,
+        "title_font": "primary",
+        "title_outline": "none",
+        "title_size": 42,
+        "responsive_size": true,
+        "title_sub": "",
+        "title_sub_font": "secondary",
+        "title_sub_outline": "none",
+        "title_sub_size": 30,
+        "title_alignment": "left",
+        "text_color": "",
+        "text_color_hover": "",
+        "button_color": "",
+        "line_color": "",
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 20,
+        "margin_bottom_mobile": 0,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 20,
+        "margin_bottom_desktop": 0,
+        "padding_border": false
+      }
+    },
+    "section_collapsible_MjRybY": {
+      "type": "section-collapsible",
+      "blocks": {
+        "text_pXXq46": {
+          "type": "text",
+          "settings": {
+            "title": "Learn more",
+            "title_h1": false,
+            "title_font": "secondary",
+            "title_outline": "none",
+            "title_size": 18,
+            "responsive_size": true,
+            "title_sub": "About our full line of products & policies",
+            "title_sub_font": "primary",
+            "title_sub_outline": "none",
+            "title_sub_size": 24,
+            "text_border": true,
+            "content": "<p>If you have more questions, feel free to <a href=\"/\" title=\"Contact\">contact us</a></p>"
+          }
+        },
+        "slide_7zXAXc": {
+          "type": "slide",
+          "settings": {
+            "block_icon": "miscellaneous-eco-friendly",
+            "block_icon_color": "#06d400",
+            "block_icon_color_h": "#667a24",
+            "block_question": "Plant Care",
+            "block_text": "<p>The quickest resource to find information is our <a href=\"/\" title=\"The Garden\">In the Garden</a> blog that is updated regularly.  </p><p>If you need more specialized service, consider attending a <a href=\"/collections/all\" title=\"Workshops\">workshop</a>, or schedule and in-house <a href=\"/collections/all\" title=\"Services\">service</a></p>"
+          }
+        },
+        "slide_ycWYiB": {
+          "type": "slide",
+          "settings": {
+            "block_icon": "commerce-box-label",
+            "block_icon_color": "#876804",
+            "block_icon_color_h": "#000000",
+            "block_question": "Shipping",
+            "block_text": "<p>Free shipping is available of orders over $125 USD.  Pricing is based on weight and packaging, and different plants have different packaging needs.</p>"
+          }
+        },
+        "slide_zyw3JD": {
+          "type": "slide",
+          "settings": {
+            "block_icon": "miscellaneous-sync",
+            "block_icon_color": "",
+            "block_icon_color_h": "",
+            "block_question": "Returns",
+            "block_text": "<p>Free returns are available.  If you need to make a return, start be reviewing our <a href=\"/\" title=\"Refund Policy\">Returns Policy</a> page</p>"
+          }
+        },
+        "slide_jbbfHC": {
+          "type": "slide",
+          "settings": {
+            "block_icon": "miscellaneous-like",
+            "block_icon_color": "",
+            "block_icon_color_h": "",
+            "block_question": "Satisfaction Guaranteed",
+            "block_text": "<p>We stand behind all of our products and promise you will love them as much as we do.  If you don't, we will replace it for free!</p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_pXXq46",
+        "slide_7zXAXc",
+        "slide_ycWYiB",
+        "slide_zyw3JD",
+        "slide_jbbfHC"
+      ],
+      "settings": {
+        "layout_x": "center",
+        "layout_y": "middle",
+        "layout_mobile": "overlay",
+        "content_width_mobile": 90,
+        "content_width_desktop": 60,
+        "text_alignment": "left",
+        "text_color": "",
+        "text_color_hover": "",
+        "line_color": "",
+        "text_background_color": "#ffffff",
+        "text_background_gradient": "",
+        "text_background_opacity": 100,
+        "image_size": false,
+        "full_width": true,
+        "background_color": "",
+        "background_gradient": "",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "margin_bottom_mobile": 20,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "margin_bottom_desktop": 40,
+        "padding_border": false
+      }
+    }
+  },
+  "order": [
+    "main",
+    "section_collapsible_MjRybY"
+  ]
+}

@@ -1,0 +1,123 @@
+<div class="option option-{{ optionNumber }} option-block-{{ optionBlockNumber }}{% if hide_variants %} hidden{% endif %}">      
+  <div class="option-values">
+    {%- liquid
+      capture tooltip  
+        for block in section.blocks
+          if block.type == 'tooltip' and block.settings.title == option.name    
+            capture content
+              if block.settings.content == 'page'
+                echo pages[block.settings.page].content    
+                capture title
+                  if block.settings.heading != blank
+                    echo block.settings.heading
+                  else
+                    echo pages[block.settings.page].title
+                  endif
+                endcapture    
+              else
+                echo block.settings.text    
+                capture title
+                  if block.settings.heading != blank
+                    echo block.settings.heading
+                  else
+                    echo 'product.show_more' | t
+                  endif
+                endcapture    
+              endif
+            endcapture    
+            echo '<button data-id="tooltip-'
+            echo block.id
+            echo '" type="button" title="'
+            echo title | escape
+            echo '" class="tooltip-btn">'
+              render 'icons', block: block, id: block.settings.block_icon, size: 14
+            echo '</button>'
+            echo '<span id="tooltip-'
+            echo block.id
+            echo '" class="hidden">'
+            echo '<script type="application/json">'
+            echo content | json
+            echo '</script>'
+            echo '</span>'    
+          endif
+        endfor  
+      endcapture
+    -%}    
+    {% if _type == 'radio' %}
+      <fieldset role="radiogroup" aria-labelledby="{{ optionNumber }}-{{ product.id }}{{ section.id }}{% if is_product %}-product{% endif %}">
+        <legend class="option-name{% unless is_product %} visually-hidden{% endunless %}" id="{{ optionNumber }}-{{ product.id }}{{ section.id }}{% if is_product %}-product{% endif %}">{{ option.name }}: <span>{{ option.selected_value }}</span>{{ tooltip }}</legend>
+        {% for value in option.values %}
+          {%- liquid            
+            assign optionIndex = forloop.index0             
+            assign v = value
+            assign has_file = false
+            assign img_src = blank
+            if variant_color_enable == 'var-img-block' or variant_color_enable == 'var-img-zoom-block'
+              assign img_src = value.variant.featured_media.preview_image
+            else
+              assign img_src = value.swatch.image
+            endif
+            if is_swatch
+              assign img_src = img_src
+              assign custom = value.swatch.color
+            endif
+            assign newVal = v | handle | append: '.png'
+            if images[newVal] != blank
+              assign has_file = true
+              assign img_src = images[newVal]
+            endif
+          -%}          
+          <div class="option-value{% if option.selected_value == v and is_product == true %} option-selected{% endif %}{% unless value.variant.available %} option-soldout option-disabled{% endunless %}{% if rounded %} option-value-rounded{% else %} option-value-not-rounded{% endif %}{% if is_color or has_file %} option-value-has-color{% if img_src != blank %} option-value-has-image{% endif %}{% else %} option-value-has-text{% endif %}">
+            {% if is_color or has_file %}
+              {%- render 'image.sizes', size: size -%}
+              <label for="{{ v | handle }}-{{ optionIndex }}-{{ product.id }}{{ section.id }}{% if is_product %}-product{% endif %}"{% unless is_product %} class="visually-hidden"{% endunless %}>{{ v | escape }}</label>
+              <span class="label option-value-name{% if img_src != blank %} option-value-image {{ variant_color_enable }}{% endif %}"{% if img_src == blank %} style="background-color:{% if custom != blank %}{{ custom }}{% else %}{{ v }}{% endif %};"{% endif %}>
+                {%- liquid
+                  capture alt
+                    if img_src.alt != blank
+                      echo img_src.alt
+                    else
+                      echo v
+                    endif
+                  endcapture
+                  if img_src != blank
+                    render 'image.load', img_src: img_src, size: size, sizes: sizes, alt: alt, lazy: lazy
+                  endif
+                -%}      
+              </span>
+            {% else %}
+              <label for="{{ v | handle }}-{{ optionIndex }}-{{ product.id }}{{ section.id }}{% if is_product %}-product{% endif %}" value="{{ v | escape }}">{{ v }}</label>    
+            {% endif %}
+            <input id="{{ v | handle }}-{{ optionIndex }}-{{ product.id }}{{ section.id }}{% if is_product %}-product{% endif %}"
+                   class="option-value-input" 
+                   type="radio" 
+                   name="{{ option.name | url_encode }}" 
+                   value="{{ v | escape }}"
+                   {% unless is_product %}title="{{ v | escape }}"{% endunless %}
+                   tabindex="0" 
+                   data-product-option="{{ 'option' | append: optionIndex }}-{{ section.id }}-{{ product.id }}"
+                   {% if is_product and option.selected_value == v %} checked{% endif %}>
+          </div>
+        {% endfor %}
+      </fieldset>
+    {% endif %}    
+    {% if _type == 'select' %}
+      <div class="option-select">
+        <label class="option-name" for="{{ section.id }}-{{ product.id }}-{{ 'option' | append: optionIndex }}">{{ option.name }}: <span>{{ option.selected_value }}</span></label>
+        <div class="relative">
+          <select id="{{ section.id }}-{{ product.id }}-{{ 'option' | append: optionIndex }}"
+                  class="option-select-input scroll-bar-v" 
+                  name="{{ section.id }}-{{ product.id }}-{{ 'option' | append: optionIndex }}" 
+                  tabindex="0" 
+                  data-product-option="{{ 'option' | append: optionIndex }}-{{ section.id }}-{{ product.id }}">
+            {% for value in option.values %}
+              {%- assign v = value -%}
+              <option value="{{ v | escape }}"{% unless value.variant.available %} class="disabled"{% endunless %}{% if option.selected_value == v and is_product != true %} selected{% endif %}>{{ v }}</option>
+            {% endfor %}
+          </select>
+          <span class="option-select-arrow">{%- render 'icons.theme', id: 'arrow', size: 12 -%}</span>
+        </div>
+      </div>
+    {% endif %}    
+  </div>
+</div>

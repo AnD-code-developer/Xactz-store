@@ -1,0 +1,229 @@
+{%  unless shop_look or footer %}
+  {%- liquid
+    assign use_style = false     
+    assign text_color = false
+    if block.settings.text_color.alpha != 0.0 and block.settings.text_color.alpha != blank
+      assign use_style = true
+      assign text_color = true
+      assign text_color_block = block.settings.text_color
+    endif
+    assign text_color_hover = false
+    if block.settings.text_color_hover.alpha != 0.0 and block.settings.text_color_hover.alpha != blank
+      assign use_style = true
+      assign text_color_hover = true
+      assign text_color_hover_block = block.settings.text_color_hover
+    endif
+    assign button_color = false
+    if block.settings.button_color.alpha != 0.0 and block.settings.button_color.alpha != blank
+      assign use_style = true
+      assign button_color = true
+      assign button_color_block = block.settings.button_color
+    endif
+    assign line_color = false
+    if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+      assign use_style = true
+      assign line_color = true
+      assign line_color_block = block.settings.line_color
+    endif
+    assign text_background_color = false
+    assign text_background_opacity = block.settings.text_background_opacity | times: 0.01
+    if block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+      assign use_style = true
+      assign text_background_color = true
+      assign text_background_color_block = block.settings.text_background_color
+    endif
+    if block.settings.text_background_gradient != blank
+      assign use_style = true
+      assign text_background_color = true
+      assign text_background_color_block = block.settings.text_background_gradient
+    endif
+  -%}
+  {% if use_style %}
+    {% style %}
+      .dynamic-block-{{ block.id }} {      
+        {%- if text_color -%}
+          --color_title_text:{{ text_color_block }};
+          --color_text:{{ text_color_block }};
+          --color_accent:{{ text_color_block }};
+          --button_primary_background:{{ text_color_block }};
+          --button_primary_border:{{ text_color_block }};
+          --button_secondary_border:{{ text_color_block }};
+          --button_secondary_text:{{ text_color_block }};
+        {%- endif -%}
+        {%- if text_color_hover -%}
+          --color_text_hover:{{ text_color_hover_block }};
+        {%- endif -%}
+        {%- if button_color -%}  
+          --button_primary_text:{{ button_color_block }};
+          --button_secondary_background:{{ button_color_block }};
+        {%- endif -%}
+        {%- if line_color -%}
+          --color_border:{{ line_color_block }};
+        {%- endif -%}
+        {%- if text_background_color -%} 
+          --color_background_outline:{{ block.settings.text_background_color }};
+          --text_overlay:{{ text_background_color_block }};
+          --text_overlay_opacity:{{ text_background_opacity }};
+        {%- endif -%}
+      }              
+    {% endstyle %}
+  {% endif %}
+{% endunless %}
+<article{% if shop_look %} id="hotspot-{{ block.id }}-{{ forloop.index }}"{% endif %} class="dynamic-block-{{ block.id }} section-card{% if is_collection %} collection-center{% endif %}{% if block.settings.include_border %} section-card-borders{% if text_background_opacity > 0 and text_background_color %} section-card-borders-no-padding{% endif %}{% endif %} {% if shop_look %}container container-inner{% else %}slide section-card-{{ section.settings.layout_y | default: 'top' }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout{% endif %} text-{{ block.settings.text_alignment | default: 'left' }}{% unless footer %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}{% endunless %}"{% if shop_look %} data-shop-look aria-hidden="true" hidden{% endif %} {{ block.shopify_attributes }}>
+  {%- liquid
+    if is_collection
+      if text_background_opacity > 0 and text_background_color
+        echo '<div class="section-layout-card-overlay"></div>'
+      endif
+    endif
+  -%}
+  <div class="section-layout-card-wrapper skip">
+    <div class="section-layout-card{% unless text_background_opacity > 0 and text_background_color %} section-layout-card-no-padding{% endunless %}">      
+        {%- liquid
+          unless is_collection
+            if text_background_opacity > 0 and text_background_color
+              echo '<div class="section-layout-card-overlay"></div>'
+            endif
+          endunless
+          unless menu_story
+            if block.settings.image_desktop != blank or block.settings.image_mobile != blank
+              if block.settings.link != blank
+                echo '<a href="'
+                echo block.settings.link
+                echo '" class="block-element section-figure"'
+                if block.settings.link_seo != blank
+                  echo 'title="'
+                  echo block.settings.link_seo | escape
+                  echo '" class="block"'
+                endif
+                echo '>'
+              else
+                echo '<div class="block-element section-figure">'
+              endif
+              unless skip
+                unless text_background_opacity > 0 and text_background_color
+                  assign include_padding = 0
+                else
+                  assign include_padding = 40
+                endunless
+                if block.settings.include_border
+                  if include_padding > 0
+                    assign include_border = 2
+                  else
+                    assign include_border = 42
+                  endif
+                else
+                  assign include_border = 0
+                endif
+                assign total = 0 | plus: include_border | plus: include_padding | append: 'px'
+                assign mobile_multiplier = 1
+                case rows_mobile
+                  when 1
+                    assign mobile_size = 178
+                  when 2
+                    assign mobile_size = 355
+                  when 3
+                    assign mobile_size = 532
+                  when 4
+                    assign mobile_size = 710
+                    assign mobile_multiplier = 0
+                endcase
+                if slider_mobile
+                  assign mobile_divide = 0
+                else
+                  if mobile_class == 'mobile-first' or mobile_class == 'mobile-last'
+                    assign mobile_divide = 0.5
+                  else
+                    assign mobile_divide = 1
+                  endif
+                endif
+                capture mobile_sizes
+                  echo 'calc(((100dvw - 40px) * ('
+                  echo rows_mobile
+                  echo ' / 4)) - ('
+                  if rows_mobile < 4
+                    echo rows_mobile_padding
+                  else
+                    echo 0
+                  endif
+                  echo 'px * ('
+                  echo mobile_divide
+                  echo ' / 1)) - '
+                  echo total
+                  echo ')'
+                endcapture
+                assign desktop_multiplier = 1
+                case rows_desktop
+                  when 1
+                    assign desktop_size = 207
+                  when 2
+                    assign desktop_size = 413
+                  when 3
+                    assign desktop_size = 620
+                  when 4
+                    assign desktop_size = 827
+                  when 5
+                    assign desktop_size = 1033
+                  when 6
+                    assign desktop_size = 1240
+                    assign desktop_multiplier = 0
+                endcase
+                if slider_desktop
+                  assign desktop_divide = 0
+                else
+                  if desktop_class == 'desktop-first' or desktop_class == 'desktop-last'
+                    assign desktop_divide = 0.5
+                  else
+                    assign desktop_divide = 1
+                  endif
+                endif
+                capture desktop_sizes
+                  echo 'calc(((100dvw - 40px) * ('
+                  echo rows_desktop
+                  echo ' / 6)) - ('
+                  if rows_desktop < 6
+                    echo rows_desktop_padding
+                  else
+                    echo 0
+                  endif
+                  echo 'px * ('
+                  echo desktop_divide
+                  echo ' / 1)) - '
+                  echo total
+                  echo ')'
+                endcapture
+                assign mobile_column_padding = mobile_multiplier | times: rows_mobile_padding | times: mobile_divide | divided_by: 1
+                assign desktop_column_padding = desktop_multiplier | times: rows_desktop_padding | times: desktop_divide | divided_by: 1
+                assign mobile_size = mobile_size | minus: mobile_column_padding | minus: total
+                assign desktop_size = desktop_size | minus: desktop_column_padding | minus: total
+                capture mobile_sizes_final
+                  echo '(min-width: 1280px) '
+                  echo mobile_size
+                  echo 'px, (min-width: 768px) '
+                  echo desktop_sizes
+                  echo ', '
+                  echo mobile_sizes
+                endcapture
+                capture desktop_sizes_final
+                  echo '(min-width: 1280px) '
+                  echo desktop_size
+                  echo 'px, (min-width: 768px) '
+                  echo desktop_sizes
+                  echo ', '
+                  echo mobile_sizes
+                endcapture
+              endunless           
+              render 'block.images', section: section, block: block, mobile_size: mobile_size, mobile_sizes: mobile_sizes_final, desktop_size: desktop_size, desktop_sizes: desktop_sizes_final, padding: padding, lazy: lazy, forloop: forloop
+              render 'image.sizes', mobile_size: mobile_size, desktop_size: desktop_size, padding_mobile: padding, padding_desktop: padding, new_size_mobile: mobile_size, new_size_desktop: desktop_size
+              if block.settings.link != blank
+                echo '</a>'
+              else
+                echo '</div>'
+              endif        
+            endif
+          endunless        
+          render 'block.text', section: section, block: block, footer: footer
+        -%}
+    </div>
+  </div>
+</article>

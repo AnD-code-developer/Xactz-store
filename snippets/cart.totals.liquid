@@ -1,0 +1,55 @@
+{% assign enable_slide = block.settings.enable_slide %}
+<div class="content-block cart-totals{% if enable_slide %} content-slide{% endif %}"{% if enable_slide %} data-content-slide{% endif %} {{ block.shopify_attributes }}>  
+  {%- liquid
+    if enable_slide
+      assign heading = block.settings.heading
+      capture title
+        if heading != blank
+          echo heading
+        else
+          echo 'general.general.click_open' | t
+        endif
+      endcapture
+      render 'block.button', block: block, title: title, is_ignore: true
+    endif
+  -%}
+  <div class="content-slide-content" data-height>
+    <div class="content-slide-space">
+      {% if title != blank and enable_slide == false %}
+        <div class="label">{{ title }}</div>
+      {% endif %}    
+      <div class="cart-discounts" data-cart-discounts>
+        {%- for discount_application in cart.cart_level_discount_applications -%}
+          <div class="cart-discount">
+            <span class="cart-discount-title">
+              {%- render 'icons.theme', id: 'sale-tag', class: ' cart-discount-sale-tag', size: 12 -%}
+              {{ discount_application.title }}
+            </span>
+            <span class="cart-discount-amount">
+              -<span class="money">{% if settings.currency_enable %}{{ discount_application.total_allocated_amount | money_with_currency }}{% else %}{{ discount_application.total_allocated_amount | money }}{% endif %}</span>
+            </span>
+          </div>
+        {%- endfor -%}
+      </div>
+      <div class="cart-total-row">
+        <span class="cart-total-row-title">{{ 'cart.totals.subtotal_title' | t }}</span>
+        <span class="cart-total-row-value money" data-cart-subtotal>{% if settings.currency_enable %}{{ cart.total_price | money_with_currency }}{% else %}{{ cart.total_price | money }}{% endif %}</span>
+      </div>
+      {%- liquid
+        unless block.settings.show_msg
+          echo '<p><small><i>'
+          if cart.taxes_included and shop.shipping_policy.body != blank
+            echo 'cart.shipping_calculator.tax_incl_ship_checkout_html' | t: link: shop.shipping_policy.url
+          elsif cart.taxes_included
+            echo 'cart.shipping_calculator.tax_incl_ship_checkout' | t
+          elsif shop.shipping_policy.body != blank
+            echo 'cart.shipping_calculator.tax_ship_checkout_both_html' | t: link: shop.shipping_policy.url
+          else
+            echo 'cart.shipping_calculator.tax_ship_checkout_both' | t
+          endif
+          echo '</small></i></p>'
+        endunless
+      -%}
+    </div>
+  </div>  
+</div>

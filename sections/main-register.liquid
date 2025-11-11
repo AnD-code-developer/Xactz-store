@@ -1,0 +1,624 @@
+{%- liquid
+  assign text_color = false
+  if section.settings.text_color.alpha != 0.0 and section.settings.text_color.alpha != blank
+    assign text_color = true
+    assign text_color_section = section.settings.text_color
+  endif
+  assign error_color = false
+  if section.settings.error_color.alpha != 0.0 and section.settings.error_color.alpha != blank
+    assign error_color = true
+    assign error_color_section = section.settings.error_color
+  endif
+  assign line_color = false
+  if section.settings.line_color.alpha != 0.0 and section.settings.line_color.alpha != blank
+    assign line_color = true
+    assign line_color_section = section.settings.line_color
+  endif
+  assign background_color = false
+  if section.settings.background_color.alpha != 0.0 and section.settings.background_color.alpha != blank
+    assign background_color = true
+    assign background_color_section = section.settings.background_color
+  endif
+  if section.settings.background_gradient != blank
+    assign background_color = true
+    assign background_color_section = section.settings.background_gradient
+  endif
+-%}
+{% style %}
+  .dynamic-section-{{ section.id }} {
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    --section-margin-bottom-mobile: {{ section.settings.margin_bottom_mobile }}px;
+    --section-margin-bottom-desktop: {{ section.settings.margin_bottom_desktop }}px;
+    {%- if text_color -%}
+      --color_title_text:{{ text_color_section }};
+      --color_text:{{ text_color_section }};
+      --color_label:{{ text_color_section }};
+      --button_primary_background:{{ text_color_section }};
+      --button_primary_border:{{ text_color_section }};
+      --button_secondary_border:{{ text_color_section }};
+      --button_secondary_text:{{ text_color_section }};
+    {%- endif -%}
+    {%- if error_color -%}  
+      --color_error:{{ error_color_section }};
+    {%- endif -%} 
+    {%- if line_color -%}
+      --color_border:{{ line_color_section }};
+    {%- endif -%}
+    {%- if background_color -%}
+      --color_background_outline:{{ section.settings.background_color }};
+      --color_background:{{ background_color_section }};
+      --color_background_section:{{ background_color_section }};
+    {%- endif -%}
+  }
+{% endstyle %}
+<div class="dynamic-section dynamic-section-{{ section.id }} section-background">
+  <section id="customer" 
+           data-section-type="customer" 
+           class="customer-template container container-inner">
+    <div class="section-padding-top section-padding-bottom section-margin-bottom{% if section.settings.padding_border %} section-border{% endif %}">
+      <div class="template-account">
+        {%- liquid
+          assign page_title = 'customers.register.header' | t
+          render 'block.masthead', section: section, page_title: page_title
+        -%}
+        {% form 'create_customer', class: 'account-top' %}
+          {%- render 'form.errors', form: form -%}  
+          <div class="input-wrapper">
+            {% if form.errors contains 'first_name' %}
+              <label class="error-message" for="customer[first_name]">{{ 'general.form.first_name' | t }} {{ form.errors.messages['first_name'] }}</label>
+            {% else %}
+              <label for="customer[first_name]"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ 'general.form.first_name' | t }}</label>
+            {% endif %}
+            <input id="customer_first_name" 
+                   class="input-field{% if form.errors contains 'first_name' %} error{% endif %}" 
+                   type="text" value="{{ form.first_name | escape }}" 
+                   name="customer[first_name]" 
+                   {% unless section.settings.text == 'labels' %} placeholder="{{ 'general.form.first_name' | t | escape }}"{% endunless %}
+                   required>
+          </div>  
+          <div class="input-wrapper">
+            {% if form.errors contains 'last_name' %}
+              <label class="error-message" for="customer[last_name]">{{ 'general.form.last_name' | t }} {{ form.errors.messages['last_name'] }}</label>
+            {% else %}
+              <label for="customer[last_name]"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ 'general.form.last_name' | t }}</label>
+            {% endif %}
+            <input id="customer_last_name" 
+                   class="input-field{% if form.errors contains 'last_name' %} error{% endif %}" 
+                   type="text" 
+                   value="{{ form.last_name | escape }}" 
+                   name="customer[last_name]" 
+                   {% unless section.settings.text == 'labels' %} placeholder="{{ 'general.form.last_name' | t }}"{% endunless %}
+                   required>
+          </div>  
+          <div class="input-wrapper">
+            {% if form.errors contains 'email' %}
+              <label class="error-message" for="customer[email]">{{ 'general.form.email' | t }} {{ form.errors.messages['email'] }}</label>
+            {% else %}
+              <label for="customer[email]"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ 'general.form.email' | t }}</label>
+            {% endif %}
+            <input id="customer_email" 
+                   class="input-field{% if form.errors contains 'email' %} error{% endif %}" 
+                   type="email" 
+                   autocorrect="off" 
+                   autocapitalize="off" 
+                   autocomplete="email" 
+                   pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                   value="{{ form.email | escape }}" 
+                   name="customer[email]" 
+                   {% unless section.settings.text == 'labels' %} placeholder="{{ 'general.form.email' | t }}"{% endunless %}
+                   required>
+          </div>  
+          <div class="input-wrapper">
+            {% if form.errors contains 'password' %}
+              <label class="error-message" for="customer[password]">{{ 'general.form.password' | t }} {{ form.errors.messages['password'] }}</label>
+            {% else %}
+              <label for="customer[password]"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ 'general.form.password' | t }}</label>
+            {% endif %}
+            <input id="customer_password" 
+                   class="input-field{% if form.errors contains 'password' %} error{% endif %}" 
+                   type="password" 
+                   name="customer[password]" 
+                   {% unless section.settings.text == 'labels' %} placeholder="{{ 'general.form.password' | t }}"{% endunless %}
+                   required>
+          </div>    
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'text' %}
+                <div class="input-wrapper">
+                  {%- liquid
+                    if block.settings.label != blank
+                      assign label = block.settings.label
+                    else
+                      assign label = 'contact.form.label' | t | append: '-' | append: block.id
+                    endif
+                    if block.settings.placeholder != blank
+                      assign placeholder = block.settings.placeholder
+                    else
+                      assign placeholder = 'contact.form.placeholder' | t
+                    endif
+                  -%}
+                  <label for="customer-text-{{ block.id }}"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ label | split: '-' | first }}</label>
+                  <input id="customer-text-{{ block.id }}" 
+                         class="input-field"
+                         type="text" 
+                         name="customer[note][{{ label | escape }}]"
+                         {% unless section.settings.text == 'labels' %} placeholder="{{ placeholder | escape }}"{% endunless %}
+                         {% if block.settings.required %} required{% endif %}/>
+                </div>  
+              {% when 'select' %}  
+                <div class="option">  
+                  {%- liquid
+                    if block.settings.label != blank
+                      assign label = block.settings.label
+                    else
+                      assign label = 'contact.form.label' | t | append: '-' | append: block.id
+                    endif
+                    if block.settings.placeholder != blank
+                      assign placeholder = block.settings.placeholder
+                    else
+                      assign placeholder = 'contact.form.select' | t
+                    endif
+                  -%}  
+                  <label for="customer-select-{{ block.id }}"{% if section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ label | split: '-' | first }}</label>
+                  <div class="option-values">     
+                    <div class="option-select"> 
+                      <select id="customer-select-{{ block.id }}" 
+                              class="option-select-input scroll-bar-v" 
+                              name="customer[note][{{ label }}]"
+                              {% if block.settings.required %} required{% endif %} >          
+                        <option value="">{{ placeholder }}</option>
+                        {%- assign list = block.settings.textarea | split: ',' -%}
+                        {% for l in list %}
+                          <option value="{{ l | escape | lstrip | rstrip  }}">{{ l | lstrip | rstrip }}</option>
+                        {% endfor %}
+                      </select>
+                      <span class="option-select-arrow">{%- render 'icons.theme', id: 'arrow', size: 12 -%}</span>
+                    </div>
+                  </div>
+                </div>  
+              {% when 'checkbox' %}  
+                {%- liquid
+                  if block.settings.checkbox != blank
+                    assign label = block.settings.checkbox
+                  else
+                    assign label = 'contact.form.label' | t | append: '-' | append: block.id
+                  endif
+                -%}  
+                <div class="line-items">
+                  <div class="input-wrapper input-container bottompad">
+                    <input type="hidden" name="customer[{{ label | escape }}]" value="{{ 'general.general.no' | t }}"/>
+                    <input id="customer-checkbox-{{ block.id }}" 
+                           type="checkbox" 
+                           name="customer[note][{{ label | escape }}]" 
+                           title="{{ label | escape }}" 
+                           value="{{ 'general.general.yes' | t | escape }}"/>
+                    <label for="customer-checkbox-{{ block.id }}">{{ label | split: '-' | first }}</label>                  
+                  </div>
+                </div>  
+              {% when 'radio' %}
+                <div class="line-items">
+                  <div class="input-wrapper light bottompad">
+                    <fieldset>
+                      {%- liquid
+                        if block.settings.label != blank
+                          assign label = block.settings.label
+                        else
+                          assign label = 'contact.form.label' | t | append: '-' | append: block.id
+                        endif
+                      -%}
+                      <legend{% if block.settings.label == blank or section.settings.text == 'placeholders' %} class="visually-hidden"{% endif %}>{{ label | split: '-' | first }}</legend>
+                      {%- assign list = block.settings.textarea | split: ',' -%}
+                      {%- for l in list -%}
+                        <div class="input-container">
+                          <input type="radio" 
+                                 id="customer-radio-{{ block.id }}-{{ forloop.index }}" 
+                                 name="customer[note][{{ label | escape }}]" 
+                                 title="{{ l | escape | lstrip | rstrip }}" 
+                                 value="{{ l | escape | lstrip | rstrip }}"{% if block.settings.required and forloop.first %} required{% endif %}/> 
+                          <label for="customer-radio-{{ block.id }}-{{ forloop.index }}">{{ l | lstrip | rstrip }}</label>
+                        </div>
+                      {%- endfor -%}
+                    </fieldset>
+                  </div>
+                </div>
+            {% endcase %}
+          {% endfor %}
+          <div class="line-items">
+            <div class="input-wrapper input-container">
+              <input type="hidden" name="customer[accepts_marketing]" value=""/>      
+              <input id="subscribe" 
+                     type="checkbox" 
+                     name="customer[accepts_marketing]" 
+                     title="{{ 'general.form.subscribe' | t }}"/>
+              <label for="subscribe">{{ 'general.form.subscribe' | t }}</label>
+            </div>
+          </div>
+          <div class="input-wrapper bottompad">
+            <button class="btn btn-primary" type="submit">{{ 'customers.register.submit' | t }}</button>
+          </div>
+        {% endform %}
+        {%- liquid
+          for block in section.blocks
+            render block
+          endfor
+        -%}
+      </div>
+    </div>
+  </section>
+</div>
+{% schema %}
+  {
+    "name": "t:sections.section.titles.registration.content",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.text.title.label"
+      },
+      {
+        "id": "title_enable",
+        "type": "checkbox",
+        "label": "t:sections.text.enable.label",
+        "default": true
+      },
+      {
+        "id": "title_h1",
+        "type": "checkbox",
+        "label": "t:sections.text.heading_one.label",
+        "default": true,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "select",
+        "id": "title_font",
+        "label": "t:sections.text.heading_font.main.label",
+        "options": [
+          {
+            "value": "primary",
+            "label": "t:sections.text.heading_font.primary.label"
+          },
+          {
+            "value": "secondary",
+            "label": "t:sections.text.heading_font.secondary.label"
+          }
+        ],
+        "default": "primary",
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "select",
+        "id": "title_outline",
+        "label": "t:sections.text.outline.heading_outline.label",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:sections.text.outline.option_1.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          },          
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          }
+        ],
+        "default": "none",
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "id": "title_size",
+        "type": "range",
+        "label": "t:sections.text.heading_size.label",
+        "min": 18,
+        "max": 240,
+        "step": 6,
+        "unit": "px",
+        "default": 42,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "responsive_size",
+        "label": "t:sections.text.responsive_size.label",
+        "default": true,
+        "visible_if": "{{ section.settings.title_enable == true }}"
+      },
+      {
+        "id": "title_sub",
+        "type": "text",
+        "label": "t:sections.text.subheading.label"
+      },
+      {
+        "type": "select",
+        "id": "title_sub_font",
+        "label": "t:sections.text.heading_font.sub.label",
+        "options": [
+          {
+            "value": "primary",
+            "label": "t:sections.text.heading_font.primary.label"
+          },
+          {
+            "value": "secondary",
+            "label": "t:sections.text.heading_font.secondary.label"
+          }
+        ],
+        "default": "secondary",
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "type": "select",
+        "id": "title_sub_outline",
+        "label": "t:sections.text.outline.subheading_outline.label",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:sections.text.outline.option_1.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background_no.label",
+            "value": "title-outline title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          },          
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-1",
+            "label": "t:sections.text.outline.option_2.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-2",
+            "label": "t:sections.text.outline.option_3.label"
+          },
+          {
+            "group": "t:sections.text.outline.background.label",
+            "value": "title-outline title-outline-bg title-outline-3",
+            "label": "t:sections.text.outline.option_4.label"
+          }
+        ],
+        "default": "none",
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "id": "title_sub_size",
+        "type": "range",
+        "label": "t:sections.text.subheading_size.label",
+        "min": 18,
+        "max": 240,
+        "step": 6,
+        "unit": "px",
+        "default": 30,
+        "visible_if": "{{ section.settings.title_sub != blank }}"
+      },
+      {
+        "id": "text_color",
+        "type": "color",
+        "label": "t:sections.text.color.label"
+      },
+      {
+        "id": "error_color",
+        "type": "color",
+        "label": "t:settings_schema.colors.settings.elements_error.label"
+      },
+      {
+        "id": "line_color",
+        "type": "color",
+        "label": "t:settings_schema.colors.settings.elements_line.label"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.section.name.content"
+      },
+      {
+        "id": "background_color",
+        "type": "color",
+        "label": "t:sections.section.settings.background_color.label"
+      },
+      {
+        "id": "background_gradient",
+        "type": "color_background",
+        "label": "t:sections.section.settings.background_gradient.label"
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.mobile.content"
+      },
+      {
+        "id": "padding_top_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 20
+      },
+      {
+        "id": "padding_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "id": "margin_bottom_mobile",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 10
+      },
+      {
+        "type": "paragraph",
+        "content": "t:sections.section.settings.desktop.content"
+      },
+      {
+        "id": "padding_top_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.top_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 40
+      },
+      {
+        "id": "padding_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_pad.label",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "id": "margin_bottom_desktop",
+        "type": "range",
+        "label": "t:sections.section.settings.bottom_margin.label",
+        "min": -240,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "id": "padding_border",
+        "type": "checkbox",
+        "label": "t:sections.section.settings.border.label",
+        "default": false
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "name": "t:sections.general.form.text.label",
+        "settings": [
+          {
+            "type": "text",
+            "id": "label",
+            "label": "t:sections.general.form.labels.label"
+          },
+          {
+            "type": "text",
+            "id": "placeholder",
+            "label": "t:sections.general.form.placeholder.label"
+          },
+          {
+           "type": "checkbox",
+           "id": "required",
+           "label": "t:sections.general.form.required.label",
+           "default": false
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "name": "t:sections.general.form.dropdown.label",
+        "settings": [
+          {
+            "type": "text",
+            "id": "label",
+            "label": "t:sections.general.form.labels.label"
+          },
+          {
+            "type": "text",
+            "id": "placeholder",
+            "label": "t:sections.general.form.placeholder.label"
+          },
+          {
+            "type": "textarea",
+            "id": "textarea",
+            "label": "t:sections.general.options.label",
+			"default": "t:onboarding.contact.options",
+        	"info": "t:sections.general.form.options.info"
+          },
+          {
+           "type": "checkbox",
+           "id": "required",
+           "label": "t:sections.general.form.required.label",
+           "default": false
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "name": "t:sections.general.form.checkbox.label",
+        "settings": [
+          {
+            "type": "text",
+            "id": "checkbox",
+            "label": "t:sections.general.form.labels.label",
+            "default": "t:onboarding.contact.checkbox"
+          }
+        ]
+      },
+      {
+        "type": "radio",
+        "name": "t:sections.general.form.radio.label",
+        "settings": [
+          {
+            "type": "text",
+            "id": "label",
+            "label": "t:sections.general.form.labels.label"
+          },
+          {
+            "type": "textarea",
+            "id": "textarea",
+            "label": "t:sections.general.options.label",
+			"default": "t:onboarding.contact.options",
+        	"info": "t:sections.general.form.options.info"
+          },
+          {
+           "type": "checkbox",
+           "id": "required",
+           "label": "t:sections.general.form.required.label",
+           "default": false
+          }
+        ]
+      },
+      {
+        "type": "@app"
+      }
+    ]
+  }
+{% endschema %}

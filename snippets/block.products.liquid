@@ -1,0 +1,211 @@
+{%- liquid
+  if complementary
+    assign size = 207
+    assign sizes = '(min-width: 1280px) 207px, (min-width: 768px) calc(((100dvw - 40px - (60% - 60px)) - ((6 - 1) * 20px)) / (6 - 0.5)), calc(((100dvw - 40px) - ((4 - 1) * 20px)) / (4 - 0.5))'            
+  else
+  assign slider_mobile = section.settings.enable_slider_mobile
+  assign slider_desktop = section.settings.enable_slider_desktop
+  assign rows_mobile = section.settings.items_per_row_mobile
+  assign rows_mobile_padding = section.settings.padding_grid_mobile
+  assign rows_desktop = section.settings.items_per_row_desktop
+  assign rows_desktop_padding = section.settings.padding_grid_desktop
+  if section.settings.include_border
+    assign include_border = 42
+  else
+    assign include_border = 0
+  endif
+  assign total = 0 | plus: include_border | append: 'px'  
+  if slider_mobile
+    case rows_mobile
+      when 1
+        assign mobile_size = 707
+      when 2
+        assign mobile_size = 471
+      when 3
+        assign mobile_size = 283
+    endcase
+    capture mobile_sizes
+      if rows_mobile == 1
+        echo 'calc(100dvw - 40px)'
+      else
+        echo 'calc((((100dvw - 40px) - ('
+        echo rows_mobile_padding
+        echo 'px * ('
+        echo rows_mobile
+        echo ' - 1))) / ('
+        echo rows_mobile
+        echo ' - 0.5)) - '
+        echo total
+        echo ')'
+      endif
+    endcapture
+  else
+    case rows_mobile
+      when 1
+        assign mobile_size = 710
+      when 2
+        assign mobile_size = 355
+      when 3
+        assign mobile_size = 236.66
+    endcase
+    capture mobile_sizes
+      echo 'calc((((100dvw - 40px) - ('
+      echo rows_mobile_padding
+      echo 'px * ('
+      echo rows_mobile
+      echo ' - 1))) / '
+      echo rows_mobile
+      echo ') - '
+      echo total
+      echo ')'
+    endcapture
+  endif
+  if slider_desktop
+    case rows_desktop
+      when 2
+        assign desktop_size = 827
+      when 3
+        assign desktop_size = 496
+      when 4
+        assign desktop_size = 354
+      when 5
+        assign desktop_size = 276
+    endcase
+    capture desktop_sizes      
+      echo 'calc((((100dvw - 40px) - ('
+      echo rows_desktop_padding
+      echo 'px * ('
+      echo rows_desktop
+      echo ' - 1))) / ('
+      echo rows_desktop
+      echo ' - 0.5)) - '
+      echo total
+      echo ')'      
+    endcapture
+  else
+    case rows_desktop
+      when 2
+        assign desktop_size = 620
+      when 3
+        assign desktop_size = 413
+      when 4
+        assign desktop_size = 310
+      when 5
+        assign desktop_size = 248
+    endcase
+    capture desktop_sizes
+      echo 'calc((((100dvw - 40px) - ('
+      echo rows_desktop_padding
+      echo 'px * ('
+      echo rows_desktop
+      echo ' - 1))) / '
+      echo rows_desktop
+      echo ') - '
+      echo total
+      echo ')'      
+    endcapture
+  endif
+  assign mobile_column_padding = rows_mobile | minus: 1 | times: rows_mobile_padding | divided_by: rows_mobile
+  assign desktop_column_padding = rows_desktop | minus: 1 | times: rows_desktop_padding | divided_by: rows_desktop
+  if mobile_size > desktop_size
+    assign size = mobile_size | minus: include_border | minus: mobile_column_padding
+  else
+    assign size = desktop_size | minus: include_border | minus: desktop_column_padding
+  endif
+  capture sizes
+    echo '(min-width: 1280px) '
+    echo desktop_size | minus: include_border | minus: desktop_column_padding
+    echo 'px, (min-width: 768px) '
+    echo desktop_sizes
+    echo ', '
+    echo mobile_sizes
+  endcapture
+  assign lazy_total = rows_mobile | times: 2    
+  endif
+  assign use_style = false   
+  assign text_color = false
+  if block.settings.text_color.alpha != 0.0 and block.settings.text_color.alpha != blank
+    assign use_style = true
+    assign text_color = true
+    assign text_color_block = block.settings.text_color
+  endif
+  assign text_color_hover = false
+  if block.settings.text_color_hover.alpha != 0.0 and block.settings.text_color_hover.alpha != blank
+    assign use_style = true
+    assign text_color_hover = true
+    assign text_color_hover_block = block.settings.text_color_hover
+  endif
+  assign button_color = false
+  if block.settings.button_color.alpha != 0.0 and block.settings.button_color.alpha != blank
+    assign use_style = true
+    assign button_color = true
+    assign button_color_block = block.settings.button_color
+  endif
+  assign line_color = false
+  if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+    assign use_style = true
+    assign line_color = true
+    assign line_color_block = block.settings.line_color
+  endif  
+-%}
+{% if use_style %}
+  {% style %}
+    .dynamic-block-{{ block.id }} {             
+      {%- if text_color -%}
+        --color_title_text:{{ text_color_block }};
+        --color_text:{{ text_color_block }};
+        --color_accent:{{ text_color_block }};
+        --color_text_modify_5:{{ text_color_block }};
+        --color_text_modify_25:{{ text_color_block | color_modify: 'alpha', 0.25 }};
+        --color_accent:{{ text_color_block }};
+        --color_accent_modify_25:{{ text_color_block | color_modify: 'alpha', 0.25 }};
+        --color_error:{{ text_color_block }};
+        --color_rating:{{ text_color_block }};
+        --color_sale:{{ text_color_block }};
+        --button_primary_background:{{ text_color_block }};
+        --button_primary_border:{{ text_color_block }};
+        --button_secondary_border:{{ text_color_block }};
+        --button_secondary_text:{{ text_color_block }};
+      {%- endif -%}
+      {%- if text_color_hover -%}
+        --color_text_hover:{{ text_color_hover_block }};
+      {%- endif -%}
+      {%- if button_color -%}  
+        --button_primary_text:{{ button_color_block }};
+        --button_secondary_background:{{ button_color_block }};
+        --color_accent_hover:{{ button_color_block }};
+      {%- endif -%}
+      {%- if line_color -%}
+        --color_border:{{ line_color_block }};
+      {%- endif -%}
+    }
+  {% endstyle %}
+{% endif %}
+<div class="dynamic-block-{{ block.id }} section-card-rows mobile-rows-of-{{ items_per_row_mobile }} desktop-rows-of-{{ items_per_row_desktop }} product-rows" {{ block.shopify_attributes }}>
+  <!-- FIRST -->  
+  {%- liquid
+    if complementary_type == 'cart'
+     for i in cart_items_ids limit: items_count
+       assign product = all_products[i]
+       render 'block.product.loop', section: section, product: product, complementary: complementary, forloop: forloop, size: size, sizes: sizes, lazy: lazy
+     endfor
+    else
+      if products != blank
+        for product in products limit: items_count
+          if is_collection          
+            render 'collection.blocks', section: section, block: block, paginate: paginate, forloop: forloop, size: size, sizes: sizes, lazy: lazy, lazy_total: lazy_total
+          endif  
+          render 'block.product.loop', section: section, product: product, complementary: complementary, forloop: forloop, size: size, sizes: sizes, lazy: lazy, lazy_total: lazy_total
+        endfor
+      else
+        for i in (1..onboard_count)
+          render 'block.onboard', section: section, size: size, product: true, forloop: forloop
+        endfor
+      endif
+    endif
+  -%}  
+  <!-- SECOND -->
+  {% if is_collection %}
+    <div class="body-slide-background quick-slide-background" data-body-slide-background></div>
+  {% endif %}  
+</div>

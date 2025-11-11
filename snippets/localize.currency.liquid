@@ -1,0 +1,30 @@
+{% if currency_selector and localization.available_countries.size > 1 %}
+  {% capture currency %}
+    {% for country in localization.available_countries %}
+      <li>
+        <button type="button" 
+                class="disclosure-list__item{% if country.iso_code == localization.country.iso_code %} disclosure-list__item--current{% endif %}"
+                {% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} 
+                data-value="{{ country.iso_code | escape }}" 
+                data-disclosure-option><span class="disclosure-list__option">{{ country.name }} &#8226; <strong>{{ country.currency.symbol }}</strong> &#8226; {{ country.currency.iso_code }}</span></button>
+      </li>
+    {% endfor %}
+  {% endcapture %}
+  <script type="application/json" id="CurrencyJson-{{ section.id }}-{{ layout }}">
+    {{ currency | json }}
+  </script>          
+  <div class="selectors-form__item">
+    <div class="disclosure" data-disclosure-currency>
+      {%- liquid
+        if header
+          assign size = 10
+        else
+          assign size = 12
+        endif
+      -%}
+      <button type="button" class="disclosure__toggle{% if header %} disclosure__toggle__header{% endif %}" aria-expanded="false" aria-controls="currency-list-{{ section.id }}-{{ layout }}" data-disclosure-toggle><span class="content-slide-toggle">{% render 'icons.theme', id: 'plus', size: size %}</span>{% if header %}{{ localization.country.iso_code }} ({{ localization.country.currency.symbol }}){% else %}{{ localization.country.name }} &#8226; <strong>{{ localization.country.currency.symbol }}</strong> &#8226; {{ localization.country.currency.iso_code }}{% endif %}</button>
+      <ul id="currency-list-{{ section.id }}-{{ layout }}" class="disclosure-list{% if header %} disclosure-list-header{% endif %}{% if payment %} disclosure-list-payment{% endif %} loading scroll-bar-v" data-disclosure-list data-id="{{ section.id }}-{{ layout }}"></ul>
+      <input type="hidden" name="country_code" value="{{ localization.country.iso_code | escape }}" data-disclosure-input/>
+    </div>
+  </div>  
+{% endif %}

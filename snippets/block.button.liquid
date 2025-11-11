@@ -1,0 +1,42 @@
+{%- liquid
+  echo '<button type="button" title="'
+  if is_filter
+    echo 'collection.refine.click_html' | t: label: label | escape
+  else
+    echo title | escape
+  endif
+  echo '" class="content-slide-btn'
+  if is_mini or is_filter
+    echo ' blocks-button'
+  endif
+  if is_mini or is_filter or is_ignore
+    echo ' ignore'
+  endif
+  echo ' body-font-'
+  echo block.settings.title_size | default: 14
+  echo '"'
+  unless is_mini
+    echo 'content-slide-btn'
+  endunless
+  echo '><span class="content-slide-toggle'
+    if block and block.settings.block_icon != 'none' or block.settings.block_icon_custom != blank
+      echo ' with-icon'
+    endif
+    echo '">'
+    if block and block.settings.block_icon != 'none' or block.settings.block_icon_custom != blank
+      render 'icons', block: block, id: block.settings.block_icon, size: block.settings.icon_size
+    else      
+      render 'icons.theme', block: block, id: 'plus', size: block.settings.icon_size
+    endif
+  echo '</span>'
+  if is_filter
+    echo '<span class="is_active">'
+      echo 'collection.refine.more' | t
+    echo '</span><span class="not_active">'
+      echo 'collection.refine.less' | t
+    echo '</span>'
+  else
+    echo title
+  endif
+  echo '</button>'
+-%}

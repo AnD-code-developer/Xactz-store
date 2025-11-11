@@ -1,0 +1,313 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "t:sections.section.titles.header.content",
+  "sections": {
+    "header-announcement": {
+      "type": "header-announcement",
+      "blocks": {
+        "announcement_dEG6Cd": {
+          "type": "announcement",
+          "settings": {
+            "announcement_text_desktop": "EXACTLY WHAT YOU NEED",
+            "announcement_text_mobile": "EXACTLY WHAT YOU NEED",
+            "announcement_color": "",
+            "announcement_color_hover": "",
+            "announcement_text_size": 12
+          }
+        },
+        "announcement_C8rBe8": {
+          "type": "announcement",
+          "settings": {
+            "announcement_text_desktop": "EVERYTHING CUSTOMIZABLE",
+            "announcement_text_mobile": "EVERYTHING CUSTOMIZABLE",
+            "announcement_color": "",
+            "announcement_color_hover": "",
+            "announcement_text_size": 12
+          }
+        },
+        "announcement_YNJdqT": {
+          "type": "announcement",
+          "settings": {
+            "announcement_text_desktop": "FEEL THE LUXURY",
+            "announcement_text_mobile": "FEEL THE LUXURY",
+            "announcement_color": "",
+            "announcement_color_hover": "",
+            "announcement_text_size": 12
+          }
+        }
+      },
+      "block_order": [
+        "announcement_dEG6Cd",
+        "announcement_C8rBe8",
+        "announcement_YNJdqT"
+      ],
+      "settings": {
+        "announcement_home_only": false,
+        "layout": "marquee",
+        "full_width": true,
+        "marquee_gap": 20,
+        "marquee_seperator": "commerce-gift",
+        "block_icon_color": "#039dff",
+        "block_icon_color_h": "#fe67d0",
+        "icon_size": 14,
+        "marquee_speed": 30,
+        "marquee_direction": "forward",
+        "should_autoplay": false,
+        "slide_autoplay": 3,
+        "image_size": false,
+        "text_color": "#039dff",
+        "text_color_hover": "",
+        "line_color": "",
+        "background_color": "#ffffff",
+        "background_gradient": "",
+        "announcement_padding": 10,
+        "padding_border": false
+      }
+    },
+    "header": {
+      "type": "header",
+      "blocks": {
+        "customer_bar_qGJEHT": {
+          "type": "customer_bar",
+          "settings": {
+            "customer_bar": "social",
+            "customer_text_desktop": "Call <em>attention</em> to a <strong>special</strong> discount, feature, or promotion here",
+            "customer_text_mobile": "Use <strong>less</strong> text on mobile!",
+            "menu": "footer",
+            "liquid": "<span>{{ shop.name }} | {{ powered_by_link }}</span>"
+          }
+        },
+        "mega_menu_k6Rgrj": {
+          "type": "mega_menu",
+          "settings": {
+            "heading": "",
+            "color_link": "",
+            "column_link": 5,
+            "menu_slider": true,
+            "menu_uppercase": true,
+            "menu_alignment": false,
+            "menu_style": "three",
+            "menu_collection_images": "collection",
+            "product_item_style": "medium",
+            "enable_image_crop": true,
+            "image_rounded": 100,
+            "image_position": "50-50",
+            "menu_collection_images_insta_filter": "none",
+            "enable_promo": true,
+            "promo_position": "last",
+            "text": "<p>Current Special<br/><strong>Potted Plants</strong></p>",
+            "link": "shopify://collections/all",
+            "link_text": "Buy Now",
+            "link_style": "text",
+            "text_alignment": "left",
+            "text_position": "split",
+            "include_border": false,
+            "text_color": "#ffffff",
+            "text_color_hover": "",
+            "button_color": "",
+            "line_color": "",
+            "text_background_color": "#000000",
+            "text_background_gradient": "",
+            "text_background_opacity": 10,
+            "insta_filter": "none",
+            "insta_filter_mobile": "none"
+          }
+        },
+        "mega_menu_nzGnLL": {
+          "type": "mega_menu",
+          "settings": {
+            "heading": "",
+            "color_link": "",
+            "column_link": 4,
+            "menu_slider": false,
+            "menu_uppercase": true,
+            "menu_alignment": true,
+            "menu_style": "one",
+            "menu_collection_images": "collection",
+            "product_item_style": "medium",
+            "enable_image_crop": true,
+            "image_rounded": 100,
+            "image_position": "50-50",
+            "menu_collection_images_insta_filter": "none",
+            "enable_promo": true,
+            "promo_position": "first",
+            "text": "<p>Find your favorites</p>",
+            "link": "shopify://collections/all",
+            "link_text": "Start Shopping",
+            "link_style": "text",
+            "text_alignment": "center",
+            "text_position": "top",
+            "include_border": false,
+            "text_color": "",
+            "text_color_hover": "",
+            "button_color": "",
+            "line_color": "",
+            "text_background_color": "",
+            "text_background_gradient": "",
+            "text_background_opacity": 0,
+            "insta_filter": "none",
+            "insta_filter_mobile": "none"
+          }
+        },
+        "story_menu_UDwB3K": {
+          "type": "story_menu",
+          "settings": {
+            "heading": "",
+            "color_link": "",
+            "section_height_mobile": 20,
+            "section_height_desktop": 35,
+            "insta_filter": "none",
+            "insta_filter_mobile": "none",
+            "title": "In the Garden",
+            "title_font": "primary",
+            "title_outline": "none",
+            "title_size": 42,
+            "title_sub": "Let's explore the world of how to create stunning displays in your home",
+            "title_sub_font": "secondary",
+            "title_sub_outline": "none",
+            "title_sub_size": 30,
+            "text_border": true,
+            "content": "<p>Are you looking to add a touch of greenery to your living space?   Succulents and terrariums are a fantastic way to bring the beauty of nature indoors. These low-maintenance plants are not only visually appealing but also offer a range of benefits for your well-being.</p>",
+            "link_1": "/",
+            "link_1_seo": "Click to visit the In the Garden Blog",
+            "button_text_1": "Visit Blog",
+            "link_style_1": "secondary",
+            "link_2": "/",
+            "link_2_seo": "Click to read the first post in the In the Garden blog",
+            "button_text_2": "Read the First Post",
+            "link_style_2": "text",
+            "text_alignment": "left",
+            "text_color": "",
+            "text_color_hover": "",
+            "button_color": "",
+            "line_color": ""
+          }
+        },
+        "color_menu_XBEwLH": {
+          "type": "color_menu",
+          "settings": {
+            "heading": "",
+            "color_link": "#990000"
+          }
+        },
+        "contact_menu_GKk7kH": {
+          "type": "contact_menu",
+          "settings": {
+            "heading": "",
+            "color_link": "",
+            "phone_value": "757 555 1212",
+            "email_value": "shop@bespoke.com",
+            "hours_value": "<p>Mon-Fri: 8am-5pm<br/>Sat: 8am-7pm<br/>Sun: 8am-4pm</p>",
+            "directions_value": "<p>Sherwood Lakes<br/>Princess Anne Rd<br/>Virginia Beach, VA 23456</p>",
+            "custom_title_1": "<p><a href=\"/\" title=\"Contact\">Contact Us</a></p>",
+            "custom_icon_1": "support-support",
+            "custom_title_2": "<p><a href=\"/\" title=\"Contact\">Ask a question</a></p>",
+            "custom_icon_2": "information-question",
+            "section_height_mobile": 20,
+            "section_height_desktop": 35,
+            "address": "Sherwood Lakes, Princess Anne Rd, Virginia Beach, VA 23456",
+            "enable_custom_colors": true,
+            "map_foreground_color": "#667a24",
+            "map_background_color": "#ffffff",
+            "zoom": 2,
+            "insta_filter": "none",
+            "insta_filter_mobile": "none"
+          }
+        },
+        "button_menu_B6iTKq": {
+          "type": "button_menu",
+          "settings": {
+            "heading": "",
+            "button_style": "secondary"
+          }
+        }
+      },
+      "block_order": [
+        "customer_bar_qGJEHT",
+        "mega_menu_k6Rgrj",
+        "mega_menu_nzGnLL",
+        "story_menu_UDwB3K",
+        "color_menu_XBEwLH",
+        "contact_menu_GKk7kH",
+        "button_menu_B6iTKq"
+      ],
+      "custom_css": [],
+      "settings": {
+        "image_size": false,
+        "enable_sticky": true,
+        "menu_location": "center",
+        "enable_search": "icon",
+        "enable_search_layout": "logo",
+        "cart_icon": "cart-cart",
+        "account": "icon",
+        "account_layout": "menu",
+        "show_locale_selector": true,
+        "show_currency_selector": true,
+        "text_size_customer": 12,
+        "text_color_customer": "#667a24",
+        "text_color_hover_customer": "",
+        "line_color_customer": "",
+        "background_color_customer": "",
+        "background_gradient_customer": "",
+        "padding_customer": 10,
+        "padding_customer_border": true,
+        "logo": "shopify://shop_images/Weixin_Image_20250912184103_2008_4.png",
+        "logo_width": 80,
+        "mobile_logo": "shopify://shop_images/Weixin_Image_20250912184103_2008_4.png",
+        "mobile_logo_width": 40,
+        "menu": "main-menu",
+        "navigation_text_size": 12,
+        "text_uppercase_navigation": true,
+        "text_color_navigation": "#90d5ff",
+        "text_color_hover_navigation": "",
+        "button_color_navigation": "",
+        "line_color_navigation": "",
+        "slider_color_navigation": "",
+        "background_color_navigation": "",
+        "background_gradient_navigation": "",
+        "padding_navigation": 10
+      }
+    },
+    "header-minicart": {
+      "type": "header-minicart",
+      "blocks": {
+        "checkout_CqQnN3": {
+          "type": "checkout",
+          "settings": {
+            "cart_terms_enable": false,
+            "cart_terms": "Add an agree to terms checkbox",
+            "enable_checkout_lock_icon": false
+          }
+        }
+      },
+      "block_order": [
+        "checkout_CqQnN3"
+      ],
+      "settings": {
+        "image_size": false,
+        "quantity_enable": true,
+        "enable_slide": false,
+        "block_icon": "none",
+        "block_icon_color": "",
+        "block_icon_color_h": "",
+        "icon_size": 14,
+        "heading": "Cart Options",
+        "title_size": 14
+      }
+    }
+  },
+  "order": [
+    "header-announcement",
+    "header",
+    "header-minicart"
+  ]
+}

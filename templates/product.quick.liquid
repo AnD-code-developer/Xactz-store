@@ -1,0 +1,111 @@
+{% capture quick %}
+  {% layout none %}
+  {% if settings.quick_location == 'quick-grid' %}<button type="button" class="close-button alt" aria-label="{{ 'general.form.close' | t | escape }}" data-quick-close>{%- render 'icons.theme', id: 'close', size: 18 -%}</button>{% endif %}
+  {%- liquid
+    assign form_text = 'product.add_to_cart.available' | t | escape
+    assign variant = product.selected_or_first_available_variant 
+    assign product_quantity = false
+    assign product_variants = false
+    capture added_to_cart_link
+      render 'icons.theme', id: 'checkmark'
+      echo 'product.added_to_cart_link_html' | t
+    endcapture
+  -%}
+  <div class="shopify-section">
+  <section data-product-id="{{ product.id }}" 
+           data-section-id="{{ product.id }}" 
+           data-onboarding="false"
+           data-section-type="product-{{ product.id }}"
+           data-url="{{ 'script.product.js' | asset_url }}"
+           class="section-skip">  
+    <div class="product product-wrapper{% if product.media.size == 0 %} product-wrapper-no-images{% endif %}">
+      {%- liquid
+        if settings.quick_location == 'quick-drawer'         
+          assign selected_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media
+          render 'product.images', product: product, section: product, is_quick: true, selected_media: selected_media, layout: 'gallery-below', insta_filter: settings.insta_filter, play: true, loop: true, lazy: 'eager'
+        endif         
+      -%}
+      <div id="product-form-{{ product.id }}" class="product-details{% if settings.quick_location == 'quick-grid' %} product-details-quick{% endif %}" data-product-details data-product-info data-href="{% unless settings.seo %}{{ product.url | within: collection }}{% else %}{{ product.url }}{% endunless %}">
+        {%- liquid    
+          capture form_classes
+            echo 'product-form-inline'
+            if settings.quick_form and settings.quick_show_payment_button
+              echo ' product-form-payment-buttons'
+            endif
+          endcapture
+          form 'product',  product,  class: form_classes,  data-product-form-inline: ''
+            if settings.quick_location == 'quick-grid'
+              echo '<div class="content-block">'
+                echo '<h4 class="product-title content-block section-title section-title-'
+                echo settings.quick_title_size
+                echo ' '
+                echo settings.quick_title_outline
+                echo '"><a href="'
+                unless settings.seo
+                  echo product.url | within: collection
+                else
+                  echo product.url
+                endunless
+                echo '" title="'
+                echo product.title | escape
+                echo '">'
+                echo product.title
+                echo '</a></h4>'
+              echo '</div>'
+            endif  
+            if settings.quick_price
+              render 'product.price', product: product, parent_type: 'main-product', price_size: settings.quick_price_size, tax: settings.quick_tax
+            endif        
+            if settings.quick_variants
+              assign product_variants = true
+              assign variant_enable = settings.quick_variant_variant_enable
+              assign enable_single = settings.quick_variant_enable_single
+              assign variant_color_enable = settings.quick_variant_color_enable
+              assign rounded = settings.quick_variant_rounded
+              render 'product.options', product: product, size: 20, enable_single: enable_single, type: variant_enable, variant_color_enable: variant_color_enable, rounded: rounded, hidden: false, lazy: 'eager'
+            endif              
+            if settings.quick_quantity
+              assign product_quantity = true
+              echo '<div class="content-block">'
+                render 'product.quantity', product: product, variant: variant, size: 12, is_product: true
+              echo '</div>'
+            endif              
+            if settings.quick_form
+              assign enable_cart_redirection = settings.quick_enable_cart_redirection
+              assign show_payment_button = settings.quick_show_payment_button             
+              assign meta = 'enable_custom'
+              assign metafirst = settings[meta] | split:':' | last | split:'.' | first
+              assign metalast = settings[meta] | split:':' | last | split:'.' | last
+              assign metatext = product.metafields[metafirst][metalast]
+              if settings.enable_custom != blank and metatext.value != blank
+                assign form_text = metatext.value
+              endif
+              if settings.quick_show_gift_card_recipient and product.gift_card?
+                render 'product.gift', product: product, form: form
+              endif
+              render 'product.form', product: product, variant: variant, form: form, form_text: form_text, show_payment_button: show_payment_button, background_color: background_color
+            endif
+            unless product_quantity
+              echo '<input class="quantity" type="hidden" min="1" max="1" name="quantity" value="1" data-quantity-input data-quantity-hidden />'
+            endunless
+            if product_variants == false
+              echo '<div class="hidden">'
+                render 'product.options', product: product, type: 'select', hidden: true
+              echo '</div>'
+            endif
+            echo '<div class="content-block product-link"><p><a href="'
+            echo product.url
+            echo '" title="'
+            echo product.title | escape
+            echo '">'
+            echo 'product.quickshop_cta' | t
+            echo '</a></p></div>'  
+            render 'product.json', product: product, form_text: form_text, enable_cart_redirection: enable_cart_redirection, variant_enable: variant_enable, enable_inline_form: true, added_to_cart_link: added_to_cart_link, use_history: false, gallery_video_autoplay: settings.quick_gallery_video_autoplay, gallery_video_looping: settings.quick_gallery_video_looping, template: 'quick'  
+          endform
+        -%}
+      </div>
+    </div>
+  </section>
+  </div>
+{% endcapture %}
+{{ quick | json }}

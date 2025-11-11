@@ -1,0 +1,31 @@
+{% if locale_selector and localization.available_languages.size > 1 %}
+  {% capture language %}
+    {% for language in localization.available_languages %}
+      <li>
+        <button type="button"
+                class="disclosure-list__item{% if language.iso_code == localization.language.iso_code %} disclosure-list__item--current{% endif %}" 
+                lang="{{ language.iso_code | escape }}"
+                {% if language.iso_code == localization.language.iso_code %} aria-current="true"{% endif %} 
+                data-value="{{ language.iso_code | escape }}" 
+                data-disclosure-option><span class="disclosure-list__option">{{ language.endonym_name | capitalize }}</span></button>
+      </li>
+    {% endfor %}
+  {% endcapture %}
+  <script type="application/json" id="LanguageJson-{{ section.id }}-{{ layout }}">
+    {{ language | json }}
+  </script>  
+  <div class="selectors-form__item">
+    <div class="disclosure" data-disclosure-locale>
+      {%- liquid
+        if header
+          assign size = 10
+        else
+          assign size = 12
+        endif
+      -%}
+      <button type="button" class="disclosure__toggle{% if header %} disclosure__toggle__header{% endif %}" aria-expanded="false" aria-controls="lang-list-{{ section.id }}-{{ layout }}" data-disclosure-toggle><span class="content-slide-toggle">{% render 'icons.theme', id: 'plus', size: size %}</span>{% if header %}{{ localization.language.iso_code | upcase }}{% else %}{{ localization.language.endonym_name | capitalize }}{% endif %}</button>
+      <ul id="lang-list-{{ section.id }}-{{ layout }}" class="disclosure-list{% if header %} disclosure-list-header{% endif %}{% if payment %} disclosure-list-payment{% endif %} loading scroll-bar-v" data-disclosure-list data-id="{{ section.id }}-{{ layout }}"></ul>
+      <input type="hidden" name="locale_code" value="{{ localization.language.iso_code | escape }}" data-disclosure-input/>
+    </div>
+  </div>  
+{% endif %}

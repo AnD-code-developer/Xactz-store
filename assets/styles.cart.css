@@ -1,0 +1,10 @@
+.js .page-template-cart #ajaxBusy {
+	background: var(--color_background_modify_75) !important;
+	display: none;
+}
+
+.js .page-template-cart #content,
+.js .page-template-cart footer {
+	display: block;
+	opacity: 1;
+}

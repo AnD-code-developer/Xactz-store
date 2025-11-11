@@ -1,0 +1,25 @@
+{% assign enable_slide = block.settings.enable_slide %}
+<div class="content-block cart-note{% if enable_slide %} content-slide{% endif %}"{% if enable_slide %} data-content-slide{% endif %} {{ block.shopify_attributes }}>  
+  {%- liquid
+    if enable_slide
+      assign heading = block.settings.heading
+      capture title
+        if heading != blank
+          echo heading
+        else
+          echo 'cart.notes' | t
+        endif
+      endcapture
+      render 'block.button', block: block, title: title, is_ignore: true
+    endif
+  -%}
+  <div class="shipping-calculator-fields content-slide-content" data-height>
+    <div class="content-slide-space">
+      {% if title != blank and enable_slide == false %}
+        <div class="label">{{ title }}</div>
+      {% endif %}
+      <label for="cart-note-content" class="visually-hidden">{{ block.settings.notes_placeholder | escape }}</label>
+      <textarea id="cart-note-content" class="cart-note-content" name="note" placeholder="{{ block.settings.notes_placeholder | escape }}">{{ cart.note }}</textarea>
+    </div>
+  </div>    
+</div>

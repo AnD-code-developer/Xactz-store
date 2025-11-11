@@ -1,0 +1,25 @@
+{%- liquid
+  assign liquid_size = block.settings.liquid | strip_html
+  assign enable_slide = block.settings.enable_slide
+-%}
+{% if block.settings.liquid != blank and liquid_size.size > 0 %}
+  <div class="content-block product-rte rte{% if enable_slide %} content-slide{% endif %}"{% if enable_slide %} data-content-slide{% endif %} {{ block.shopify_attributes }}>
+    {%- liquid      
+      if enable_slide
+        capture title
+          if block.settings.heading != blank
+            echo block.settings.heading
+          else
+            echo 'product.show_more' | t
+          endif
+        endcapture       
+        render 'block.button', block: block, title: title, is_ignore: true
+      endif
+    -%}
+    <div class="content-slide-content" data-height>
+      <div id="liquid-{{ block.id }}" class="content-slide-space{% if block.settings.enable_metafields %} variant_metafields{% endif %}">
+        {{ block.settings.liquid }}
+      </div>
+    </div>
+  </div>
+{% endif %}

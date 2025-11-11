@@ -1,0 +1,99 @@
+{% if block.settings.phone_value != blank or block.settings.email_value != blank or block.settings.hours_value != blank or block.settings.directions_value != blank or block.settings.custom_title_1 != blank or block.settings.custom_title_2 != blank %}
+  <div class="contactbar-items{% if has_map %} contactbar-hasmap{% endif %}">
+    <div class="contactbar-items-layout">
+      {% if block.settings.phone_value != blank %}
+        {%- liquid
+          capture phone_url
+            echo 'tel:'
+            echo block.settings.phone_value | strip_newlines | remove: ' ' | escape
+          endcapture
+        -%}
+        <div class="contactbar-item">
+          <a href="{{ phone_url }}" role="menuitem" class="contactbar-item-link" aria-label="{{ 'contactbar.phone_title' | t | escape }}: {{ block.settings.phone_value | escape }}" title="{{ 'contactbar.phone_title' | t | escape }}: {{ block.settings.phone_value | escape }}"></a>
+          <div class="contactbar-item-contents">
+            <div class="contactbar-item-icon">
+              {%- render 'icons.theme', id: 'contact-phone' -%}
+              <div class="contactbar-item-label">{{ 'contactbar.phone_title' | t }}</div>
+            </div>
+            <div class="contactbar-item-value">{{ block.settings.phone_value }}</div>
+          </div>
+        </div>
+      {% endif %}
+      {% if block.settings.email_value != blank %}
+        <div class="contactbar-item">
+          <a href="{% if block.settings.email_value contains '@' %}mailto:{% endif %}{{ block.settings.email_value | escape }}" role="menuitem" class="contactbar-item-link" aria-label="{{ 'contactbar.email_title' | t | escape }}: {{ block.settings.email_value | escape }}" title="{{ 'contactbar.email_title' | t | escape }}{% if block.settings.email_value contains '@' %}: {{ block.settings.email_value | escape }}{% endif %}"{% if block.settings.email_value contains '@' %} target="_blank"{% endif %}></a>
+          <div class="contactbar-item-contents">
+            <div class="contactbar-item-icon">
+              {%- render 'icons.theme', id: 'contact-email' -%}
+              <div class="contactbar-item-label">{{ 'contactbar.email_title' | t }}</div>
+            </div>
+            <div class="contactbar-item-value">{{ block.settings.email_value }}</div>
+          </div>
+        </div>
+      {% endif %}
+      {% if block.settings.hours_value != blank %}
+        <div class="contactbar-item{% if block.settings.hours_value == blank %} desktop-hide{% endif %}">
+          <button type="button" class="contactbar-item-link" title="{{ 'contactbar.hours_title' | t | escape }}: {{ block.settings.hours_value | replace: '<br/>', ' ' | replace: '<br>', ' ' | strip_html | escape }}" aria-label="{{ 'contactbar.hours_title' | t | escape }}: {{ block.settings.hours_value | replace: '<br/>', ' ' | replace: '<br>', ' ' | strip_html | escape }}" data-contactbar-info-trigger></button>
+          <div class="contactbar-item-contents">
+            <div class="contactbar-item-icon">
+              {%- render 'icons.theme', id: 'contact-hours' -%}
+              <div class="contactbar-item-label">{{ 'contactbar.hours_title' | t }}</div>
+            </div>
+            <div class="contactbar-item-value">{{ block.settings.hours_value }}</div>
+          </div>
+        </div>
+      {% endif %}
+      {% if block.settings.directions_value != blank %}
+        <div class="contactbar-item">
+          <a href="{{ directions_url }}" role="menuitem" class="contactbar-item-link" aria-label="{{ 'contactbar.directions_title' | t | escape }}: {{ block.settings.directions_value | strip_html | escape }}" title="{{ 'contactbar.directions_title' | t | escape }}: {{ block.settings.directions_value | replace: '<br/>', ' ' | replace: '<br>', ' ' | strip_html | escape }}" target="_blank"></a>
+          <div class="contactbar-item-contents">
+            <div class="contactbar-item-icon">
+              {%- render 'icons.theme', id: 'contact-directions' -%}
+              <div class="contactbar-item-label">{{ 'contactbar.directions_title' | t }}</div>
+            </div>
+            <div class="contactbar-item-value">{{ block.settings.directions_value }}</div>
+          </div>
+        </div>
+      {% endif %}
+      {%- liquid
+        if block.settings.custom_title_1 != blank
+          if text_color
+            assign icon_color = text_color_section
+          else
+            assign icon_color = blank
+          endif
+          echo '<div class="contactbar-item custom"><div class="contactbar-item-contents'
+          if block.settings.custom_icon_1 == 'none'
+            echo ' no-icon'
+          endif
+          echo '">'
+            if block.settings.custom_icon_1 != 'none'
+              echo '<div class="contactbar-item-icon">'
+                render 'icons', id: block.settings.custom_icon_1, icon_color: icon_color, icon_color_h: icon_color
+              echo '</div>'
+            endif
+            echo '<div class="contactbar-item-value">'
+              echo block.settings.custom_title_1
+            echo '</div>'
+          echo '</div></div>'
+        endif
+        if block.settings.custom_title_2 != blank
+          echo '<div class="contactbar-item custom"><div class="contactbar-item-contents'
+          if block.settings.custom_icon_2 == 'none'
+            echo ' no-icon'
+          endif
+          echo '">'
+            if block.settings.custom_icon_2 != 'none'
+              echo '<div class="contactbar-item-icon">'
+                render 'icons', id: block.settings.custom_icon_2, icon_color: icon_color, icon_color_h: icon_color
+              echo '</div>'
+            endif
+            echo '<div class="contactbar-item-value">'
+              echo block.settings.custom_title_2
+            echo '</div>'
+          echo '</div></div>'
+        endif  
+      -%}   
+    </div>
+  </div>
+{% endif %}

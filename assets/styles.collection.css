@@ -1,0 +1,499 @@
+.collection-container {
+	position: relative;
+}
+
+.collection-container .collection-filter-sortby {
+	align-items: center;
+	border-bottom: 1px dotted var(--color_border);
+	border-top: 1px dotted var(--color_border);
+	display: flex;
+	flex: 1;
+	flex-flow: row nowrap;
+	font-size: var(--body_font_size_11);
+	margin: 0 0 20px;
+	padding: 0 10px;
+	text-transform: uppercase;
+	white-space: normal;
+}
+
+.collection-container .collection-filter-sortby select {
+	color: var(--color_text);
+}
+
+.collection-container .collection-filter-sortby .separator {
+	align-self: stretch;
+	border-left: 1px dotted var(--color_border);
+	width: 1px;
+}
+
+.collection-container .collection-filter-sortby .collection-filter {
+	font-size: 0;
+}
+
+.collection-container .collection-filter-sortby .collection-filter button {
+	padding: 10px;
+}
+
+.collection-container .collection-filter-sortby .collection-filter button svg {
+	fill: var(--color_background);
+	color: var(--color_text);
+}
+
+.collection-container .collection-filter-sortby .collection-filter button svg circle {
+	color: var(--color_text);
+}
+
+.collection-container .collection-filter-sortby .sort-bread {
+	align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	width: 100%;
+}
+
+.collection-container .collection-filter-sortby .sort-bread > div,
+      .collection-container .collection-filter-sortby .sort-bread > nav {
+	margin: 10px;
+}
+
+.collection-container .collection-filter-sortby .sort-bread > nav {
+	order: 1;
+}
+
+.collection-container .collection-filter-sortby .sort-bread > span {
+	order: 2;
+}
+
+.collection-container .collection-filter-sortby .sort-bread > div {
+	order: 3;
+}
+
+.collection-container .collection-filter-sortby .sort-bread .separator {
+	align-self: stretch;
+	border-top: 1px dotted var(--color_border);
+	height: 1px;
+	width: 100%;
+}
+
+.collection-container .collection-filter-sortby .sort-bread .breadcrumb-container {
+	display: flex;
+	flex-flow: row wrap;
+}
+
+@media screen and (min-width: 640px) {
+	.collection-container .collection-filter-sortby .sort-bread {
+		align-items: center;
+		align-self: stretch;
+		flex-flow: row nowrap;
+	}
+
+	.collection-container .collection-filter-sortby .sort-bread > nav {
+		order: 3;
+	}
+
+	.collection-container .collection-filter-sortby .sort-bread > div {
+		order: 1;
+	}
+
+	.collection-container .collection-filter-sortby .sort-bread .separator {
+		border-left: 1px dotted var(--color_border);
+		border-top: none;
+		height: auto;
+		width: 1px;
+	}
+}
+
+@media screen and (min-width: 960px) {
+	.collection-container .collection-filter-sortby {
+		padding: 0;
+	}
+}
+
+.collection-container .collection-filter-sortby .option-select {
+	margin: 0;
+}
+
+.collection-container .collection-filter-sortby .option-select.focused {
+	outline-offset: 0.3rem;
+}
+
+.collection-container .collection-filter-sortby .option-select select {
+	-webkit-appearance: none;
+	appearance: none;
+	padding-right: 20px;
+}
+
+.rtl .collection-container .collection-filter-sortby .option-select select {
+	padding-left: 20px;
+	padding-right: 0;
+}
+
+.collection-container .collection-filter-sortby .option-select select:focus-visible {
+	outline-offset: 0.3rem;
+}
+
+.collection-container .collection-filter-sortby .option-select .option-select-arrow {
+	width: 10px;
+}
+
+.collection-container .collection-filter-sortby .option-select .option-select-arrow svg {
+	color: var(--color_text);
+}
+
+.collection-container .collection-filters {
+	background: var(--color_background);
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	max-width: 480px;
+	padding: 1px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	z-index: 0;
+}
+
+.rtl .collection-container .collection-filters {
+	left: unset;
+	right: 0;
+}
+
+.collection-container .collection-filters #filters-active {
+	display: flex;
+	flex-flow: row wrap;
+	gap: 10px;
+	padding-right: 40px;
+}
+
+.rtl .collection-container .collection-filters #filters-active {
+	padding-left: 40px;
+	padding-right: 0;
+}
+
+.collection-container .collection-filters #filters-active a {
+	align-items: center;
+	display: grid;
+	font-size: var(--body_font_size_11);
+	grid-template-columns: repeat(2, auto);
+	grid-template-rows: 1fr;
+	gap: 4px;
+	padding: 10px;
+	text-decoration: none;
+}
+
+.collection-container .collection-filters #filters-active a svg {
+	color: var(--color_error);
+	margin: -1px 0 0;
+}
+
+.collection-container .collection-filters #filters-active a svg path {
+	transition: all 125ms var(--ease_out_cubic);
+}
+
+.collection-container .collection-filters #filters-active a:hover svg path {
+	stroke-width: 4;
+}
+
+.collection-container .collection-filters form {
+	display: grid;
+	gap: 40px;
+	grid-template-columns: 1fr;
+	grid-template-rows: auto;
+	margin: 20px;
+}
+
+@media screen and (min-width: 960px) {
+	.ltr .collection-container .collection-filters form {
+		margin-left: 0;
+	}
+
+	.rtl .collection-container .collection-filters form {
+		margin-right: 0;
+	}
+}
+
+.collection-container .collection-filters form .option legend {
+	align-items: center;
+	display: grid;
+	grid-template-columns: repeat(2, auto);
+	grid-template-rows: 1fr;
+	gap: 10px;
+	margin-bottom: 10px;
+	position: relative;
+	z-index: 1;
+}
+
+.collection-container .collection-filters form .option legend a {
+	color: var(--color_error);
+	text-align: center;
+	width: 20px;
+}
+
+.collection-container .collection-filters form .option legend a svg path {
+	transition: all 125ms var(--ease_out_cubic);
+}
+
+.collection-container .collection-filters form .option legend a:hover svg path {
+	stroke-width: 4;
+}
+
+.collection-container .collection-filters form .option ul {
+	margin-bottom: 0;
+}
+
+.collection-container .collection-filters form .option .content-slide .content-slide-btn {
+	font-family: var(--body_font);
+	font-size: var(--body_font_size_12);
+}
+
+.collection-container .collection-filters form .option .content-slide .content-slide-btn .is_active {
+	display: block;
+}
+
+.collection-container .collection-filters form .option .content-slide .content-slide-btn .not_active {
+	display: none;
+}
+
+.collection-container .collection-filters form .option .content-slide .content-slide-btn.active .is_active {
+	display: none;
+}
+
+.collection-container .collection-filters form .option .content-slide .content-slide-btn.active .not_active {
+	display: block;
+}
+
+.collection-container .collection-filters form .option .content-slide .content-slide-btn:before {
+	background: none;
+}
+
+.collection-container .collection-filters form .option .content-slide .content-slide-btn .content-slide-toggle {
+	padding: 5px;
+}
+
+.collection-container .collection-filters form .option .content-slide .content-slide-btn .content-slide-toggle svg {
+	height: 10px;
+	width: 10px;
+}
+
+.collection-container .collection-filters form .price-filter {
+	flex-flow: column;
+	width: 95%;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] {
+	position: relative;
+	height: 4px;
+	text-align: start;
+	margin: 25px 0 15px;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > div {
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	height: 4px;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > div > [inverse-left],
+            .collection-container .collection-filters form .price-filter div[slider] > div > [inverse-right] {
+	position: absolute;
+	height: 4px;
+	background-color: var(--color_border);
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > div > [inverse-left] {
+	left: 0;
+}
+
+.rtl .collection-container .collection-filters form .price-filter div[slider] > div > [inverse-left] {
+	left: unset;
+	right: 0;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > div > [inverse-right] {
+	right: 0;
+}
+
+.rtl .collection-container .collection-filters form .price-filter div[slider] > div > [inverse-right] {
+	left: 0;
+	right: unset;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > div > [range] {
+	position: absolute;
+	left: 0;
+	height: 4px;
+	background-color: var(--color_accent);
+}
+
+.rtl .collection-container .collection-filters form .price-filter div[slider] > div > [range] {
+	left: unset;
+	right: 0;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > div > [thumb] {
+	background: var(--color_background);
+	border: 1px solid var(--color_accent);
+	border-radius: 50%;
+	cursor: pointer;
+	position: absolute;
+	height: 20px;
+	margin-left: -10px;
+	outline: none;
+	width: 20px;
+	text-align: start;
+	top: 50%;
+	transform: translate(0, -50%);
+	z-index: 2;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > div > [thumb].right {
+	margin-left: -12px;
+}
+
+.rtl .collection-container .collection-filters form .price-filter div[slider] > div > [thumb] {
+	margin-left: unset;
+	margin-right: -10px;
+}
+
+.rtl .collection-container .collection-filters form .price-filter div[slider] > div > [thumb].right {
+	margin-left: unset;
+	margin-right: -10px;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > div > [thumb] span {
+	font-size: var(--body_font_size_12);
+	font-weight: var(--body_font_weight_bold);
+	position: absolute;
+	left: 50%;
+	top: -100%;
+	transform: translate(-50%, -5px);
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range] {
+	height: 4px;
+	left: 0;
+	pointer-events: none;
+	position: absolute;
+	-webkit-appearance: none;
+	right: 0;
+	top: 0px;
+	width: 100%;
+	z-index: 3;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]:focus-visible {
+	outline: none;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]:focus-visible::-ms-thumb {
+	outline: 2px dotted var(--color_accent);
+	outline-offset: .3rem;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]:focus-visible::-moz-range-thumb {
+	outline: 2px dotted var(--color_accent);
+	outline-offset: .3rem;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]:focus-visible::-webkit-slider-thumb {
+	outline: 2px dotted var(--color_accent);
+	outline-offset: .3rem;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]:hover {
+	cursor: grab;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]:focus {
+	cursor: grabbing;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]::-ms-thumb {
+	pointer-events: all;
+	width: 20px;
+	height: 20px;
+	border-radius: 0px;
+	border: 0 none;
+	background: transparent;
+	box-shadow: none;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]::-moz-range-thumb {
+	pointer-events: all;
+	width: 20px;
+	height: 20px;
+	border-radius: 0px;
+	border: 0 none;
+	background: transparent;
+	box-shadow: none;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]::-webkit-slider-thumb {
+	pointer-events: all;
+	width: 20px;
+	height: 20px;
+	border-radius: 0px;
+	border: 0 none;
+	background: transparent;
+	box-shadow: none;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]::-ms-fill-lower {
+	background: transparent;
+	border: 0 none;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]::-ms-fill-upper {
+	background: transparent;
+	border: 0 none;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]::-ms-track {
+	-webkit-appearance: none;
+	background: transparent;
+	color: transparent;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]::-moz-range-track {
+	-moz-appearance: none;
+	background: transparent;
+	color: transparent;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]:focus::-webkit-slider-runnable-track {
+	background: transparent;
+	border: transparent;
+}
+
+.collection-container .collection-filters form .price-filter div[slider] > input[type=range]::-ms-tooltip {
+	display: none;
+}
+
+.collection-container #collection-slider {
+	background: var(--color_background);
+}
+
+.collection-container .infinite-scroll {
+	display: flex;
+	justify-content: center;
+}
+
+.collection-container .infinite-scroll .infinite-scroll-show-more {
+	margin-top: 40px;
+	width: 250px;
+}
+
+.js .page-template-collection #ajaxBusy {
+	background: var(--color_background_modify_75) !important;
+	display: none;
+}
+
+.js .page-template-collection #content,
+.js .page-template-collection footer {
+	display: block;
+	opacity: 1;
+}

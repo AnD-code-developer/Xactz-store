@@ -1,0 +1,9 @@
+<a href="{{ url }}" class="social-link social-link-{{ id }}"{% if title != blank %} aria-label="{{ title | escape }}" title="{{ title | escape }}"{% endif %} target="_blank">
+  {%- liquid
+    unless custom
+      render 'icons.social', id: id
+    else
+      render 'image.load', img_src: custom, size: 24, sizes: '24px', alt: title, lazy: 'eager'
+    endunless
+  -%}
+</a>

@@ -1,0 +1,91 @@
+{% capture customer_login %}
+  {% form 'customer_login' %}
+    {%- render 'form.errors', form: form -%}
+    <div class="input-wrapper">
+      <label for="login-email">{{ 'general.form.email' | t }}</label>
+      <input id="login-email" 
+             class="input-field first-email" 
+             type="email" 
+             autocorrect="off" 
+             autocapitalize="off" 
+             autocomplete="email" 
+             pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+             placeholder="{{ 'general.form.email_placeholder' | t | escape }}" 
+             value="{{ form.email | escape }}" 
+             name="customer[email]">
+    </div>              
+    <div class="input-wrapper">
+      <label for="login-password">{{ 'general.form.password' | t }}</label>
+      <input id="login-password" class="input-field" placeholder="{{ 'general.form.password_placeholder' | t }}" type="password" name="customer[password]">
+    </div>              
+    <div class="input-wrapper inline section-layout-card-buttons">
+      <button type="submit" class="account-login-btn btn btn-primary">{{ 'customers.login.submit' | t }}</button>
+        <button type="button"
+                class="account-recovery-toggle"
+                data-index="slider-h-2"
+                data-toggle-account-recovery><small class="underline">{{ 'customers.login.forgot_your_password' | t }}</small></button>
+    </div>              
+  {% endform %}
+{% endcapture %}
+{%  capture recover_customer_password %}
+  {% form 'recover_customer_password' %}
+    {% if form.posted_successfully? %}
+      {% assign posted_successfully = true %}
+      <p class="account-recovery-success">{{ 'customers.login.message' | t }}</p>
+    {% else %}          
+      <p>{{ 'customers.login.recover_password_message' | t }}</p>          
+      {% if form.errors %}
+        {% assign posted_error = true %}
+        {{ form.errors | default_errors }}
+      {% endif %}          
+      <div class="input-wrapper">
+        <label for="login-reset">{{ 'general.form.email' | t }}</label>
+        <input id="login-reset" 
+               class="input-field{% if form.errors %} error{% endif %}" 
+               type="email" 
+               autocorrect="off" 
+               autocapitalize="off" 
+               autocomplete="email" 
+               pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+               placeholder="{{ 'general.form.email_placeholder' | t | escape }}" 
+               value="{{ form.email }}" 
+               name="email">
+      </div>          
+      <div class="input-wrapper inline section-layout-card-buttons">
+        <button type="submit" class="account-login-btn btn btn-primary">{{ 'customers.reset_password.submit' | t }}</button>
+        <button type="button"
+                class="account-recovery-toggle"
+                data-index="slider-h-1"
+                data-toggle-account-recovery><small class="underline">{{ 'general.form.cancel' | t }}</small></button>
+      </div>          
+    {% endif %}
+  {% endform %}
+{% endcapture %}
+{% unless posted_successfully %}
+  <div class="account account-options-slide{% unless posted_error %} visible{% endunless %} slider-v slider-h slider-h-1" data-height {{ block.shopify_attributes }}>
+    <div class="account-container{% if drawer %} toppad{% endif %}">
+      <div class="account-login">
+        {{ customer_login }}
+      </div>
+      {% unless build %}
+        <div class="account-register toppad-3{% if drawer %} bottompad{% endif %}">
+          {% if shop.checkout.guest_login %}
+            <h4>{{ 'customers.guest_checkout.header' | t }}</h4>
+            {% form 'guest_login' %}
+            <button class="btn btn-primary" type="submit">{{ 'customers.guest_checkout.submit' | t }}</button>
+            {% endform %}
+          {% else %}
+            <h4>{{ 'customers.new_customer.header' | t }}</h4>
+            <p>{{ 'customers.new_customer.message' | t }}</p>
+            <a class="btn btn-secondary btn-block" href="{{ routes.account_register_url }}">{{ 'customers.register.submit' | t }}</a>
+          {% endif %}
+        </div>    
+      {% endunless %}
+    </div>  
+  </div>
+{% endunless %}
+<div class="account-recovery{% unless posted_successfully %} account-recovery-slide{% endunless %}{% if posted_error or posted_successfully %} visible{% endif %} slider-v slider-h slider-h-2" data-height>
+  <div class="account-container{% if drawer %} toppad bottompad{% endif %}">
+    {{ recover_customer_password }}
+  </div>
+</div>

@@ -1,0 +1,84 @@
+{%- if block.settings.title != blank or is_search -%}
+  {%- liquid
+    if block.settings.title_h1
+      assign title = 1
+    else
+      assign title = 2
+    endif
+    if search.performed
+      assign page_title = 'search.results.title' | t
+    else
+      assign page_title = 'search.form.title' | t
+    endif
+  -%}
+  <h{{ title }} class="block-element section-title{% if has_rss and block.settings.include_rss %} has_social_link{% endif %} section-title-{{ block.settings.title_font | default: 'primary' }}{% if block.settings.title_sub != blank %} section-title-half{% endif %} {% unless footer %}section-title{% else %}body-font{% endunless %}-{{ block.settings.title_size }}{% if block.settings.responsive_size == false %} static-{{ block.settings.title_size }}{% endif %} {{ block.settings.title_outline | default: 'none' }} no-pad">{% if is_search %}{{ page_title }}{% else %}{{ block.settings.title }}{% endif %}{% if has_rss and block.settings.include_rss %}{% render 'block.social.link', id: 'rss', title: rss_title, url: rss_url %}{% endif %}</h{{ title }}>
+{%- endif -%}
+{%- if block.settings.title_sub != blank -%}
+  <h3 class="block-element section-title{% if has_rss and block.settings.include_rss %} has_social_link{% endif %} section-title-{{ block.settings.title_sub_font | default: 'secondary' }} section-title-{{ block.settings.title_sub_size }}{% if block.settings.responsive_size == false %} static-{{ block.settings.title_sub_size }}{% endif %} {{ block.settings.title_sub_outline | default: 'none' }} no-pad">
+    {%- liquid
+      echo block.settings.title_sub
+      if has_rss and block.settings.include_rss and block.settings.title == blank
+        render 'block.social.link', id: 'rss', title: rss_title, url: rss_url
+      endif
+    -%}
+  </h3>  
+{%- endif-%}
+{%- if block.settings.content != blank or has_description and block.settings.enable_description -%}
+  <div class="block-element body-font-{{ block.settings.text_size | default: '14' }} section-layout-card-content{% if block.settings.text_border %} text-border{% endif %}">
+    {%- liquid
+      if has_description
+        if has_rss and block.settings.include_rss
+          echo '<p>'
+            echo page_description
+          echo '</p>'
+        else
+          echo collection.description
+        endif
+      else
+        echo block.settings.content
+      endif
+    -%}
+  </div>
+{%- endif -%}
+{%- liquid
+  assign block_link_container = false
+  if block.settings.link_1 != blank and block.settings.button_text_1 != blank 
+    assign block_link_container = true              
+  elsif block.settings.link_2 != blank and block.settings.button_text_2 != blank
+    assign block_link_container = true
+  endif
+  assign block_link = false
+  if block.settings.link_1 != blank and block.settings.button_text_1 == blank 
+    assign block_link = true              
+  elsif block.settings.link_2 != blank and block.settings.button_text_2 == blank
+    assign block_link = true
+  endif
+-%}
+{%- if block_link_container -%}<div class="block-element section-layout-card-buttons">{%- endif -%}
+  {%- if block.settings.link_1 != blank and block.settings.button_text_1 != blank -%}
+    {%- assign block_link = false -%}
+    {% if block.settings.link_style_1 == 'text' %}
+      <a href="{{ block.settings.link_1 }}" title="{% if block.settings.link_1_seo != blank %}{{ block.settings.link_1_seo | escape }}{% else %}{{ block.settings.button_text_1 | escape }}{% endif %}" class="link-group inline-link-group">
+        <span><span class="link-text">{{ block.settings.button_text_1 }}</span></span>
+        <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+      </a>
+    {% else %}
+      <a href="{{ block.settings.link_1 }}" title="{% if block.settings.link_1_seo != blank %}{{ block.settings.link_1_seo | escape }}{% else %}{{ block.settings.button_text_1 | escape }}{% endif %}" class="btn {% if block.settings.link_style_1 == 'primary' %}btn-primary{% else %}btn-secondary{% endif %} auto-width">{{ block.settings.button_text_1 }}</a>
+    {% endif %}
+  {%- endif -%}
+  {%- if block.settings.link_1 != blank and block.settings.button_text_1 != blank and block.settings.link_2 != blank and block.settings.button_text_2 != blank -%}<span class="link-group-seperator" aria-hidden="true">{% if block.settings.link_style_1 == 'text' and block.settings.link_style_2 == 'text' %}&bull;{% else %}&nbsp;{% endif %}</span>{%- endif -%}
+  {%- if block.settings.link_2 != blank and block.settings.button_text_2 != blank -%}
+    {%- assign block_link = false -%}
+    {% if block.settings.link_style_2 == 'text' %}
+      <a href="{{ block.settings.link_2 }}" title="{% if block.settings.link_2_seo != blank %}{{ block.settings.link_2_seo | escape }}{% else %}{{ block.settings.button_text_2 | escape }}{% endif %}" class="link-group inline-link-group">
+        <span><span class="link-text">{{ block.settings.button_text_2 }}</span></span>
+        <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+      </a>
+    {% else %}
+      <a href="{{ block.settings.link_2 }}" title="{% if block.settings.link_2_seo != blank %}{{ block.settings.link_2_seo | escape }}{% else %}{{ block.settings.button_text_2 | escape }}{% endif %}" class="btn {% if block.settings.link_style_2 == 'primary' %}btn-primary{% else %}btn-secondary{% endif %} auto-width">{{ block.settings.button_text_2 }}</a>
+    {% endif %}
+  {%- endif -%}  
+{%- if block_link_container -%}</div>{%- endif -%}
+{%- if block_link -%}
+  <a class="section-layout-link keyed-inside" href="{% if block.settings.link_1 %}{{ block.settings.link_1 }}{% else %}{{ block.settings.link_2 }}{% endif %}" title="{% if block.settings.link_1_seo != blank %}{{ block.settings.link_1_seo | escape }}{% else %}{{ block.settings.link_2_seo | escape }}{% endif %}"></a>
+{%- endif -%}

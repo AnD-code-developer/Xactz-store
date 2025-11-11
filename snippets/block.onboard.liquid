@@ -1,0 +1,89 @@
+{%- liquid
+  if product
+    assign product_style = product_style | default: 'natural'
+    assign product_item_style = settings.product_item_style
+    if settings.enable_image_crop and product_item_style != 'natural'
+      assign product_item_style = product_item_style | prepend: 'cropped-'
+    endif
+  endif
+-%}
+<article class="{% if is_collection %}dynamic-block-{{ block.id }} section-layout {% endif %}section-card slide{% if product %} product-item{% endif %} {% if section.settings.image_location == 'inline' %}collection-list {% endif %}section-card-no-image{% unless skip %}{% if section.settings.include_border %} section-card-borders{% endif %}{% endunless %}{% if product %} product-item text-{{ settings.text_alignment }}{% else %} text-{{ section.settings.text_alignment }}{% endif %}{% if build %} dynamic-block-{{ block.id }} section-card-{{ layout_y }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout{% if text_background_opacity > 0 and text_background_color %} section-layout-card-overlay-padding{% endif %}{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}" {{ block.shopify_attributes }}>
+  {%- liquid
+    if text_background_opacity > 0 and text_background_color
+      echo '<div class="section-layout-card-overlay"></div>'
+    endif
+    render 'image.sizes', size: size
+  -%}  
+  <figure class="text-center{% if product %} product-item-image product-item-style-{{ product_item_style }} product-item-no-image{% elsif article %} height-padding-{{ padding }}{% endif %}">
+    {%- liquid
+      if product
+        assign title = 'product-apparel-'        
+        assign index = forloop.index0 | modulo: 4 | plus: 1
+      elsif collection
+        assign title = 'collection-apparel-'
+        assign index = forloop.index0 | modulo: 4 | plus: 1
+      elsif article
+        assign title = 'hero-apparel-'
+        assign index = forloop.index0 | modulo: 3 | plus: 1
+      endif
+    -%}
+    <a href="{{ routes.root_url }}" title="{{ shop.name | escape }}" tabindex="-1">{{ title | append: index | placeholder_svg_tag: 'placeholder-svg' }}</a>
+  </figure>
+  <div class="section-card-content">    
+    {% if product %} 
+      {% if settings.vendor_enable %}
+        <span class="product-item-vendor">
+          <a href="{{ routes.all_products_collection_url }}" title="{{ 'product.onboarding.vendor' | t | escape }}" class="underline" tabindex="-1">{{ 'product.onboarding.vendor' | t }}</a>
+        </span>
+      {% endif %}
+      <h4 class="product-item-title section-title-{{ settings.title_font | default: 'primary' }} section-title-{{ settings.title_size }}">
+        <a href="{{ routes.all_products_collection_url }}" title="{{ 'product.onboarding.title' | t | escape }}" class="underline keyed">{{ 'product.onboarding.title' | t }}</a>
+      </h4>
+      <div class="product-item-details-grid">
+        <div class="product-item-details text-left last">
+          <div class="product-price product-item-price">
+            <span class="money" data-variant-price>{% if settings.currency_enable %}{{ 'product.onboarding.price' | t | money_with_currency }}{% else %}{{ 'product.onboarding.price' | t | money }}{% endif %}</span>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="section-card-content{% if section.settings.post_limit == 1 %} single{% endif %}">        
+        {%- liquid
+          if section.settings.include_author or section.settings.include_date
+            echo '<p class="section-card-date">'
+              if section.settings.include_author
+                echo 'article.onboarding.author' | t: author: shop.name
+              endif
+              if section.settings.include_author and section.settings.include_date
+                echo '<br/>'
+              endif
+              if section.settings.include_date
+                echo 'now' | date: format: settings.month_day_year
+              endif
+            echo '</p>'
+          endif
+          echo '<h3 class="section-card-title">'
+            if article
+              echo 'article.onboarding.excerpt.title' | t
+            elsif collection
+              echo 'collection.item.onboarding.title' | t
+            endif
+          echo '</h3>'
+          if excerpt > 0 or section.settings.show_description
+            echo '<div class="section-card-rte"><p>'
+              if article
+                echo 'article.onboarding.excerpt.content' | t | truncatewords: section.settings.excerpt_limit
+              elsif collection
+                echo 'collection.item.onboarding.description' | t | truncatewords: section.settings.show_description_limit
+              endif
+            echo '</p></div>'
+          endif
+        -%}        
+        <a href="{{ routes.root_url }}" title="{{ shop.name | escape }}" class="link-group">
+          <span><span class="link-text">{% if article %}{{ 'article.excerpt.read_more_article' | t }}{% elsif collection %}{{ 'collection.item.cta' | t | escape }}{% endif %}</span></span>
+          <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+        </a>        
+      </div>
+    {% endif %}
+  </div>
+</article>

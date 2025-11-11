@@ -1,0 +1,14 @@
+<div class="content-block" {{ block.shopify_attributes }}>
+  {%- if request.page_type == 'product' -%}
+    <h1 class="product-title section-title  section-title-{{ block.settings.title_font | default: 'primary' }}section-title-{{ block.settings.title_size }}{% if block.settings.responsive_size == false %} static-{{ block.settings.title_size }}{% endif %} {{ block.settings.title_outline }}" {{ block.shopify_attributes }}>{{ product.title }}</h1>
+  {% else %}
+    {%- liquid
+      if block.settings.title_h1
+        assign title = 1
+      else
+        assign title = 2
+      endif
+    -%}
+    <h{{ title }} class="product-title section-title section-title-{{ block.settings.title_font | default: 'primary' }} section-title-{{ block.settings.title_size }}{% if block.settings.responsive_size == false %} static-{{ block.settings.title_size }}{% endif %} {{ block.settings.title_outline }}" {{ block.shopify_attributes }}>{{ product.title }}</h{{ title }}>
+  {% endif %}
+</div>

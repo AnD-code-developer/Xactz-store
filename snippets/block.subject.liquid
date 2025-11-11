@@ -1,0 +1,236 @@
+{%- liquid
+   if content_width_mobile == blank
+     assign content_width_mobile = block.settings.content_width_mobile | default: '100'
+   endif
+   if content_width_desktop == blank
+     assign content_width_desktop = block.settings.content_width_desktop | default: '100'
+   endif
+  assign text_color = false
+  if block.settings.text_color.alpha != 0.0 and block.settings.text_color.alpha != blank
+    assign text_color = true
+    assign text_color_block = block.settings.text_color
+  endif
+  assign text_color_hover = false
+  if block.settings.text_color_hover.alpha != 0.0 and block.settings.text_color_hover.alpha != blank
+    assign text_color_hover = true
+    assign text_color_hover_block = block.settings.text_color_hover
+  endif
+  assign button_color = false
+  if block.settings.button_color.alpha != 0.0 and block.settings.button_color.alpha != blank
+    assign button_color = true
+    assign button_color_block = block.settings.button_color
+  endif
+  assign line_color = false
+  if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+    assign line_color = true
+    assign line_color_block = block.settings.line_color
+  endif
+  assign input_text_color = false
+  if block.settings.input_text_color.alpha != 0.0 and block.settings.input_text_color.alpha != blank
+    assign input_text_color = true
+    assign input_text_color_block = block.settings.input_text_color
+  endif
+  assign input_line_color = false
+  if block.settings.input_line_color.alpha != 0.0 and block.settings.input_line_color.alpha != blank
+    assign input_line_color = true
+    assign input_line_color_block = block.settings.input_line_color
+  endif
+  assign input_background_color = false
+  if block.settings.input_background_color.alpha != 0.0 and block.settings.input_background_color.alpha != blank
+    assign input_background_color = true
+    assign input_background_color_block = block.settings.input_background_color
+  endif
+  assign text_background_color = false
+  assign text_background_opacity = block.settings.text_background_opacity | times: 0.01
+  if block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+    assign text_background_color = true
+    assign text_background_color_block = block.settings.text_background_color
+  endif
+  if block.settings.text_background_gradient != blank
+    assign text_background_color = true
+    assign text_background_color_block = block.settings.text_background_gradient
+  endif
+-%}
+{% style %}
+  .dynamic-block-{{ block.id }} {
+    --content_width_mobile: {{ content_width_mobile | default: '100' }}%;
+    --content_width_desktop: {{ content_width_desktop | default: '100' }}%;
+    {%- if countdown -%}
+      --countdown_gap:{{ block.settings.countdown_number_size }}px;
+    {%- endif -%}
+    {%- if rss_size -%}  
+      --rss-size: {{ rss_size | times: 0.75 }}px;
+    {%- endif -%}
+    {%- if layout_mobile -%}
+      @media screen and (min-width: 768px) {
+    {%- endif -%}
+      {%- if text_color -%}
+        --color_title_text:{{ text_color_block }};
+        --color_text:{{ text_color_block }};
+        --color_accent:{{ text_color_block }};
+        --color_label:{{ text_color_block }};
+        --button_primary_background:{{ text_color_block }};
+        --button_primary_border:{{ text_color_block }};
+        --button_secondary_border:{{ text_color_block }};
+        --button_secondary_text:{{ text_color_block }};
+      {%- endif -%}
+      {%- if text_color_hover -%}
+        --color_text_hover:{{ text_color_hover_block }};
+      {%- endif -%}  
+      {%- if button_color -%}  
+        --button_primary_text:{{ button_color_block }};
+        --button_secondary_background:{{ button_color_block }};
+      {%- endif -%}
+      {%- if line_color -%}
+        --color_border:{{ line_color_block }};
+      {%- endif -%}
+      {%- if text_background_color -%} 
+        --color_background_outline:{{ block.settings.text_background_color }};
+        --text_overlay:{{ text_background_color_block }};
+        --text_overlay_opacity:{{ text_background_opacity }};
+      {%- endif -%}
+    {%- if layout_mobile -%}
+      }
+    {%- endif -%}
+  }
+  {% if input_text_color or input_line_color or input_background_color %}
+    .dynamic-block-{{ block.id }} form input.newsletter-input:focus-within,  
+    .dynamic-block-{{ block.id }} form.search.active,
+    .dynamic-block-{{ block.id }} form.search:focus-within {
+      {%- if input_text_color -%}
+        --color_title_text:{{ input_text_color_block }};
+        --color_text:{{ input_text_color_block }};
+        --color_accent:{{ input_text_color_block }};
+        --color_label:{{ input_text_color_block }};
+        --color_text_modify_5:{{ input_text_color_block }};
+        --color_text_modify_25:{{ input_text_color_block | color_modify: 'alpha', 0.25 }};
+        --color_accent:{{ input_text_color_block }};
+        --color_accent_modify_25:{{ input_text_color_block | color_modify: 'alpha', 0.25 }};
+        --color_error:{{ input_text_color_block }};
+        --color_rating:{{ input_text_color_block }};
+        --color_sale:{{ input_text_color_block }};
+        --button_primary_background:{{ input_text_color_block }};
+        --button_primary_border:{{ input_text_color_block }};
+        --button_secondary_border:{{ input_text_color_block }};
+        --button_secondary_text:{{ input_text_color_block }};
+      {%- endif -%}
+      {%- if input_line_color -%} 
+        --color_border:{{ input_line_color_block }};
+      {%- endif -%}
+      {%- if input_background_color -%} 
+        --color_background:{{ input_background_color_block }};
+        --input_background:{{ input_background_color_block }};
+      {%- endif -%}
+    }
+  {% endif %}
+{% endstyle %}
+<article class="dynamic-block-{{ block.id }} text-{{ block.settings.text_alignment | default: 'left' }} section-layout{% unless rotate %} section-layout-{{ block.settings.layout_x | default: 'center' }}-{{ block.settings.layout_y | default: 'middle' }}{% else %} rotate rotate-onboarding{% if settings.animation_enable %} animated-rotate-item{% endif %}{% endunless %}{% if rotate %} rotate-text{% endif %}{% if block_subject %} relative{% endif %}" {{ block.shopify_attributes }}>
+  <div class="section-layout-card-wrapper{% if is_static %} skip ignore{% endif %}{% if is_banner and has_image == false %} skip skip-{{ block.settings.layout_x }}{% endif %}{% if rotate %} skip{% endif %}">
+    <div class="section-layout-card{% if block.settings.include_border %} section-layout-card-borders{% endif %}{% if block.settings.subject_type == 'image' or block.type == 'image' %} image{% else %}{% unless section.settings.full_width %}{% unless text_background_opacity > 0 and text_background_color %} section-layout-card-padding{% endunless %}{% endunless %}{% endif %}{% if settings.animation_enable %} animated-item{% endif %}">
+      {% if block.settings.subject_type == 'image' or block.type == 'image' %}
+        {%- liquid
+          assign rows_desktop_padding = section.settings.padding_grid_desktop | default: 0
+          if is_background
+            assign mobile_size = 768 | times: content_width_mobile | times: 0.01
+            assign mobile_sizes = content_width_mobile | append: 'vw'
+          else
+            assign mobile_size = 768
+            assign mobile_sizes = '100vw'
+          endif        
+          assign desktop_size = 1280 | times: content_width_desktop | times: 0.01        
+          if is_background
+            assign desktop_sizes = content_width_desktop | append: 'vw'
+            assign desktop_column_padding = 0
+          else
+            capture desktop_sizes
+              echo 'calc(('
+              echo content_width_desktop
+              echo 'vw - 20px - ('
+              echo rows_desktop_padding
+              echo 'px / 2)))'
+            endcapture
+            assign desktop_column_padding = block_width | minus: 1 | times: rows_desktop_padding | divided_by: block_width
+          endif
+          capture sizes
+            echo '(min-width: 1280px) '
+            echo desktop_size | minus: desktop_column_padding
+            echo 'px, (min-width: 768px) '
+            echo desktop_sizes
+            echo ', '
+            echo mobile_sizes
+          endcapture
+          render 'image.sizes', mobile_size: mobile_size, desktop_size: desktop_size
+          if block.settings.image_desktop == blank and block.settings.image_mobile == blank
+            echo '<figure class="section-layout-wrapper">'
+              echo 'hero-apparel-2' | placeholder_svg_tag: 'placeholder-svg'
+            echo '</figure>'
+          endif
+        -%}        
+        {% if block.settings.image_desktop != blank %}  
+          <figure class="{{ block.settings.insta_filter }} section-layout-wrapper{% if block.settings.image_mobile != blank %} desktop{% endif %}">
+            {%- liquid
+              assign img_src = block.settings.image_desktop
+              capture alt
+                if img_src.alt != blank
+                  echo img_src.alt | escape
+                else
+                  echo img_src | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+                endif
+              endcapture
+            -%}     
+            {% if block.settings.link != blank %}<a href="{{ block.settings.link }}"{% if block.settings.link_seo != blank %} title="{{ block.settings.link_seo | escape }}"{% endif %}>{% endif %}                        
+              {%- render 'image.load', img_src: img_src, size: desktop_size, sizes: sizes, alt: alt, lazy: lazy -%}     
+            {% if block.settings.link != blank %}</a>{% endif %}
+          </figure>
+        {% endif %}        
+        {% if block.settings.image_mobile != blank %}  
+          <figure class="{{ block.settings.insta_filter_mobile }} section-layout-wrapper{% if block.settings.image_desktop != blank %} mobile{% endif %}">
+            {%- liquid
+              assign img_src = block.settings.image_mobile
+              capture alt
+                if img_src.alt != blank
+                  echo img_src.alt | escape
+                else
+                  echo img_src | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+                endif
+              endcapture
+            -%}
+            {% if block.settings.link != blank %}<a href="{{ block.settings.link }}"{% if block.settings.link_seo != blank %} title="{{ block.settings.link_seo | escape }}"{% endif %}>{% endif %}                        
+              {%- render 'image.load', img_src: img_src, size: mobile_size, sizes: sizes, alt: alt, lazy: lazy -%}
+            {% if block.settings.link != blank %}</a>{% endif %}
+          </figure>
+        {% endif %}      
+      {% else %}      
+        {% liquid
+          if text_background_opacity > 0 and text_background_color
+            echo '<div class="section-layout-card-overlay"></div>'
+          endif
+          if countdown == true
+            render 'block.countdown', section: section, block: block
+          endif
+          unless countdown == true or map == true
+            render 'block.text', section: section, block: block, search: search, is_search: is_search, collection: collection, has_description: has_description, has_rss: true, rss_title: rss_title, rss_url: rss_url
+          endunless
+          if collapsible == true
+            render 'block.collapsible', section: section, block: block
+          endif
+          if contact == true
+            render 'block.contact', section: section, block: block, contact: contact
+          endif
+          if filter == true
+            render 'block.filter', section: section, block: block
+          endif
+          if map == true
+            render 'block.map.buttons', section: section, block: block
+          endif
+          if newsletter == true
+            render 'block.newsletter', section: section, block: block
+          endif
+          if search == true
+            render 'block.search', section: section, block: block
+          endif
+        -%}
+      {% endif %}
+    </div>
+  </div>
+</article>

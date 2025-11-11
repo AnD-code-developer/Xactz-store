@@ -1,0 +1,161 @@
+{%  unless shop_look %}
+  {%- liquid
+    assign star_color = false
+    if block.settings.star_color.alpha != 0.0 and block.settings.star_color.alpha != blank
+      assign star_color = true
+      assign star_color_block = block.settings.star_color
+    endif
+    assign star_color_background = false
+    if block.settings.star_color_background.alpha != 0.0 and block.settings.star_color_background.alpha != blank
+      assign star_color_background = true
+      assign star_color_background_block = block.settings.star_color_background
+    endif
+    assign text_color = false
+    if block.settings.text_color.alpha != 0.0 and block.settings.text_color.alpha != blank
+      assign text_color = true
+      assign text_color_block = block.settings.text_color
+    endif
+    assign text_color_hover = false
+    if block.settings.text_color_hover.alpha != 0.0 and block.settings.text_color_hover.alpha != blank
+      assign text_color_hover = true
+      assign text_color_hover_block = block.settings.text_color_hover
+    endif
+    assign line_color = false
+    if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+      assign line_color = true
+      assign line_color_block = block.settings.line_color
+    endif
+    assign text_background_color = false
+    assign text_background_opacity = block.settings.text_background_opacity | times: 0.01
+    if block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+      assign text_background_color = true
+      assign text_background_color_block = block.settings.text_background_color
+    endif
+    if block.settings.text_background_gradient != blank
+      assign text_background_color = true
+      assign text_background_color_block = block.settings.text_background_gradient
+    endif
+    if block.settings.stars > 0
+      assign rating_value_rating = block.settings.stars
+      assign rating_count = 1
+      assign rating_scale_max = 5
+      assign rating_decimal = 0
+      assign decimal = rating_value_rating | modulo: 1
+      if decimal >= 0.3 and decimal <= 0.7
+        assign rating_decimal = 0.5
+      elsif decimal > 0.7
+        assign rating_decimal = 1
+      endif  
+      capture rating_value
+        echo rating_value_rating | round: 1
+        echo ' / '
+        echo rating_scale_max
+      endcapture  
+    endif
+  -%}
+  {% style %}
+    .dynamic-block-{{ block.id }} {
+      --testimonial_image_size: {{ block.settings.block_img_width }}px;
+      --testimonial_social_size: {{ block.settings.social_size }}px;      
+      --image-rounded: {{ block.settings.image_rounded }}%;
+      {%- if star_color -%}
+        --color_rating:{{ star_color_block }};
+      {%- endif -%}      
+      {%- if star_color_background -%}
+        --color_rating_background:{{ star_color_background_block }};
+      {%- endif -%}      
+      {%- if text_color -%}
+        --color_title_text:{{ text_color_block }};
+        --color_text:{{ text_color_block }};
+        --color_accent:{{ text_color_block }};
+      {%- endif -%}   
+      {%- if text_color_hover -%}
+        --color_text_hover:{{ text_color_hover_block }};
+      {%- endif -%}      
+      {%- if line_color -%}
+        --color_border:{{ line_color_block }};
+      {%- endif -%}    
+      {%- if text_background_color -%} 
+        --color_background_outline:{{ block.settings.text_background_color }};
+        --text_overlay:{{ text_background_color_block }};
+        --text_overlay_opacity:{{ text_background_opacity }};
+      {%- endif -%}
+      {%- if block.settings.stars > 0 -%}
+        .stars {
+          font-size: {{ block.settings.stars_size }}px;
+          --percent: calc((var(--rating) / var(--rating_max) + var(--rating_decimal) * var(--star_size) / (var(--rating_max) * (var(--star_spacing) + var(--star_size)))) * 100%);
+        }
+      {%- endif -%}
+    }
+  {% endstyle %}
+{% endunless %}
+<article class="dynamic-block-{{ block.id }} section-card{% if is_collection %} collection-center{% endif %}{% if block.settings.include_border %} section-card-borders{% if text_background_color %} section-card-borders-no-padding{% endif %}{% endif %} slide  mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout text-{{ block.settings.text_alignment }}{% if build %} testimonials section-card-{{ layout_y }}{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{% if is_collection %}{{ position }}{% else %}{{ forloop.index0 }}{% endif %}{% endif %}" {{ block.shopify_attributes }}>
+  {%- liquid
+    if text_background_opacity > 0 and text_background_color
+      echo '<div class="section-layout-card-overlay"></div>'
+    endif
+  -%}
+  <div class="section-layout-card-wrapper skip">
+    <div class="section-layout-card{% unless text_background_opacity > 0 and text_background_color %} section-layout-card-no-padding{% endunless %}">  
+      {% if block.settings.stars > 0 %}
+        <div class="block-element reviews clearfix">
+          {%- capture stars -%}
+            <span class="stars-rating" role="img" aria-label="{{ 'product.reviews' | t: total: rating_value, count: rating_count | escape }}">
+              <span class="stars" 
+                    style="--rating: {{ rating_value_rating | floor }};--rating_max: {{ rating_scale_max }}; --rating_decimal: {{ rating_decimal }};" 
+                    aria-hidden="true"></span>
+            </span>
+          {%- endcapture -%}
+          {{ stars }}
+        </div>
+      {% endif %}
+      {% if block.settings.testimonial != blank %}
+        <div class="block-element section-layout-card-content"><p>{{ block.settings.testimonial }}</p></div>
+      {% endif %}
+      {%- liquid         
+        echo '<div class="block-element'
+        if block.settings.image_desktop != blank
+          echo ' section-layout-card-left'
+        endif         
+        echo '">'         
+          if block.settings.image_desktop != blank
+            echo '<div class="block-element section-figure">'
+              echo '<figure class="testimonials '
+              echo block.settings.insta_filter
+              echo ' section-layout-wrapper height-padding-100 rounded">'
+                assign img_src = block.settings.image_desktop     
+                assign size = block.settings.block_img_width
+                assign sizes = block.settings.block_img_width | append: 'px'    
+                capture alt
+                  if img_src.alt != blank
+                    echo img_src.alt | escape
+                  else
+                    echo img_src | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+                  endif
+                endcapture    
+                render 'image.load', img_src: img_src, size: size, new_size: size, sizes: sizes, padding: 100, alt: alt, background: true, lazy: lazy, full_width: full_width
+                render 'image.sizes', size: size
+              echo '</figure>'
+            echo '</div>'
+          endif    
+          echo '<div class="'
+          unless block.settings.image_desktop != blank
+            echo 'block-element '
+          endunless
+          echo 'text-'
+          if block.settings.image_desktop != blank
+            echo 'left'
+          else
+            echo block.settings.text_alignment
+          endif
+          echo '">'
+            render 'block.text', section: section, block: block
+          echo '</div>'  
+        echo '</div>'          
+        echo '<div class="block-element social">'
+          render 'block.social', settings: block.settings
+        echo '</div>'
+      -%}
+    </div>
+  </div>
+</article>

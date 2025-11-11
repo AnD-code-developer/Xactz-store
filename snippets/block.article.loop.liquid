@@ -1,0 +1,79 @@
+{%- liquid  
+  if main_blog
+    assign image_position = section.settings.image_position_featured
+    assign insta_filter = section.settings.insta_filter_featured
+    assign include_author = section.settings.include_author_featured
+    assign include_date = section.settings.include_date_featured
+    assign text_alignment = section.settings.text_alignment_featured
+  else
+    assign image_position = section.settings.image_position
+    assign insta_filter = section.settings.insta_filter
+    assign include_author = section.settings.include_author
+    assign include_date = section.settings.include_date
+    assign text_alignment = section.settings.text_alignment
+  endif
+-%}
+<article class="section-card slide{% if section.settings.include_border and main_blog != true %} section-card-borders{% endif %} text-{{ text_alignment | default: 'left' }}{% if build %} dynamic-block-{{ block.id }} section-card-{{ layout_y }} mobile-rows-of-{{ block.settings.content_width_mobile }} desktop-rows-of-{{ block.settings.content_width_desktop }} {{ class }} section-layout{% if text_background_opacity > 0 and text_background_color %} section-layout-card-overlay-padding{% endif %}{% endif %}{% if settings.animation_enable %} animated-item animated-delay-{{ forloop.index0 }}{% endif %}" {{ block.shopify_attributes }}>
+  {%- liquid
+    if text_background_opacity > 0 and text_background_color
+      echo '<div class="section-layout-card-overlay"></div>'
+    endif
+    render 'image.sizes', size: size, padding: padding, new_size: size
+  -%}
+  {% if article.image %}
+    <div class="section-card-image">
+      <figure class="text-center height-padding-{{ padding }}">
+        <a href="{{ article.url }}" title="{{ article.title | escape }}" class="{{ insta_filter }}" tabindex="-1">
+          {%- liquid
+            capture alt
+              if article.image.alt != blank
+                echo article.image.alt | escape
+              else
+                echo article.title | escape
+              endif
+            endcapture
+            if lazy_total != blank
+              if forloop_index <= lazy_total
+                assign lazy = lazy
+              else
+                assign lazy = 'lazy'
+              endif
+            endif
+            if padding == 'original'
+              render 'image.load', img_src: article.image, size: size, sizes: sizes, alt: alt, lazy: lazy
+            else
+              render 'image.load', img_src: article.image, size: size, new_size: size, padding: padding, sizes: sizes, alt: alt, image_position: image_position, background: true, lazy: lazy
+            endif      
+          -%}
+        </a>
+      </figure>
+    </div>
+  {% endif %}
+  <div class="section-card-content{% if section.settings.post_limit == 1 %} single{% endif %}">
+    <h3 class="section-card-title{% if main_blog %} ignore section-title-{{ section.settings.title_size_featured }}{% endif %}"><a href="{{ article.url }}" title="{{ article.title | escape }}" class="underline keyed inside">{{ article.title }}</a></h3>
+    {% if include_author or include_date %}
+      <p class="section-card-date">
+        {% if include_author %}{{ 'article.author' | t: author: article.author }}{% endif %}
+        {% if include_author and include_date %}<br/>{% endif %}
+        {% if include_date %}<small>{{ article.published_at | date: format: settings.month_day_year }}</small>{% endif %} 
+      </p>
+    {% endif %}
+    {% if excerpt > 0 %}
+      <div class="section-card-rte">
+        <p>
+          {%- liquid
+            if article.excerpt != blank
+              echo article.excerpt | strip_html | truncatewords: excerpt | highlight: predictive_search.terms
+            else
+              echo article.content | strip_html | truncatewords: excerpt | highlight: predictive_search.terms
+            endif
+          -%}
+        </p>
+      </div>
+    {% endif %}
+    <a href="{{ article.url }}" title="{{ article.title | escape }}" class="link-group" tabindex="-1">
+      <span><span class="link-text">{% if is_page %}{{ 'article.excerpt.read_more' | t }}{% else %}{{ 'article.excerpt.read_more_article' | t }}{% endif %}</span></span>
+      <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+    </a>
+  </div>  
+</article>

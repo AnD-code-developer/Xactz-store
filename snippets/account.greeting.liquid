@@ -1,0 +1,10 @@
+{%- liquid
+  assign hour = 'now' | date: '%H' | times: 1
+  if hour < 12
+    echo 'customers.account.logged_in_morning_html' | t: user_name: customer.first_name | escape
+  elsif hour > 17
+    echo 'customers.account.logged_in_evening_html' | t: user_name: customer.first_name | escape
+  else
+    echo 'customers.account.logged_in_afternoon_html' | t: user_name: customer.first_name | escape
+  endif
+-%}

@@ -1,0 +1,336 @@
+{%- liquid
+  if is_quick
+    assign product_item_style = settings.product_item_style
+    assign enable_image_crop = settings.enable_image_crop
+  else
+    assign product_item_style = section.settings.product_item_style
+    assign enable_image_crop = section.settings.enable_image_crop
+  endif
+-%}
+<div data-section-id="{{ section.id }}" 
+     data-product-gallery 
+     data-product-gallery-layout="{% if product.media.size > 1 %}{{ layout }}{% else %}single{% endif %}"
+     class="product-gallery{% unless layout == 'list' %} {% if layout == 'gallery-left' or layout == 'gallery-right' %}vertical{% else %}horizontal{% endif %}{% endunless %}">
+  {% if product.media.size > 0 %}
+    {% if layout == 'list' %}
+      <a href="#product-form-{{ section.id }}" title="{{ 'product.skipto' | t | escape }}" class="btn btn-secondary product skip-to content-details-sticky text-center">{{ 'product.skipto' | t }}</a>
+    {% endif %}
+  {% endif %}
+  <div class="product-rows product-gallery--viewport{% if layout != 'list' and product.media.size > 1 %} product-gallery--viewport--has-navigation{% endif %}{% unless is_quick %} content-details-sticky{% endunless %}" data-product-gallery-viewport>
+    <section id="{{ section.id }}-featured-images" 
+             class="product-item{% if layout == 'list' %} slideshow-featured{% else %}{% if product.media.size > 1 %} loading slideshow {% if layout == 'gallery-left' or layout == 'gallery-right' %}vertical{% else %}horizontal{% endif %}{% endif %}{% endif %}"
+             data-section-id="{{ section.id }}-featured-images" 
+             data-product-gallery-navigation-layout="featured"
+             {% if layout != 'list' and product.media.size > 1 %}
+             data-section-type="slider-{{ section.id }}-featured-images"
+             data-url="{{ 'script.slider.js' | asset_url }}"
+             data-slider-use="true"
+             data-slider-breakpoint="large"
+             data-type="product"
+             data-slideshow
+             {% endif %}>
+      <div class="slideshow-container">
+        <div class="slider large{% if layout != 'list' and product.media.size > 1 %} slider-loading{% endif %}" data-slider-axis="horizontal">
+          {%- liquid
+            assign blocks_size = product.media.size
+            assign blocks_index = 0  
+            assign model = false             
+            if layout == 'gallery-left' or layout == 'gallery-right'
+              assign size = 710
+              assign sizeX = '599x'
+              assign sizes = '(min-width: 1280px) 599px, (min-width: 960px) calc(((100dvw - 40px - 50px) * 0.6) - 100px), (min-width: 768px) calc(((100dvw - 40px - 50px) * 0.55) - 100px), calc(100vw - 40px)'
+            else
+              assign size = 719
+              assign sizeX = size | append: 'x'
+              capture sizes
+                echo '(min-width: 1280px) '
+                echo size
+                echo 'px, (min-width: 1280px) 719px, (min-width: 960px) calc((100dvw - 40px - 50px) * 0.6), (min-width: 768px) calc((100dvw - 40px - 50px) * 0.55), calc(100vw - 40px)'
+              endcapture
+            endif
+            assign product_item_style_class = product_item_style
+            if enable_image_crop and product_item_style != 'natural'
+              assign product_item_style_class = product_item_style | prepend: 'cropped-'
+            endif
+            assign loop = true
+            assign crop = enable_image_crop
+            case product_item_style
+              when 'natural'
+                assign crop = false
+                assign loop = false
+              when 'small'
+                assign padding = 75
+              when 'medium'
+                assign padding = 100
+              when 'large'
+                assign padding = 150
+            endcase
+            if enable_image_crop
+              assign image_position = '50-50'
+            endif
+          -%}
+          {% if product.media.size > 0 %}
+            {% if layout != 'list' and product.media.size > 1  %}
+              {% capture thumbs %}
+                {% for media in product.media %}
+                  {%- liquid
+                    if selected_media.id == media.id
+                      assign active_index = forloop.index
+                    endif
+                    assign optionIndex = forloop.index
+                  -%}
+                  <div class="slider-button product-gallery--media-thumbnail product-gallery--{{ media.media_type }}-thumbnail keyed inside"
+                       data-index="{{ forloop.index }}" 
+                       data-product-gallery-thumbnail="{{ forloop.index0 }}" 
+                       data-product-gallery-selected="{%- if selected_media.id == media.id -%}true{%- else -%}false{%- endif -%}" 
+                       data-media="{{ media.id }}"
+                       data-media-type="{{ media.media_type }}">
+                    {%- liquid
+                      capture alt
+                        if media.preview_image.alt != blank
+                          echo 'product.media.thumbnail' | t: title: media.preview_image.alt
+                        else
+                          assign title = optionIndex | prepend: '#'
+                          echo 'product.media.thumbnail' | t: title: title
+                        endif
+                      endcapture
+                      render 'image.sizes', size: 80
+                    -%}                
+                    <label for="{{ optionIndex }}-{{ product.id }}{{ section.id }}" class="visually-hidden">{{ alt }}</label>
+                    <span class="{{ insta_filter }}">          
+                      {%- liquid
+                        render 'image.load', img_src: media.preview_image, size: 80, sizes: '80px', alt: alt, lazy: lazy
+                        case media.media_type
+                          when 'model'
+                            render 'icons.theme', id: 'model-thumb'
+                          when 'video'
+                            render 'icons.theme', id: 'play-thumb'
+                          when 'external_video'
+                            render 'icons.theme', id: 'play-thumb'
+                        endcase
+                      -%}
+                    </span>        
+                    <input id="{{ optionIndex }}-{{ product.id }}{{ section.id }}"
+                           type="radio" 
+                           name="{{ 'product.media.thumbnails' | t: title: product.title }}"
+                           tabindex="0" 
+                           {%- if selected_media.id == media.id -%} checked{% endif %}>        
+                  </div>
+                {% endfor %}
+              {% endcapture %}
+            {% endif %}              
+            {% for media in product.media %}  
+              {%- liquid      
+                assign blocks_index = blocks_index | plus: 1
+                capture previous
+                  if blocks_index == 1
+                    echo section.id
+                    echo '-'
+                    echo blocks_size
+                  else
+                    echo section.id
+                    echo '-'
+                    echo blocks_index | minus: 1
+                  endif
+                endcapture                  
+                capture next
+                  if blocks_index == blocks_size
+                    echo section.id
+                    echo '-1'
+                  else
+                    echo section.id
+                    echo '-'
+                    echo blocks_index | plus: 1
+                  endif
+                endcapture
+                assign previous = previous | split: '-' | last              
+                assign previous_loop = active_index | minus: 1
+                if previous_loop == 0
+                  assign previous_loop = product.media.size
+                endif              
+                assign next = next | split: '-' | last              
+                assign next_loop = active_index | plus: 1
+                if next_loop > product.media.size
+                  assign next_loop = 1
+                endif              
+              -%}
+              <figure id="slide-{{ section.id }}-featured-images-{{ forloop.index }}" class="slide{% if selected_media.id == media.id %} active{% else %}{% if product.media.size > 2 %}{% if forloop.index == next_loop %} next{% endif %}{% if forloop.index == previous_loop %} previous{% endif %}{% else %} visible{% endif %}{% endif %} slideshow-slide section-layout product-item-image product-item-style-{{ product_item_style_class }}{% unless product.featured_media %} product-item-no-image{% endunless %} product-gallery--viewport--figure keyed inside"
+                      {% if layout != 'list' and product.media.size > 1 %}
+                        data-slideshow-slide 
+                        data-slide="{{ blocks_index }}"  
+                        data-previous="{{ previous }}"  
+                        data-next="{{ next }}"                        
+                      {% endif %}
+                      data-product-gallery-figure="{{ forloop.index0 }}" 
+                      data-product-gallery-selected="{%- if selected_media.id == media.id -%}true{%- else -%}false{%- endif -%}" 
+                      data-media="{{ media.id }}" 
+                      data-media-type="{{ media.media_type }}"{% if media.media_type == 'image' %} 
+                      data-product-gallery-image-zoom
+                      data-zoom-level="{{ section.settings.gallery_zoom_level | default: 2 }}"{% endif %}>
+                <div class="slide-container">
+                  {%- liquid                     
+                    case product_item_style
+                      when 'natural'
+                        assign padding = media.preview_image.aspect_ratio | times: 100
+                    endcase
+                    case media.media_type
+                      when 'image'
+                        capture alt
+                          if media.preview_image.alt != blank
+                            echo media.preview_image.alt
+                          else
+                            echo product.title
+                          endif
+                        endcapture
+                        echo '<span class="'
+                        echo insta_filter
+                        echo '">'
+                          if selected_media.id == media.id
+                            assign fetch = 'high'
+                            assign lazy = lazy
+                          else
+                            assign fetch = 'auto'
+                            assign lazy = 'lazy'
+                          endif
+                          render 'image.load', img_src: media.preview_image, size: size, new_size: size, padding: padding, image_position: image_position, sizes: sizes, alt: alt, loop: loop, crop: crop, fetch: fetch, lazy: lazy
+                        echo '</span>'
+                        if product_item_style == 'natural'
+                          assign new_padding = 'original'
+                        else
+                          assign new_padding = padding
+                        endif
+                        render 'image.sizes', size: size, padding: new_padding, new_size: size
+                      when 'model'
+                        assign model = true
+                        echo '<div class="product-gallery--model-wrapper">'
+                        echo media | model_viewer_tag: image_size: sizeX, reveal: 'interaction', toggleable: true, interaction-prompt-threshold: 0
+                        echo '</div>'
+                        echo '<button class="btn btn-secondary product-gallery--viewinyourspace" data-default-model-id="'
+                        echo media.id
+                        echo '" data-shopify-xr data-shopify-model3d-id="'
+                        echo model.id
+                        echo '" data-shopify-title="'
+                        echo product.title | escape
+                        echo '" data-shopify-xr-hidden aria-label="'
+                        echo 'product.media.view_in_your_space' | t | escape
+                        echo '">'
+                        render 'icons.theme', id: '3D', size: 24
+                        echo 'product.media.view_in_your_space' | t
+                        echo '</button>'
+                      when 'video'              
+                        echo media | video_tag: image_size: sizeX
+                      when 'external_video'          
+                        if layout == 'list' or product.media.size < 2 or forloop.first and product.selected_or_first_available_variant.featured_image == blank
+                          assign play = false
+                          capture vid1
+                            echo '<div class="youtube-container no-container" style="padding-top:'
+                            echo 1 | divided_by: media.aspect_ratio | times: 100
+                            echo '%">'
+                          endcapture
+                          assign vid2 = '</div>'
+                        else
+                          if selected_media.id == media.id
+                            capture alt
+                              if media.preview_image.alt != blank
+                                echo media.preview_image.alt
+                              else
+                                echo product.title
+                              endif
+                            endcapture
+                            echo '<button type="button" tab-index="0" aria-label="'
+                            echo 'product.media.thumbnail' | t: title: media.alt
+                            echo '" data-product-gallery-thumbnail-placeholder>'
+                            assign size = sizeX | replace: 'x',''
+                            render 'image.load', img_src: media.preview_image, size: size, new_size: size, padding: padding, image_position: image_position, sizes: sizes, alt: alt, loop: loop, crop: crop, fetch: fetch, lazy: lazy
+                            echo '</button>'
+                          endif
+                          assign play = true
+                          capture vid1
+                            echo '<div class="youtube-container no-container" style="padding-top:'
+                            echo 1 | divided_by: media.aspect_ratio | times: 100
+                            echo '%"><template>'
+                          endcapture
+                          assign vid2 = '</template></div>'
+                        endif
+                        echo vid1
+                          if media.host == 'youtube'
+                            echo media | external_video_url: autoplay: play, loop: loop, playlist: media.external_id | external_video_tag: class: 'js-youtube no-container', loading: lazy                    
+                          else
+                            echo media | external_video_url: autoplay: play, loop: loop | external_video_tag: class: 'js-vimeo no-container', loading: lazy
+                          endif
+                        echo vid2
+                      else                    
+                        echo media | media_tag: image_size: sizeX
+                    endcase
+                  -%}
+                </div>
+              </figure>              
+            {% endfor %}
+           {% elsif settings.product_item_placeholder != blank %}
+            {%- liquid
+              capture alt
+                if settings.product_item_placeholder.alt != blank
+                  echo settings.product_item_placeholder.alt
+                else
+                  echo product.title
+                endif
+              endcapture
+              echo '<figure class="slide active slideshow-slide section-layout product-item-image product-item-style-'
+              echo product_item_style_class
+              echo ' product-gallery--viewport--figure keyed inside" data-media-type="image" data-product-gallery-selected="true" data-product-gallery-image-zoom>'
+              echo '<div class="slide-container">'
+              echo '<span class="'
+              echo insta_filter
+              echo '">'
+                assign fetch = 'high'
+                assign lazy = lazy
+                render 'image.load', img_src: settings.product_item_placeholder, size: size, new_size: size, padding: padding, image_position: image_position, sizes: sizes, alt: alt, loop: loop, crop: crop, fetch: fetch, lazy: lazy
+              echo '</span>'
+              echo '</div>'
+              echo '</figure>'
+            -%}
+           {% else %}
+            {%- liquid
+              echo '<figure class="slide active slideshow-slide section-layout product-item-image product-item-style-'
+              echo product_item_style_class
+              echo ' product-gallery--viewport--figure keyed inside" data-media-type="svg" data-product-gallery-selected="true">'
+              echo '<div class="slide-container">'
+                echo '<span class="'
+                echo insta_filter
+                echo '">'
+                  echo 'product-apparel-3' | placeholder_svg_tag: 'placeholder-svg'
+                echo '</span>'
+              echo '</div>'
+              echo '</figure>'
+            -%}
+           {% endif %}  
+        </div>
+      </div>
+      {% if layout != 'list' and product.media.size > 1  %}
+        <section id="{{ section.id }}-thumb-images" 
+                 data-section-id="{{ section.id }}-thumb-images" 
+                 data-product-gallery-navigation 
+                 data-product-gallery-navigation-layout="{% if layout == 'list' %}pagination{% else %}thumbnails{% endif %}"
+                 data-section-type="slider-{{ section.id }}-thumb-images"
+                 data-url="{{ 'script.slider.js' | asset_url }}"
+                 data-slider-use="true"
+                 data-slider-breakpoint="large"
+                 class="product-gallery--navigation{% unless is_quick %} content-details-sticky{% endunless %}">
+          <div class="slider {% if layout == 'gallery-left' or layout == 'gallery-right' %}scroll-bar-v vertical{% else %}scroll-bar-h horizontal{% endif %} relative" data-slider-axis="{% if layout == 'gallery-left' or layout == 'gallery-right' %}vertical{% else %}horizontal{% endif %}">
+            <fieldset role="radiogroup" aria-labelledby="1-{{ product.id }}{{ section.id }}" class="product-gallery--navigation-scroller" data-product-gallery-navigation-scroller>
+              <legend class="visually-hidden" id="1-{{ product.id }}{{ section.id }}">{{ 'product.media.thumbnails' | t: title: product.title }}</legend>
+              {{ thumbs }}
+            </fieldset>
+          </div>
+        </section>
+      {% endif %}                        
+    </section>  
+    {% if model %}
+      <script>
+        window.ShopifyXR=window.ShopifyXR||function(){(ShopifyXR.q=ShopifyXR.q||[]).push(arguments)}
+        {% assign models = product.media | where: 'media_type', 'model' | json %}
+        ShopifyXR('addModels', {{ models }});
+      </script>  
+    {% endif %}    
+  </div>         
+</div>

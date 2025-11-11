@@ -1,0 +1,260 @@
+{% liquid
+  assign enable_slide = block.settings.enable_slide
+  assign visible = false
+  if image 
+    if block.settings.image_desktop != blank or block.settings.image_mobile != blank
+      assign visible = true
+    endif
+  endif
+  if text 
+    if block.settings.text != blank or block.settings.link != blank and block.settings.link_text != blank
+      assign visible = true
+    endif
+  endif
+  assign use_style = false
+  assign text_color = false
+  if block.settings.text_color.alpha != 0.0 and block.settings.text_color.alpha != blank
+    assign use_style = true
+    assign text_color = true
+    assign text_color_block = block.settings.text_color
+  endif     
+  assign text_color_hover = false
+  if block.settings.text_color_hover.alpha != 0.0 and block.settings.text_color_hover.alpha != blank
+    assign use_style = true
+    assign text_color_hover = true
+    assign text_color_hover_block = block.settings.text_color_hover
+  endif       
+  assign button_color = false
+  if block.settings.button_color.alpha != 0.0 and block.settings.button_color.alpha != blank
+    assign use_style = true
+    assign button_color = true
+    assign button_color_block = block.settings.button_color
+  endif
+  assign line_color = false
+  if block.settings.line_color.alpha != 0.0 and block.settings.line_color.alpha != blank
+    assign use_style = true
+    assign line_color = true
+    assign line_color_block = block.settings.line_color
+  endif
+  assign text_background_color = false
+  assign text_background_opacity = block.settings.text_background_opacity | times: 0.01
+  if block.settings.text_background_color.alpha != 0.0 and block.settings.text_background_color.alpha != blank
+    assign use_style = true
+    assign text_background_color = true
+    assign text_background_color_block = block.settings.text_background_color
+  endif
+  if block.settings.text_background_gradient != blank
+    assign use_style = true
+    assign text_background_color = true
+    assign text_background_color_block = block.settings.text_background_gradient
+  endif
+  if is_mobile
+    assign use_style = false
+  endif
+-%}
+{% if use_style %}
+  {% style %}
+    .dynamic-promo-block-{{ block.id }}-{{ is_mobile }} {
+      {%- if text_color -%}
+      --color_title_text:{{ text_color_block }};
+      --color_text:{{ text_color_block }};
+      --button_primary_background:{{ text_color_block }};
+      --button_primary_border:{{ text_color_block }};
+      --button_secondary_border:{{ text_color_block }};
+      --button_secondary_text:{{ text_color_block }};
+      {%- endif -%}
+      {%- if text_color_hover -%}
+      --color_text_hover:{{ text_color_hover_block }};
+      {%- endif -%}    
+      {%- if button_color -%}  
+        --button_primary_text:{{ button_color_block }};
+        --button_secondary_background:{{ button_color_block }};
+      {%- endif -%}
+      {%- if line_color -%}
+      --color_border:{{ line_color_block }};
+      {%- endif -%}
+      {%- if text_background_color -%} 
+        --color_overlay:{{ text_background_color_block }};
+        --color_overlay_opacity:{{ text_background_opacity }};
+      {%- endif -%}
+    }
+  {% endstyle %}
+{% endif %}
+{% if visible %}
+  <div class="dynamic-promo-block-{{ block.id }}-{{ is_mobile }}{% unless skip %} content-block{% endunless %}{% if enable_slide %} content-slide{% endif %} section-layout{% unless enable_slide %} content-promo content-promo-{{ block.settings.text_position }}{% unless cart and image %}{% if block.settings.image_desktop or block.settings.include_border or text_background_color and text_background_opacity > 0 %} content-padding{% endif %}{% endunless %}{% endunless %}{% unless is_mobile %}{% if block.settings.include_border %} content-border{% endif %}{% endunless %}{% if enable_slide %} bottompad{% endif %} text-{{ block.settings.text_alignment | default: 'left' }}" {% if enable_slide %}data-content-slide {% endif %}{{ block.shopify_attributes }}>
+    {%- liquid
+      if enable_slide
+        assign heading = block.settings.heading
+        capture title
+          if heading != blank
+            echo heading
+          else
+            echo 'general.general.click_open' | t
+          endif
+        endcapture
+        render 'block.button', block: block, title: title, is_ignore: true
+      endif
+    -%}  
+    {% if enable_slide %}<div class="content-slide-content" data-height><div class="content-slide-space">{% endif %}  
+      {% if title != blank and enable_slide == false %}
+        <div class="label">{{ title }}</div>
+      {% endif %}  
+      {% liquid
+        if is_cart
+          assign size = 710
+          assign sizes = '(min-width: 1280px) 466px, (min-width: 768px) calc(40vw - 70px), calc(100vw - 40px)'
+        else
+          assign size = 439
+          assign sizes = '(min-width: 480px) 439px, calc(100vw - 40px)'
+        endif
+        if image
+          if block.settings.link != blank
+            echo '<a href="'
+            echo block.settings.link
+            echo '" title="'
+            echo block.settings.link_text | escape
+            echo '">'
+          endif          
+          if block.settings.image_desktop != blank        
+            echo '<figure class="content-promo'
+            if block.settings.include_border
+              echo ' content-border'
+            endif
+            echo ' '
+            echo block.settings.insta_filter
+            echo ' content-image'
+            if enable_slide
+              echo ' bottompad'
+            endif
+            if block.settings.image_mobile != blank
+              echo ' desktop'
+            endif
+            echo '">'              
+              capture alt
+                if block.settings.image_desktop.alt != blank
+                  echo block.settings.image_desktop.alt | escape
+                elsif block.settings.title != blank
+                  echo block.settings.title | escape
+                elsif block.settings.text != blank
+                  echo block.settings.text | escape
+                else
+                echo block.settings.image_desktop | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+                endif
+              endcapture
+              render 'image.load', img_src: block.settings.image_desktop, size: size, sizes: sizes, alt: alt, lazy: lazy
+            echo '</figure>'
+          endif
+          if block.settings.image_mobile != blank      
+            echo '<figure class="content-promo'
+            if block.settings.include_border
+              echo ' content-border'
+            endif
+            echo ' '
+            echo block.settings.insta_filter_mobile
+            echo ' content-image'
+            if enable_slide
+              echo ' bottompad'
+            endif
+            if block.settings.image_desktop != blank
+              echo ' mobile'
+            endif
+            echo '">'                
+              capture alt
+                if block.settings.image_mobile.alt != blank
+                  echo block.settings.image_mobile.alt | escape
+                elsif block.settings.title != blank
+                  echo block.settings.title | escape
+                elsif block.settings.text != blank
+                  echo block.settings.text | escape
+                else
+                echo block.settings.image_mobile | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+                endif
+              endcapture
+              render 'image.load', img_src: block.settings.image_mobile, size: size, sizes: sizes, alt: alt, lazy: lazy
+            echo '</figure>'
+          endif
+          if block.settings.link != blank
+            echo '</a>'
+          endif
+        endif
+        render 'image.sizes', mobile_size: size, desktop_size: size
+      -%}
+      {% if text %}          
+        {%- liquid
+          if is_mobile or menu_location == 'mobile'
+            assign size = 439
+            assign sizes = '(min-width: 526px) 439px, calc(100vw - 40px)'
+          else        
+            if size == blank              
+              assign size = 310
+              assign sizes = '(min-width: 1280px) 310px, 25dvw'
+            endif        
+            assign new_size = size | times: 1.5        
+          endif        
+          if block.settings.image_desktop != blank          
+            capture alt
+              if block.settings.image_desktop.alt != blank
+                echo block.settings.image_desktop.alt | escape
+              elsif block.settings.link_text != blank
+                echo block.settings.link_text | escape
+              elsif block.settings.text != blank
+                echo block.settings.text | strip_html
+              else
+                echo section.settings.image_desktop | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+              endif
+            endcapture
+            echo '<figure class="desktop '
+            echo block.settings.insta_filter
+            echo '">'
+              if is_mobile or menu_location == 'mobile'
+                render 'image.load', img_src: block.settings.image_desktop, size: size, sizes: sizes, alt: alt, lazy: lazy
+              else
+                render 'image.load', img_src: block.settings.image_desktop, promo_background: promo_background, size: size, new_size: new_size, padding: 100, sizes: sizes, alt: alt, background: true, lazy: lazy
+              endif
+            echo '</figure>'
+          endif
+          if block.settings.image_mobile != blank
+            capture alt
+              if block.settings.image_mobile.alt != blank
+                echo block.settings.image_mobile.alt | escape
+              elsif block.settings.link_text != blank
+                echo block.settings.link_text | escape
+              elsif block.settings.text != blank
+                echo block.settings.text | strip_html
+              else
+                echo section.settings.image_mobile | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+              endif
+            endcapture
+            echo '<figure class="mobile '
+            echo block.settings.insta_filter_mobile
+            echo '">'
+              if is_mobile or menu_location == 'mobile'
+                render 'image.load', img_src: block.settings.image_mobile, size: size, sizes: sizes, alt: alt, lazy: lazy
+              else
+                render 'image.load', img_src: block.settings.image_mobile, promo_background: promo_background, size: size, new_size: new_size, padding: 100, sizes: sizes, alt: alt, background: true, lazy: lazy
+              endif
+            echo '</figure>'
+          endif
+          if text_background_color
+            echo '<div class="section-layout-overlay skip"></div>'
+          endif
+          if block.settings.text != blank
+            echo '<div class="promo-block">'
+              echo block.settings.text
+            echo '</div>'
+          endif
+        -%}
+        {% if block.settings.link != blank and block.settings.link_text != blank %}
+          {% if block.settings.link_style == 'text' %}
+            <a href="{{ block.settings.link }}" role="menuitem" title="{{ block.settings.link_text }}" class="link-group{% if enable_slide %} bottompad{% endif %}">
+              <span><span class="link-text">{{ block.settings.link_text }}</span></span>
+              <span class="link-arrow">{%- render 'icons.theme', id: 'arrow-long-r', size: 18 -%}</span>
+            </a>
+          {% else %}
+            <a href="{{ block.settings.link }}" title="{{ block.settings.link_text }}" class="btn {% if block.settings.link_style == 'primary' %}btn-primary{% else %}btn-secondary{% endif %}{% if enable_slide %} bottompad{% endif %} auto-width">{{ block.settings.link_text }}</a>
+          {% endif %}              
+        {% endif %}
+      {% endif %}
+    {% if enable_slide %}</div></div>{% endif %}      
+  </div>
+{% endif %}

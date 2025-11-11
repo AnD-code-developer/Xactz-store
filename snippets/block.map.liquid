@@ -1,0 +1,191 @@
+{%- liquid
+  assign has_map = false
+  assign has_onboard = true
+  if settings.api_key != blank and block.settings.address != blank
+    assign has_map = true
+    assign has_onboard = false
+  endif
+  if is_page
+    assign has_onboard = false
+  endif
+  if block.settings.enable_custom_colors
+    assign map_background_color = block.settings.map_background_color
+    assign map_foreground_color = block.settings.map_foreground_color
+  endif 
+  assign overlay_color = false
+  assign overlay_color_opacity = block.settings.overlay_opacity | times: 0.01
+  if block.settings.overlay_background_color.alpha != 0.0 and block.settings.overlay_background_color.alpha != blank
+    assign overlay_color = true
+    assign overlay_color_block = block.settings.overlay_background_color
+  endif                       
+  if block.settings.overlay_background_gradient != blank
+    assign overlay_color = true
+    assign overlay_color_block = block.settings.overlay_background_gradient
+  endif                       
+  capture previous
+    if blocks_index == 1
+      echo blocks_size
+    else
+      echo blocks_index | minus: 1
+    endif
+  endcapture                  
+  capture next
+    if blocks_index == blocks_size
+      echo '1'
+    else
+      echo blocks_index | plus: 1
+    endif
+  endcapture
+-%}
+<section data-section-id="{{ section.id }}" 
+         data-section-type="navigation-container-{{ section.id }}"
+         data-url="{{ 'script.map.js' | asset_url }}"  
+         {% if blocks_size > 1 %}
+           id="slide-{{ section.id }}-{{ blocks_index }}"
+           data-slideshow-slide 
+           data-slide="{{ blocks_index }}"  
+           data-previous="{{ previous }}"  
+           data-next="{{ next }}"
+         {% endif %}
+         {%- unless story or has_map == false -%}
+           {% if block.settings.address != blank %}
+             data-map
+             data-map-trigger="{{ link.handle }}" 
+             data-map-id="{{ block.settings.map_id }}"
+             data-address="{{ block.settings.address }}"
+             data-zoom="{{ block.settings.zoom }}"
+             {% if block.settings.enable_custom_colors %}
+               data-map-color-a="{{ map_foreground_color }}"
+               data-map-color-b="{{ map_background_color | color_mix: map_foreground_color, 30 }}"
+               data-map-color-c="{{ map_background_color | color_mix: map_foreground_color, 50 }}"
+               data-map-color-d="{{ map_background_color | color_mix: map_foreground_color, 70 }}"
+               data-map-color-e="{{ map_background_color | color_mix: '#ffffff', 98 }}"
+               data-map-color-f="{{ map_background_color | color_mix: '#000000', 50 }}"
+             {% endif %}
+           {% endif %}
+         {%- endunless -%}
+         {% unless build %}
+           class="dynamic-block-{{ block.id }}{% if blocks_size > 1 %} slide{% if blocks_index == 1 %} active{% else %}{% if blocks_size > 2 %}{% if blocks_index == 2 %} next{% endif %}{% if forloop.last %} previous{% endif %}{% else %} visible{% endif %}{% endif %}{% endif %} slideshow-slide{% if blocks_size == 1 %} single{% endif %} section-layout{% if full_width %} full_width skip{% endif %}"
+         {% endunless %}
+         {{ block.shopify_attributes }}>
+  {%- liquid
+     if text_background_opacity > 0 and text_background_color
+       echo '<div class="section-layout-card-overlay"></div>'
+     endif
+  -%}  
+  <div class="slide-container">
+    {% unless build %}
+      {% style %}
+        .dynamic-block-{{ block.id }} {
+          {%- if menu -%}
+            --section_height_mobile: {{ section.settings.section_height_mobile }}vh; 
+            --section_height_desktop: {{ section.settings.section_height_desktop }}vh;
+          {%- endif -%}
+          {%- if block.settings.image_desktop != blank -%}--image_height_desktop: {{ block.settings.image_desktop.height }}px;{%- endif -%}
+          {%- if block.settings.image_mobile != blank -%}--image_height_mobile: {{ block.settings.image_mobile.height }}px;{%- endif -%}
+          {%- if overlay_color -%}
+            --color_overlay:{{ overlay_color_block }};
+            --color_overlay_opacity:{{ overlay_color_opacity }};
+          {%- endif -%}      
+          --z_index: {{ blocks_zindex }};
+        }
+      {% endstyle %}
+    {% endunless %}
+    {%- liquid
+      if block.settings.image_desktop != blank or block.settings.image_mobile != blank
+        if full_width
+          assign desktop_size = block.settings.image_desktop.width
+          assign desktop_sizes = '100dvw'
+        elsif menu
+          assign desktop_size = 600
+          assign desktop_sizes = '(min-width: 1280px) 600px, calc((100vw - 40px) * 0.5 - 20px)'
+          assign mobile_size = 439
+          assign mobile_sizes = '(min-width: 768px) 439px, (min-width: 480px) 100vw - 40px'
+        elsif build
+          assign desktop_size = desktop_size
+          assign desktop_sizes = desktop_sizes
+        else
+          assign desktop_size = 1240
+          assign desktop_sizes = '(min-width: 1280px) 1240px, (min-width: 960px) calc(100dvw - 40px), 100dvw'
+        endif    
+        if blocks_index == 1 or blocks_index == 2 or forloop.last
+          if section.settings.enable_lazy
+            assign lazy = 'lazy'
+          else
+            assign lazy = 'eager'
+          endif
+        else
+          assign lazy = 'lazy'
+        endif
+      endif
+      assign img_class = blank
+      if has_map
+        assign img_class = ' image hidden'
+      endif
+      if is_section 
+        assign mobile_size = 768
+        capture mobile_sizes
+          echo '(min-width: 1280px) '
+          if block.settings.image_desktop == blank
+            echo desktop_size
+          else
+            echo mobile_size
+          endif
+          echo 'px, (min-width: 960px) calc(100dvw - 40px), 100dvw'
+        endcapture
+      endif
+      if is_page
+        assign size = 618
+        assign sizes = '(min-width: 1280px) 618px, (min-width: 640px) calc((100dvw - 42px) * 0.5), calc(100dvw - 42px)'   
+        if block.settings.image_desktop != blank
+          capture alt
+            if block.settings.image_desktop.alt != blank
+              echo block.settings.image_desktop.alt | escape
+            elsif block.settings.title != blank
+              echo block.settings.title | escape
+            elsif block.settings.text != blank
+              echo block.settings.text | escape
+            else
+              echo section.settings.image_desktop | split: '/' | last | replace: '-', ' ' | replace: '_', ' ' | split: '.' | first | capitalize
+            endif
+          endcapture
+          echo '<span class="'
+          echo block.settings.insta_filter
+          echo img_class
+          echo '">'
+            render 'image.load', img_src: block.settings.image_desktop, build_background: true, size: size, padding: 100, sizes: sizes, alt: alt, background: true, lazy: lazy
+          echo '</span>'
+        endif
+      else
+        render 'block.images', section: section, block: block, mobile_size: mobile_size, mobile_sizes: mobile_sizes, desktop_size: desktop_size, desktop_sizes: desktop_sizes, image_background: true, build: build, build_background: build_background, full_width: full_width, lazy: lazy, class: img_class, forloop: forloop, has_onboard: has_onboard
+      endif
+    -%}    
+    {% if has_map %}
+      <figure class="section-layout-wrapper image-height-desktop map loading">
+        <div class="height-padding-custom desktop">
+          <div class="spinner"></div>
+          <div class="map-container" data-map-container></div>
+        </div>
+      </figure>
+    {% endif %}
+    {%- liquid
+      unless has_map == false and block.settings.image_desktop == blank and block.settings.image_mobile == blank
+        if block.settings.overlay_opacity != 0 and overlay_color
+          echo '<div class="section-layout-overlay"></div>'
+        endif
+      endunless
+      if is_section 
+        if full_width
+          assign size = 1900
+        else
+          assign size = 1240
+        endif
+        render 'image.sizes', note: true,  mobile_size: 768, desktop_size: size, padding_mobile: section.settings.section_height_mobile, padding_desktop: section.settings.section_height_desktop, new_size_mobile: 768, new_size_desktop: 1240
+      elsif is_page
+        render 'image.sizes', size: size, padding: 150, new_size: size
+      else
+        render 'image.sizes', note: true,  mobile_size: mobile_size, desktop_size: desktop_size, padding_mobile: block.settings.section_height_mobile, padding_desktop: block.settings.section_height_desktop, new_size_mobile: 768, new_size_desktop: 1240
+      endif      
+    -%}
+  </div>
+</section>

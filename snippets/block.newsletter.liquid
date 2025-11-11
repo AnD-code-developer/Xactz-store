@@ -1,0 +1,34 @@
+<section data-section-id="{{ section.id }}" 
+           data-section-type="newsletter-{{ section.id }}"
+           data-url="{{ 'script.newsletter.js' | asset_url }}"
+           class="block-element newsletter section-layout-card-content" {{ block.shopify_attributes }}>
+  {%- capture id -%}newseletter-{{ section.id }}{%- endcapture -%}  
+  {% form 'customer', id: id %}
+    {% if form.posted_successfully? %}
+      <span class="success newsletter-title" data-title="{{ 'newsletter.success_title' | t }}" data-link="{{ 'newsletter.continue' | t }}"><p>{{ 'newsletter.success' | t }}</p></span>
+      <span class="hidden newsletter-message">{{ 'newsletter.success_html' | t: shop_name: shop.name }}</span>
+    {% else %}
+      {%- render 'form.errors', form: form -%}
+      <div class="newsletter-form">
+        <label class="visually-hidden"
+               for="input-{{ id }}">{{ 'newsletter.placeholder' | t }}</label>
+        <input id="input-{{ id }}"
+               class="newsletter-input no-pad" 
+               name="contact[email]" 
+               type="email" 
+               autocorrect="off" 
+               autocapitalize="off" 
+               autocomplete="email" 
+               pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+               value="{% if customer %}{{ customer.email }}{% else %}{{ form.email }}{% endif %}" 
+               placeholder="{{ 'newsletter.placeholder' | t | escape }}" 
+               required>
+        <input type="hidden" 
+               id="contact_tags" 
+               name="contact[tags]" 
+               value="prospect,newsletter">
+        <button class="newsletter-submit btn btn-primary" name="subscribe" type="submit">{{ 'newsletter.subscribe' | t }}</button>
+      </div>
+    {% endif %}
+  {% endform %}
+</section>
